@@ -1,0 +1,73 @@
+
+
+<form class="form-horizontal passengerFlows_from" role="form">
+	<div class="form-group">
+		<label class="col-sm-1 control-label">工作日</label>
+		
+		<div class="col-sm-4">
+			<label class="checkbox-inline"> <input type="radio"
+				name="workType" id="all" value="0"
+				checked="checked">全部
+			</label> 
+			
+			<label class="checkbox-inline"> <input type="radio"
+				name="workType" id="workType1" value="1">工作日
+			</label> 
+			
+			<label class="checkbox-inline"> <input type="radio"
+				name="workType" id="workType2" value="0">非工作日
+			</label>
+			
+			<label class="checkbox-inline"> <input type="radio"
+				name="workType" id="workType2" value="-1">节假日
+			</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-1 control-label">客流方向</label>
+		
+		<div class="col-sm-4">
+			<label class="checkbox-inline"> <input type="radio"
+				name="flowDirection" id="flowDirection1" value="0"
+				checked="checked">全部
+			</label> 
+			
+			<label class="checkbox-inline"> <input type="radio"
+				name="flowDirection" id="flowDirection2" value="1">流出
+			</label> 
+			
+			<label class="checkbox-inline"> <input type="radio"
+				name="flowDirection" id="flowDirection3" value="2">流入
+			</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-1 control-label">区域</label>
+		<div class="col-sm-4">
+			<select id="xqselect" class="form-control passengerFlows_sel">
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-1 control-label">日期</label>
+
+		<div class="col-sm-2">
+			<input class="form-control" id="begin_date" name="begin_date"
+				placeholder="选择日期">
+		</div>
+		
+		<div class="col-sm-2">
+			<input class="form-control" id="end_date" name="end_date"
+				placeholder="选择日期">
+		</div>
+		
+		<div class="col-sm-2">
+			<button type="button" class="btn btn-primary"
+				id="btn_month_confirm">分析</button>
+		</div>
+	</div>
+</form>
+

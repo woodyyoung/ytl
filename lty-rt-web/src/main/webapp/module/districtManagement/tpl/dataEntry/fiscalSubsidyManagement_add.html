@@ -1,0 +1,73 @@
+<div class="modal fade" id="addfiscalSubsidyManagementModal" tabindex="-1" role="dialog"  aria-labelledby="addfiscalSubsidyManagementModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabelTile">添加公交财政补贴基础数据管理</h4>
+			</div>
+			<div class="modal-body">
+				<form class="perInfo_form form-horizontal" role="form" id="subsidiesform">
+					<div class="form-group">
+		                <label for="inputpwd" class="col-sm-2 control-label">补贴类型:</label>
+		                <div class="col-sm-10">
+		                    <select class="form-control selectpicker" id="subsidiesType1" style="width:100%">
+						    	
+						    </select>
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd_new" class="col-sm-2 control-label">补贴额度:</label>
+		                <div class="col-sm-10">
+		                    <input type="number" class="form-control" id="cost">
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd_sure" class="col-sm-2 control-label">补贴时间:</label>
+		                <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="startTime1" value="" placeholder="选择日期">
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd" class="col-sm-2 control-label">补贴对象:</label>
+		                <div class="col-sm-10">
+		                    <select class="form-control selectpicker" id="subsidyObject1" style="width:100%">
+						    	<!-- <option>户外职工</option> -->
+						    </select>
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd" class="col-sm-2 control-label">补贴来源:</label>
+		                <div class="col-sm-10">
+		                    <select class="form-control selectpicker" id="sourceOfSubsidies1" style="width:100%">
+						    	<!-- <option>地方</option> -->
+						    </select>
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd_sure" class="col-sm-2 control-label">录入人:</label>
+		                <div class="col-sm-10">
+		                    <input type="text" class="form-control" value="" id="createby"  disabled="">
+		                </div>
+		            </div>
+		            <div class="form-group">
+		                <label for="inputpwd_sure" class="col-sm-2 control-label">备注:</label>
+		                <div class="col-sm-10">
+		                	<textarea type="text" class="form-control" value="" id="remark"></textarea>
+		                </div>
+		            </div>
+
+		            <input type="hidden" name="financial_id" id="financial_id">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="btn_add_stretch">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+        

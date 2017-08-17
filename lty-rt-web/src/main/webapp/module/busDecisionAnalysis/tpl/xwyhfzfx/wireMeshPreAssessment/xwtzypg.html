@@ -1,0 +1,51 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-kLfx">线网调整预评估</h3>
+			</div><!-- panel-heading -->
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="x_panel">
+							<div class="x_content">
+				              <div id="treeview-searchable" class=""></div><!-- treeview-searchable -->
+				              <div>
+				                <input type="input" class="form-control" id="input-search" placeholder="线路搜索..." value=""/>
+				                <input type="hidden" id = "dyglId" value/>
+				              </div>    
+				            </div><!-- x_content -->
+			            </div><!-- x_panel -->
+					</div><!-- col-md-3 -->
+					<div class="col-md-9">
+						<div class="x_panel">
+							<form class="form-inline margB10">
+								<div class="form-group">
+									<label for="exampleInputName2">线路</label>
+									<select class="form-control selectpicker" id="yztselect">
+										 <option>1路</option>
+									</select>
+								</div>
+							</form><!-- form-inline -->
+							<form class="form-inline margB10">
+								<div class="form-group">
+									<label for="exampleInputName2">日期</label>
+									<input class="form-control" id="begin_date" name="begin_date" placeholder="选择日期">
+								</div>
+								 <div class="checkbox">
+								    <label>
+								      <input type="checkbox">对比当前
+								    </label>
+								</div>
+								<button type="submit" class="btn btn-default">预评估</button>
+							</form><!-- form-inline -->
+							<div class="xwtzypg_echarts">
+								<div id="dCycleCharts" style="width: 800px; height: 500px;"></div><!-- dCycleCharts -->
+							</div><!-- xwtzypg_echarts -->
+						</div><!-- x_panel -->
+					</div><!-- col-md-9 -->
+				</div><!-- row -->
+			</div><!-- panel-body -->
+		</div><!-- panel -->
+	</div><!-- col-md-12 -->
+</div><!-- row -->

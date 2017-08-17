@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.PassengerFlowMapper" >
+  <!-- <resultMap id="PassengerFlowMap" type="com.lty.rt.passengerFlows.bean.PassengerFlow" >
+    <result column="stationId" property="stationId"  />
+    <result column="stationName" property="stationName"  />
+    <result column="longitude" property="longitude" />
+    <result column="latitude" property="latitude" />
+    <result column="total_person_count" property="totalpersoncount"  />
+    <result column="onbus_person_count" property="onbuspersoncount"  />
+    <result column="offbus_person_count" property="offbuspersoncount" />
+  </resultMap> -->
+  
+  <!-- <select id="findListByMap" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+	   SELECT 
+	       T.PLATFORM_ID,
+	       T.P_NAME,
+	       T.LONGITUDE,
+       	   T.LATITUDE,
+	       SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+	       SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+	       SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT
+	  FROM V_STATION_PSGFLOW T
+	 	<where>
+	  	<if test="stationId != null  and stationId !=''">
+	 		T.PLATFORM_ID =#{stationId}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		   AND T.OCCUR_TIME &gt;=  TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:mi:ss')
+		   AND T.OCCUR_TIME &lt;  TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:mi:ss')
+		 GROUP BY T.PLATFORM_ID, T.P_NAME, T.LONGITUDE,T.LATITUDE
+ 		</where> 
+ 
+  	</select> -->
+  	
+  	
+  <select id="findListByMap" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+	SELECT
+	T.PLATFORM_ID,
+	T.P_NAME,
+	T.LONGITUDE,
+	T.LATITUDE,
+	SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+	SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+	SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT
+	FROM V_STATION_PSGFLOW T
+	<where>
+		<if test="stationId != null  and stationId !=''">
+			T.PLATFORM_ID =#{stationId}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+	</where>
+	GROUP BY T.PLATFORM_ID, T.P_NAME,
+	T.LONGITUDE,T.LATITUDE
+ 
+  	</select>
+  
+  
+</mapper>

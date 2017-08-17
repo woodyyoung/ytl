@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.assessment.mapper.IndexSourceDataMapper" >
+  <resultMap id="BaseResultMap" type="IndexSourceData" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="INDEX_ID" property="indexId" jdbcType="VARCHAR" />
+    <result column="INDEX_NUM" property="indexNum" jdbcType="DECIMAL" />
+    <result column="INDEX_TOTAL_NUM" property="indexTotalNum" jdbcType="DECIMAL" />
+    <result column="COUNT_DATE" property="countDate" jdbcType="DATE" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DATE" />
+    <result column="ACTUAL_LEVEL" property="actualLevel" jdbcType="VARCHAR" />
+    <result column="ACTUAL_SCORE" property="actualScore" jdbcType="DECIMAL" />
+    <result column="LINE_ID" property="lineId" jdbcType="VARCHAR" />
+    <result column="AREA_ID" property="areaId" jdbcType="VARCHAR" />
+    <result column="IS_WORK" property="isWork" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <resultMap id="IndexLevelResultMap" type="IndexLevel" >
+    <result column="INDEX_ID" property="indexId" jdbcType="VARCHAR" />
+    <result column="INDEX_LEVEL" property="indexLevel" jdbcType="VARCHAR" />
+    <result column="TOP_LIMIT" property="topLimit" jdbcType="DECIMAL" />
+    <result column="LOWER_LIMIT" property="lowerLimit" jdbcType="DECIMAL" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="PROPOSAL" property="proposal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapVo" type="com.lty.rt.assessment.vo.IndexSourceDataVo" >
+    <id column="ID" property="id" />
+    <result column="INDEX_ID" property="indexId" />
+    <result column="NAME" property="indexName" />
+    <result column="INDEX_NUM" property="indexNum" />
+    <result column="INDEX_TOTAL_NUM" property="indexTotalNum" />
+    <result column="COUNT_DATE" property="countDate" jdbcType="VARCHAR"/>
+    <result column="CREATETIME" property="createtime" jdbcType="VARCHAR"/>
+    <result column="UPDATETIME" property="updatetime" jdbcType="VARCHAR"/>
+    <result column="ACTUAL_LEVEL" property="actualLevel" />
+    <result column="ACTUAL_SCORE" property="actualScore" />
+    <result column="INPUTPERSON" property="inputPerson" />
+    <result column="REMARK" property="remark" />
+    <result column="level_unit" property="levelUnit" />
+    
+    <collection property="actualIndexLevel" column="{indexId=INDEX_ID,level=ACTUAL_LEVEL}"  ofType="com.lty.rt.assessment.bean.IndexLevel" select="getIndexLevelByLevel"/>
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, INDEX_ID, INDEX_NUM, INDEX_TOTAL_NUM, COUNT_DATE, CREATETIME, UPDATETIME, ACTUAL_LEVEL, 
+    ACTUAL_SCORE,LINE_ID, AREA_ID
+  </sql>
+  
+
+ 
+  <!-- <select id="getChartDataByDays" resultMap="BaseResultMapVo" parameterType="Map" >
+   select 
+       a.index_id,
+       b.name,
+       to_char(a.count_date, 'yyyy-MM-dd') count_date,
+       to_char(a.CREATETIME, 'yyyy-MM-dd') CREATETIME,
+       a.INPUT_PERSON inputPerson,
+       a.REMARK remark,
+       avg(a.index_num)index_num,
+       avg(a.index_total_num)index_total_num,
+       avg(a.actual_level)actual_level,
+       avg(a.actual_score)actual_score
+  from pjmk_index_source_data a
+  left join pjmk_index b
+    on a.index_id = b.id
+ where 1 = 1
+    <if test="arg != null" >
+        and index_id = #{arg,jdbcType=DECIMAL}
+    </if>
+    <if test="beginDate != null" >
+        and count_date &gt;= TO_DATE(#{beginDate }, 'yyyy-mm-dd') 
+    </if>
+    <if test="endDate != null" >
+        and count_date &lt;= TO_DATE(#{endDate }, 'yyyy-mm-dd')
+    </if>
+    <if test="isWork != null and isWork != ''" >
+        and a.is_work = #{isWork }
+    </if>
+    <if test="lineId != null" >
+        and a.line_id like #{lineId }||'%'
+    </if>
+     <if test="areaId != null" >
+        and a.area_id like #{areaId }||'%'
+    </if>
+      group by  a.index_id,     b.name,   a.count_date, a.CREATETIME, a.INPUT_PERSON, a.REMARK
+	  order by   a.count_date desc
+  </select> -->
+  
+  <select id="getIndexLevelByLevel" resultMap="IndexLevelResultMap" parameterType="java.util.Map" >
+    select INDEX_ID, INDEX_LEVEL, TOP_LIMIT, LOWER_LIMIT, DESCRIPTION, PROPOSAL
+    from PJMK_INDEX_LEVEL
+    where INDEX_LEVEL = trunc(#{level,jdbcType=DECIMAL})
+    and INDEX_ID = #{indexId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getChartDataByDays" resultMap="BaseResultMapVo" parameterType="Map" >
+   select 
+       a.index_id,
+       b.name ,
+       b.level_unit,
+       to_char(a.count_date, 'yyyy-MM-dd') count_date,
+       avg(a.index_num)index_num,
+       avg(a.index_total_num)index_total_num,
+       avg(a.actual_level)actual_level,
+       avg(a.actual_score)actual_score
+  from v_index_source_data_level a
+  left join pjmk_index b
+    on a.index_id = b.id
+ where 1 = 1
+    <if test="arg != null" >
+        and index_id = #{arg,jdbcType=DECIMAL}
+    </if>
+    <if test="beginDate != null" >
+        and count_date &gt;= TO_DATE(#{beginDate }, 'yyyy-mm-dd') 
+    </if>
+    <if test="endDate != null" >
+        and count_date &lt;= TO_DATE(#{endDate }, 'yyyy-mm-dd')
+    </if>
+    <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    <if test="lineId != null" >
+        and a.line_id like #{lineId }||'%'
+    </if>
+     <if test="areaId != null" >
+        and a.area_id like #{areaId }||'%'
+    </if>
+      group by  a.index_id,     b.name,  b.level_unit,  a.count_date
+	  order by   a.count_date
+  </select>
+  
+  
+  <select id="getChartDataByMonths" resultMap="BaseResultMapVo" parameterType="Map" >
+    select a.INDEX_ID, a.name,  a.level_unit,
+    round(sum(a.INDEX_NUM),2) as INDEX_NUM, 
+    round(sum(a.INDEX_TOTAL_NUM),2) as INDEX_TOTAL_NUM, 
+    a.mm as COUNT_DATE, 
+    round(avg(a.ACTUAL_LEVEL),2) as ACTUAL_LEVEL, 
+    round(avg(a.ACTUAL_SCORE),2) as ACTUAL_SCORE
+	from v_index_source_data a
+	where 1=1
+	and a.mm &gt;= #{beginDate }
+	and a.mm &lt;= #{endDate }
+	and index_id = #{arg,jdbcType=DECIMAL}
+	<if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    <if test="lineId != null" >
+        and a.line_id like #{lineId }||'%'
+    </if>
+     <if test="areaId != null" >
+        and a.area_id like #{areaId }||'%'
+    </if>
+	group by a.INDEX_ID,a.name,a.level_unit,a.mm 
+	order by a.mm
+  </select>
+  
+  <select id="getChartDataByWeeks" resultMap="BaseResultMapVo" parameterType="Map" >
+    select a.INDEX_ID, a.name, a.level_unit,
+    round(sum(a.INDEX_NUM),2) as INDEX_NUM, 
+    round(sum(a.INDEX_TOTAL_NUM),2) as INDEX_TOTAL_NUM, 
+    a.iw as COUNT_DATE, 
+    round(avg(a.ACTUAL_LEVEL),2) as ACTUAL_LEVEL, 
+    round(avg(a.ACTUAL_SCORE),2) as ACTUAL_SCORE
+	from v_index_source_data a
+	where 1=1
+	and a.dd &gt;= #{beginDate }
+	and a.dd &lt;= #{endDate }
+	and index_id = #{arg,jdbcType=DECIMAL}
+    <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    <if test="lineId != null" >
+        and a.line_id like #{lineId }||'%'
+    </if>
+     <if test="areaId != null" >
+        and a.area_id like #{areaId }||'%'
+    </if>
+	group by a.INDEX_ID,a.name,a.level_unit,a.iw
+	order by a.iw
+  </select>
+  
+  <select id="getChartDataByYears" resultMap="BaseResultMapVo" parameterType="Map" >
+    select a.INDEX_ID, a.name, a.level_unit,
+    round(sum(a.INDEX_NUM),2) as INDEX_NUM, 
+    round(sum(a.INDEX_TOTAL_NUM),2) as INDEX_TOTAL_NUM, 
+    a.yea as COUNT_DATE, 
+    round(avg(a.ACTUAL_LEVEL),2) as ACTUAL_LEVEL, 
+    round(avg(a.ACTUAL_SCORE),2) as ACTUAL_SCORE
+	from v_index_source_data a
+	where 1=1
+	and a.yea &gt;= #{beginDate }
+	and a.yea &lt;= #{endDate }
+	and index_id = #{arg,jdbcType=DECIMAL}
+    <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    <if test="lineId != null" >
+        and a.line_id like #{lineId }||'%'
+    </if>
+     <if test="areaId != null" >
+        and a.area_id like #{areaId }||'%'
+    </if>
+	group by a.INDEX_ID,a.level_unit,a.name,a.yea
+	order by a.yea
+  </select>
+  
+   <select id="getIndexCountByMap" resultType="Integer" parameterType="Map" >
+    select nvl(COUNT(1),0) rnt from pjmk_index_source_data t
+    where t.index_id=#{indexId}
+    and to_char(t.count_date,'YYYY-MM-DD') = #{countDate}
+    <if test="lineId != null and lineId != ''" >
+        and t.line_id = #{lineId}
+    </if>
+    <if test="areaId != null and areaId != ''" >
+        and t.area_id = #{areaId}
+    </if>
+  </select>
+  
+  <insert id="deleteIndexSourceDataByMap" parameterType="Map" >
+    delete from PJMK_INDEX_SOURCE_DATA t
+    where t.index_id = #{indexId}
+    and t.count_date &gt;= to_date(#{startTime},'yyyy-mm-dd')
+    and t.count_date &lt;= to_date(#{endTime},'yyyy-mm-dd')
+    
+    <if test="lineId != null and lineId != ''" >
+        and t.line_id = #{lineId}
+    </if>
+    <if test="areaId != null and areaId != ''" >
+        and t.area_id = #{areaId}
+    </if>
+  </insert>
+  
+  <insert id="batchDelByMap" parameterType="Map">
+    delete from PJMK_INDEX_SOURCE_DATA t
+    where t.id in 
+    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </insert>
+  
+  <insert id="batchInsertIndexSourceData" parameterType="IndexSourceData">
+    insert into PJMK_INDEX_SOURCE_DATA(ID,INDEX_ID,INDEX_NUM,INDEX_TOTAL_NUM,COUNT_DATE,ACTUAL_SCORE,LINE_ID,AREA_ID,IS_WORK,INPUT_PERSON,REMARK)
+    <foreach collection="list" index="index" item="item" open="(" separator="union" close=")">    
+            select #{item.id,jdbcType=VARCHAR},#{item.indexId,jdbcType=VARCHAR},#{item.indexNum,jdbcType=DECIMAL},#{item.indexTotalNum,jdbcType=DECIMAL},#{item.countDate},
+			#{item.actualScore,jdbcType=DECIMAL},#{item.lineId,jdbcType=VARCHAR},#{item.areaId,jdbcType=VARCHAR},#{item.isWork},#{item.inputPerson,jdbcType=VARCHAR} ,#{item.remark,jdbcType=VARCHAR}  from dual    
+    </foreach>
+  </insert>
+  
+  <update id="updateScore" parameterType="IndexSourceData" >
+    update PJMK_INDEX_SOURCE_DATA
+    set 
+    INDEX_NUM = #{indexNum,jdbcType=DECIMAL},
+    INDEX_TOTAL_NUM = #{indexTotalNum,jdbcType=DECIMAL},
+    ACTUAL_SCORE = #{actualScore,jdbcType=DECIMAL},
+   <!--  ACTUAL_LEVEL = #{actualLevel,jdbcType=VARCHAR}, -->
+    INPUT_PERSON = #{inputPerson,jdbcType=VARCHAR},
+    REMARK = #{remark,jdbcType=VARCHAR},
+    UPDATETIME = sysdate
+    where index_id = #{indexId,jdbcType=VARCHAR}
+    and count_date = #{countDate,jdbcType=DATE}
+  </update>
+  
+   <update id="updateIndexData" parameterType="Map" >
+	    update PJMK_INDEX_SOURCE_DATA
+	    <set> 
+		   	<if test="indexNum!=null and indexNum!=''">
+		    	INDEX_NUM = #{indexNum,jdbcType=DECIMAL},
+		    </if>
+		    <if test="indexTotalNum!=null and indexTotalNum!=''">
+		    	INDEX_TOTAL_NUM = #{indexTotalNum,jdbcType=DECIMAL},
+		    </if>
+		    <if test="inputPerson!=null and inputPerson!=''">
+		    	INPUT_PERSON = #{inputPerson,jdbcType=VARCHAR},
+		    </if>
+		     <if test="remark!=null and remark!=''">
+		    	REMARK = #{remark,jdbcType=VARCHAR},
+		    </if>
+		    ACTUAL_SCORE = #{actualScore,jdbcType=DECIMAL}
+	    </set>
+	    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="searchIndexData" resultType="Map" parameterType="Map" >
+    select a.id,
+        a.index_id,
+        a.index_num,
+        a.index_total_num,
+        to_char(a.count_date, 'yyyy-mm-dd') count_date,
+        to_char(a.createtime, 'yyyy-mm-dd') createtime,
+        to_char(a.updatetime, 'yyyy-mm-dd') updatetime,
+        a.actual_level,
+        a.actual_score,
+        a.line_id,
+        l.name linename,
+        ar.codename areaName,
+        a.area_id,
+        a.is_work,
+        a.input_person,
+        a.remark
+   from pjmk_index_source_data a, pjmk_line l,pjmk_area ar
+  where a.line_id = l.id(+)
+  and a.area_id = ar.codeid(+)
+	    <if test="indexId != null" >
+	        and a.index_id = #{indexId,jdbcType=DECIMAL}
+	    </if>
+	    <if test="beginDate != null" >
+	        and a.count_date &gt;= TO_DATE(#{beginDate }, 'yyyy-mm-dd') 
+	    </if>
+	    <if test="endDate != null" >
+	        and a.count_date &lt;= TO_DATE(#{endDate }, 'yyyy-mm-dd')
+	    </if>
+	    <if test="isWork != null and isWork != '' and isWork!='-1' " >
+	        and a.is_work = #{isWork }
+	    </if>
+	    <if  test="isWork=='-1' " >
+	        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+	    </if>
+	    <if test="lineId != null" >
+	        and a.line_id like #{lineId }||'%'
+	    </if>
+	     <if test="areaId != null" >
+	        and a.area_id like #{areaId }||'%'
+	    </if>
+	order by  a.count_date desc
+  </select>
+  
+</mapper>

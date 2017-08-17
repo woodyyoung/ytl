@@ -1,0 +1,83 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-kLfx"> 全市公交行业人车公里成本年度变化情况</h3>
+			</div><!-- panel-heading -->
+			<div class="ndbh_form">
+				<form class="form-inline">
+				  <div class="form-group">
+				    <label for="exampleInputName2">类别选择:</label>
+				    <label class="radio-inline"><input type="radio" name="qcndbhRadio" id="lineRadio1" value="0" checked="checked">线路</label> 
+				    <label class="radio-inline"><input type="radio" name="qcndbhRadio" id="companyRadio2" value="1">公司</label>
+				  </div>
+				</form><!-- form-inline -->
+				<form class="form-inline margB10" id="pvcost_select_form">
+				  <div class="form-group qcndbh_line">
+				    <label for="exampleInputName2">线路</label>
+				    <select class="form-control selectpicker" id="line_id" name="line_id">
+				    </select>
+				  </div>
+				  <div class="form-group qcndbh_company">
+				    <label for="exampleInputName2">公司</label>
+				    <select class="form-control selectpicker" id="company_id" name="company_id">
+				    </select>
+				    <!-- <input class="form-control" name="" placeholder="公司" > -->
+				  </div>
+				  <div class="form-group">
+				    <label for="exampleInputName2">年份</label>
+				    <input class="form-control" id="begin_date" name="startTime" placeholder="选择日期">
+				  </div>
+				  <div class="form-group">
+				    <span>至</span>
+				    <input class="form-control" id="end_date" name="endTime" placeholder="选择日期">
+				  </div>
+				  <button type="button" class="btn btn-primary" id="btn_hours_confirm">查询</button>
+				</form><!-- form-inline -->
+			</div><!-- ndbh_form -->
+		</div><!-- panel -->
+	</div><!-- col-md-12 -->
+</div><!-- row -->
+<div class="row">
+	<div class="col-md-12">
+		<div class="x_panel">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="ndbh_title">全市公交行业千车公里成本年度对比情况</div><!-- ndbh_title -->
+					<div class="ndbh_list">
+						<ul class="ndbhList_ul">
+							<li class="ndbhList_liLast">
+								<select class="form-control selectpicker" id="pvcosttype_id" name="pvcosttype_id">
+									<option>其他</option>
+									<option>人公里成本</option>
+									<option>人次成本</option>
+									<option>车次出行成本</option>
+								</select>
+							</li>
+							<div class="clear"></div>
+						</ul>
+					</div><!-- ndbh_list -->
+					<div class="ndbh_echarts">
+						<div id="ndbhEcharts_fold" style="width: 100%; height: 400px;"></div>
+					</div><!-- ndbh_echarts -->
+				</div><!-- col-md-12 -->
+			</div><!-- row -->
+		</div><!-- x_panel -->
+	</div><!-- col-md-12 -->
+</div><!-- row -->
+<div class="row">
+	<div class="col-md-12">
+		<div class="x_panel">
+			<table class="table responsive table-bordered col-sm-12"  id="table_list_template">				
+				<!-- <thead>
+		            <tr>
+		                <th>年份</th>
+		                <th>线路</th>
+		                <th>费用类型</th>
+		                <th>费用</th>
+		            </tr>
+		        </thead> -->
+			</table>
+		</div><!-- x_panel -->
+	</div><!-- col-md-12 -->
+</div><!-- row -->

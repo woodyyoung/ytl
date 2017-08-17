@@ -1,0 +1,76 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-kLfx">路段断面客流预测</h3>
+			</div>
+
+			<div class="panel-body">
+				<form class="form-horizontal" role="form" id="dmklfx_form">
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-sm-12">
+		<!-- 地图 -->
+		<div class="panel panel-default xlklcx_panel">
+			<div class="passenger_rightBtn_click"><a class="passenger_rightBtn_toggle passenger_btn_open"></a></div>
+			<div id="dmklfxCharts" style="height: 800px;"></div>
+		
+		    <div class="passenger_leftBtn_click"><a class="passenger_leftBtn_toggle passenger_btn_open"></a></div>
+			<!-- 直方图 -->
+			 <div class="passenger_float_left">
+	         	<div id="dmklycBarCharts" style="height: 300px;"></div>
+	         </div>
+			
+			<div class="passenger_rightBtn_click"><a class="passenger_rightBtn_toggle passenger_btn_open"></a></div>
+			<!-- 客流等级 -->
+			 <div class="linePassengerFlow_sign">
+			 <div class="total_txt">
+				                      <select id="planName" class="form-control passengerFlows_sel"></select>
+			    </div>
+	           <ul class="linePassengerFlowSign_ul"></ul><!-- linePassengerFlowSign_ul --> 
+	           <div class="total_txt">
+	       		<div class="total_txt1"><p class="total_p1">客流总量</p><p class="total_p2"></p></div>
+	       	   </div>
+	         </div>
+			
+			<!-- 折线图-->
+			 <div class="passenger_btn_click"><a class="passenger_btn_toggle passenger_btn_open"></a></div>
+	         <div class="passenger_float">
+	         	<div id="dmklycCharts" style="height: 300px;"></div>
+	         </div>
+	     </div>
+	</div>
+
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+
+				<div class="row">
+
+					<div class="col-sm-12 xlklcx_btn">
+
+						<!-- Contextual button for informational alert messages -->
+						 <!-- <button type="button" class="btn btn-info">打印</button> -->
+
+						<!-- Indicates caution should be taken with this action -->
+						<button type="button" class="btn btn-warning" id="btn-export">导出图表</button>
+					</div>
+				</div>
+
+				<table class="table responsive table-bordered col-sm-12"  id="table_list_template">
+					 <thead>
+			            <tr>
+			                <th>路段断面</th>
+			                <th>时间</th>
+			                <th>客流量</th>
+			            </tr>
+			        </thead>
+				</table>
+				
+			</div>
+		</div>
+	</div>
+</div>

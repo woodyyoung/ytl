@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>当前在线用户</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="css/font-awesome.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- dataTables -->
+    <link href="css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="css/select.dataTables.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="css/custom.css" rel="stylesheet">
+    
+  </head>
+  <body class="nav-md">
+    <div class="container body">
+      <div class="col-md-3 left_col">
+
+      <div class="left_col scroll-view">
+
+        <div class="navbar nav_title">
+          <a href="index.html" class="site_title logo_site"><i class="perInfo_logo"><img src="images/logo.png"></i><span>LTYERP</span></a>
+        </div><!-- nav_title -->
+        <div class="clearfix"></div>
+        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+          <ul class="nav side-menu">
+            <li><a><i class="fa fa-id-card-o"></i>用户<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+                <li><a href="onlineUser.html">在线用户</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!-- sidebar-menu -->
+
+      </div>
+
+      </div><!-- left -->
+      <div class="right_col" role="main">
+        <div class="top_nav">
+          <div class="nav_menu">
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fa fa-arrow-circle-left"></i></a>
+            </div><!-- nav -->
+            <ul class="nav navbar-nav navbar-right">
+              <li class="">
+                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <img src="images/user.jpg" alt="">管理员
+                  <span class=" fa fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                  <li><a href="onlineUser.html"><i class="fa fa-id-card-o"></i><span class="drop_sp">当前在线用户</span></a></li>
+                  <li><a href="javascript:;"><i class="fa fa-cog"></i><span class="drop_sp">修改密码</span></a></li>
+                  <li><a href="javascript:;"><i class="fa fa-user"></i><span class="drop_sp">我的资料</span></a></li>
+                  <li><a href="login.html"><i class="fa fa-sign-out"></i><span class="drop_sp">退出系统</span></a></li>
+                </ul>
+              </li>
+            </ul><!-- navbar-nav -->
+            <div class="menu_btn right hide"><i class="fa fa-bars"></i></div><!-- menu_btn -->
+            <ul class="menu_ul navbar-right">
+             <!--  <li><i class="fa fa-truck"></i><p>调度</p></li>
+              <li><i class="fa fa-map-marker"></i><p>运营</p></li> -->
+              <li><a href=""><i class="fa fa-bus"></i><p>车辆</p></a></li>
+              <li><a href=""><i class="fa fa-cubes"></i><p>物资</p></a></li>
+              <!-- <li><i class="fa fa-bars"></i><p>设备</p></li>
+              <li><i class="fa fa-life-ring"></i><p>安全</p></li>
+              <li><i class="fa fa-user"></i><p>人事</p></li>
+              <li><i class="fa fa-cny"></i><p>财务</p></li>
+              <li><i class="fa fa-bar-chart"></i><p>报表</p></li> -->
+              <li><a href=""><i class="fa fa-briefcase"></i><p>办公</p></a></li>
+              <li><a href="system/department.html"> <i class="fa fa-cog"></i><p>系统</p></a></li>
+            </ul><!-- menu_ul -->
+          </div><!-- nav_menu -->
+        </div><!-- top_nav -->
+
+        <div class="index_padd">
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="perInfo_title"><h3>当前在线用户</h3></div>
+            </div>
+          </div><!-- row -->
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>当前在线用户列表</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <div class="user_search">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="ex3">用户名</label>
+                        <input type="text" id="ex3" class="form-control" placeholder=" ">
+                      </div>
+                      <button type="submit" class="btn btn-default">查询</button>
+                    </form>
+                  </div><!-- user_search -->
+                  <div class="onlineUser_tab table-responsive">
+                    <table id="example" class="display" cellspacing="0" width="100%"></table>
+                  </div><!-- onlineUser_tab -->
+                </div>
+              </div><!-- x_panel -->
+            </div>
+          </div><!-- row -->
+        </div><!-- index_padd -->
+      </div><!-- right -->
+    </div><!-- container -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- dataTables -->
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.buttons.min.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="js/custom.js"></script>
+    <script type="text/javascript">
+      var mytable=null;
+      $(function(){
+        details();
+        function ajaxRequest(type,url,data){
+          var options = {
+              dataType:"json",
+              contentType:"applacation/json",
+              cache:false,
+              async:true,
+              type:type,
+              data:data
+          }
+          return $.ajax(url,options);
+        }
+        function details(){
+          var url = "json/onlineUser.json";
+              ajaxRequest("get",url).done(function(data){
+                  mytable = $("#example").DataTable({
+                  data: data.data,
+                  "order": [[ 1, "desc" ]],
+                  "language": {
+                  "processing": "处理中...",
+                  "lengthMenu": "显示 _MENU_ 项结果",
+                  "zeroRecords": "没有匹配结果",
+                  "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                  "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                  "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                  "infoPostFix": "",
+                  "search": "搜索:",
+                  "searchPlaceholder": "搜索...",
+                  "url": "",
+                  "emptyTable": "表中数据为空",
+                  "loadingRecords": "载入中...",
+                  "infoThousands": ",",
+                  "paginate": {
+                      "first": "首页",
+                      "previous": "上一页",
+                      "next": "下一页",
+                      "last": "末页"
+                  }
+                  },
+                  columns:[
+                    {data:"用户名",title:"用户名"},
+                    {data:"部门",title:"部门"},
+                    {data:"登录时间",title:"登录时间"},
+                    {data:"最近活动时间",title:"最近活动时间"},
+                    {data:"登录IP",title:"登录IP"}
+                  ],
+                  select: {
+                  style:    'os',
+                  selector: 'td:first-child'
+                  }
+                  /*buttons: [ ]*/
+                });
+             });
+        }
+      });
+    </script>
+  </body>
+</html>

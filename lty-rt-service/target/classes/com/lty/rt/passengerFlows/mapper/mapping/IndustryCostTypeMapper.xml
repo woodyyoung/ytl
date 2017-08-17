@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lty.rt.passengerFlows.mapper.IndustryCostTypeMapper">
+  <resultMap id="BaseResultMap" type="com.lty.rt.passengerFlows.bean.IndustryCostType">
+    <id column="TYPE_NO" jdbcType="VARCHAR" property="typeNo" />
+    <result column="TYPE_NAME" jdbcType="VARCHAR" property="typeName" />
+    <result column="MARK" jdbcType="VARCHAR" property="mark" />
+    <result column="CREATETIME" jdbcType="DATE" property="createtime" />
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    TYPE_NO, TYPE_NAME, nvl(MARK,' ') mark, CREATETIME, ID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_COST_TYPE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findListByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select
+	<include refid="Base_Column_List" />
+	from PJMK_COST_TYPE p
+	order by TYPE_NO,TYPE_NAME
+  </select>
+  
+  
+  <!-- <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from PJMK_COST_TYPE
+    where TYPE_NO = #{typeNo,jdbcType=VARCHAR}
+  </delete> -->
+   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_COST_TYPE
+    where ID in <!-- (#{value,jdbcType=VARCHAR}) -->
+    <foreach item="empnoItem" collection="array" open="(" separator="," close=")">	
+            #{empnoItem}
+    </foreach>
+  </delete>
+  
+  <insert id="insert" parameterType="com.lty.rt.passengerFlows.bean.IndustryCostType">
+    insert into PJMK_COST_TYPE (TYPE_NO, TYPE_NAME, MARK, 
+      CREATETIME, ID)
+    values (#{typeNo,jdbcType=VARCHAR}, #{typeName,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, 
+      sysdate, #{id,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.passengerFlows.bean.IndustryCostType">
+    insert into PJMK_COST_TYPE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="typeNo != null">
+        TYPE_NO,
+      </if>
+      <if test="typeName != null">
+        TYPE_NAME,
+      </if>
+      <if test="mark != null">
+        MARK,
+      </if>
+      <if test="createtime != null">
+        CREATETIME,
+      </if>
+      <if test="id != null">
+        ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="typeNo != null">
+        #{typeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="typeName != null">
+        #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null">
+        #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.passengerFlows.bean.IndustryCostType">
+    update PJMK_COST_TYPE
+    <set>
+      <if test="typeName != null">
+        TYPE_NAME = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null">
+        MARK = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        CREATETIME = #{createtime,jdbcType=DATE},
+      </if>
+    </set>
+    where ID =  #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.passengerFlows.bean.IndustryCostType">
+    update PJMK_COST_TYPE
+    set TYPE_NAME = #{typeName,jdbcType=VARCHAR},
+      MARK = #{mark,jdbcType=VARCHAR}
+    where ID =  #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

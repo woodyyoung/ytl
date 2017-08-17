@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.AuxiliaryLineMapper" >
+
+  <!-- tree node result map -->
+  <resultMap id="TreeNodeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+    <result column="id" property="id" />
+    <result column="pid" property="pid" />
+    <result column="nodeName" property="nodeName" />
+    <result column="arg" property="arg" />
+  </resultMap>
+  
+  <!-- Auxiliary line scheme result map -->
+  <resultMap id="AuxiliaryLineResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.AuxiliaryLineScheme" >
+    <result column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="lineId" property="lineId" />
+    <result column="mapData" property="mapData" />
+  </resultMap>
+  
+  <!-- Auxiliary line station result map -->
+  <resultMap id="AuxiliaryStationResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.AuxiliaryLineStation" >
+    <result column="schemeId" property="schemeId" />
+    <result column="lineId" property="lineId" />
+    <result column="platformId" property="platformId" />
+  </resultMap>
+  
+  <select id="queryLineTreeNode" resultMap="TreeNodeResultMap" >
+    select k.id, k.name nodeName, '-1' pid, 'line' as arg from pjmk_line k
+	union all 
+	select t.id, t.name nodeName, t.line_id pid, 'scheme' as arg from PJMK_AUXILIARY_LINE_SCHEME t where state = 0
+  </select>
+  
+  <insert id="insertScheme" parameterType="com.lty.rt.auxiliaryAnalysis.entity.AuxiliaryLineScheme">
+  	insert into PJMK_AUXILIARY_LINE_SCHEME(id, name, line_id, map_data, state) values(#{id}, #{name}, #{lineId}, #{mapData}, 0)
+  </insert>
+  
+  <update id="updateScheme" parameterType="com.lty.rt.auxiliaryAnalysis.entity.AuxiliaryLineScheme">
+  	update PJMK_AUXILIARY_LINE_SCHEME set
+  	 name = #{name},
+  	 line_id = #{lineId},
+  	 map_data = #{mapData}
+  	where id = #{id}
+  </update>
+  
+  <delete id="delLineStationByLineId" parameterType="java.lang.String">
+  	delete from PJMK_AUXILIARY_LINE_STATION WHERER LINE_ID = #{lineId}
+  </delete>
+  
+  <insert id="batchSaveLineStation" parameterType="com.lty.rt.auxiliaryAnalysis.entity.AuxiliaryLineStation" useGeneratedKeys="false">
+  	insert into PJMK_AUXILIARY_LINE_STATION
+  	<foreach collection="list" index="index" item="item" open="(" separator="union" close=")">    
+            select #{item.schemeId}, #{item.platformId}, #{item.lineId} from dual    
+    </foreach>
+  </insert>
+  
+  <update id="delLineScheme" parameterType="java.lang.String">
+  	update PJMK_AUXILIARY_LINE_SCHEME
+  	 set state = 1
+  	where id = #{id}
+  </update>
+  
+  <delete id="delLineStationBySchemeId" parameterType="java.lang.String">
+  	delete from PJMK_AUXILIARY_LINE_STATION WHERE SCHEME_ID = #{schemeId}
+  </delete>
+  
+  <select id="querySchemeById" resultMap="AuxiliaryLineResultMap" parameterType="java.lang.String">
+  	select id, name, line_id lineId, map_data mapData from PJMK_AUXILIARY_LINE_SCHEME where id = #{id} and state=0
+  </select>
+  
+   <select id="queryFillRates" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select round(max(t1.fillrate*100), 1) max_fillrate,
+		       round(avg(t1.fillrate*100), 1) avg_fillrate
+		  from (
+		        select t.HH,
+		                sum(t.total_person_count+t.onbus_person_count+t.offbus_person_count) / (count(t.station_id) * 50) fillrate
+		          from (
+		                 
+		                 select to_char(t.occur_time, 'HH24') hh, t.*
+		                   from pjmk_station_psgflow t
+		                  where t.line_id = #{lineId}
+		                    and t.occur_time &gt;= to_date(#{date}, 'yyyy-mm-dd')
+		                    and t.occur_time &lt; to_date(#{date}, 'yyyy-mm-dd')+1) t
+		        
+		         group by t.HH) t1
+
+	</select>
+	
+   <select id="queryFillRatesForScheme" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select round(max(t1.fillrate*100), 1) max_fillrate,
+		       round(avg(t1.fillrate*100), 1) avg_fillrate
+		  from (
+		        select t.HH,
+		                sum(t.total_person_count+t.onbus_person_count+t.offbus_person_count) / (count(t.station_id) * 50) fillrate
+		          from (
+		                 
+		                 select to_char(t.occur_time, 'HH24') hh, t.*
+		                   from pjmk_station_psgflow t
+		                  where  t.station_id in
+						      <foreach item="item" index="index" collection="stationIds" open="(" separator="," close=")">  
+								  #{item.id}  
+							  </foreach>  
+		                    and t.occur_time &gt;= to_date(#{date}, 'yyyy-mm-dd')
+		                    and t.occur_time &lt; to_date(#{date}, 'yyyy-mm-dd')+1) t
+		        
+		         group by t.HH) t1
+
+	</select>
+	
+ 	 <select id="queryTotalPsgFlow" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select sum(t.onbus_person_count+t.offbus_person_count) bus_person_count
+		  from V_LINE_PSGFLOW  t 
+		 where t.line_id =#{lineId}
+		 and t.dd = #{date}
+	</select>
+	
+	
+	 <select id="queryTotalPsgFlowForScheme" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select sum(t.onbus_person_count+t.offbus_person_count) TOTAL_PERSON_COUNT
+		  from V_LINE_PSGFLOW t 
+		 where t.station_id in
+	      <foreach item="item" index="index" collection="stationIds" open="(" separator="," close=")">  
+			 #{item.id}  
+		  </foreach>  
+	      and t.dd = #{date}
+	</select>
+	
+	
+	
+	<select id="queryPsgFlowForScheme" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+			select t.hh,
+	          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT
+	     from V_LINE_PSGFLOW t
+	    where t.station_id in
+	      <foreach item="item" index="index" collection="stationIds" open="(" separator="," close=")">  
+			 #{item.id}  
+		  </foreach>  
+	      and t.dd = #{date}
+	    group by t.hh
+	</select>
+	
+	<select id="queryStationPsgFlowForScheme" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select  t.station_id,t.station_name as NAME,
+	          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT
+	     from V_LINE_PSGFLOW t
+	    where t.station_id in
+	  		<foreach item="item" index="index" collection="stationIds" open="(" separator="," close=")">  
+			 #{item.id}  
+		  </foreach>  
+		  <if test="psgType==1">
+	      	and t.dd = #{date}
+	      </if>
+	      <if test="psgType==2">
+	      	and t.hh = #{date}
+	      </if>
+	    group by t.station_id,t.station_name
+	</select>
+	
+	<select id="queryLineStartAndEndPlanRunime" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		     select to_char( min(t.planruntime),'HH24:mi') startRuntime,to_char(max(t.planruntime),'HH24:mi') endRunTime
+		      from pjmk_dispatch_plan t where t.lineid  = #{lineId}
+	</select>
+	
+	<select id="queryLineBusNum" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		      select count(*) busNum  from pjmk_bus t where t.lineid = #{lineId}
+	</select>
+	
+	
+
+	<!-- <select id="queryPlatFormPsgFlow" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		        select t.id,
+                    t.name,
+                    t.longitude,
+                    t.latitude,
+                    sum(nvl(v.onbus_person_count, 0) +
+                        nvl(v.offbus_person_count, 0)) total_person_count,
+                    sum(nvl(v.onbus_person_count, 0)) onbus_person_count,
+                    sum(nvl(v.offbus_person_count, 0)) offbus_person_count
+               from (select t.*
+                       from pjmk_platform t
+                      where t.name not in
+                            (select t.name
+                               from pjmk_station t
+                              where t.lineid = #{lineId} )) t
+             
+               left join pjmk_station_psgflow v
+             
+                 on t.id = v.platform_id
+               	and v.occur_time &gt;= to_date(#{date}, 'yyyy-mm-dd')
+		        and v.occur_time &lt; to_date(#{date}, 'yyyy-mm-dd')+1
+                
+                group by t.id,t.name,t.longitude,t.latitude
+	</select> -->
+	
+	<select id="queryPlatFormPsgFlow" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+				       select t1.*, t2.aa line_total_person_count
+  from (select t.id,
+               t.name,
+               t.longitude,
+               t.latitude,
+               sum(nvl(v.onbus_person_count, 0) +
+                   nvl(v.offbus_person_count, 0)) total_person_count,
+               sum(nvl(v.onbus_person_count, 0)) onbus_person_count,
+               sum(nvl(v.offbus_person_count, 0)) offbus_person_count
+          from (select t.*
+                  from pjmk_platform t
+                 where t.name not in
+                       (select t.name
+                          from pjmk_station t
+                         where t.lineid =
+                               #{lineId})) t
+        
+          left join pjmk_station_psgflow v
+        
+            on t.id = v.platform_id
+           and v.occur_time &gt;= to_date(#{date}, 'yyyy-mm-dd')
+           and v.occur_time &lt; to_date(#{date}, 'yyyy-mm-dd') + 1
+        
+         group by t.id, t.name, t.longitude, t.latitude) t1
+
+  left join (
+             
+             select t.platform_id,
+                     wmsys.wm_concat(t.line_name || ':' ||
+                                     t.total_person_count) aa
+               from (select t.platform_id,
+                             t.line_name,
+                             sum(t.onbus_person_count + t.offbus_person_count) total_person_count
+                        from pjmk_station_psgflow t
+                       where t.occur_time &gt;= to_date(#{date}, 'yyyy-mm-dd')
+                         and t.occur_time &lt; to_date(#{date}, 'yyyy-mm-dd') + 1
+                       group by t.platform_id, t.line_name) t
+             
+              group by t.platform_id) t2
+
+    on t1.id = t2.platform_id
+	</select>
+	
+	
+	
+	
+	
+  
+</mapper>

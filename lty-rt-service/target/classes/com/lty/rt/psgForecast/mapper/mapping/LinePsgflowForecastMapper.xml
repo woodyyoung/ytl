@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.psgForecast.mapper.LinePsgflowForecastMapper">
+
+	<!-- 查询月份预测的客流数据及历史月份的客流数据 -->
+	<select id="queryMonthData" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE T.OCCUR_TIME &gt;=
+		TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt;=
+		TO_DATE(#{endDate}, 'yyyy-mm-dd')
+		<if test="lineId != null and lineId!='' ">
+			and t.line_id=#{lineId}
+		</if>
+		GROUP BY T.MM order by T.MM
+	</select>
+
+
+	<!-- 查询预测的一个月每天的客流数据量 -->
+	<select id="queryDaysData" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+<!-- 		SELECT t.dd,
+		t.d,
+		sum(t.onbus_person_count + t.offbus_person_count)
+		total_person_count,
+		sum(t.onbus_person_count) onbus_person_count,
+		sum(t.offbus_person_count) offbus_person_count
+		FROM V_LINE_PSGFLOW T
+		WHERE T.OCCUR_TIME &gt;= TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		AND
+		T.OCCUR_TIME &lt;= TO_DATE(#{endDate}, 'yyyy-mm-dd')
+		<if test="lineId != null and lineId!='' ">
+			and t.line_id=#{lineId}
+		</if>
+		and t.d = #{item}
+		and t.holiday_flag = (select
+		decode(to_char(to_date(#{yc_month}||'-'||#{item},'yyyy-MM-dd'),'D'),7,1,1,1,0)
+		from dual)
+		group by t.dd, t.d
+		order by t.dd -->
+		SELECT t.dd,
+		t.d,
+		sum(t.onbus_person_count + t.offbus_person_count)
+		total_person_count,
+		sum(t.onbus_person_count) onbus_person_count,
+		sum(t.offbus_person_count) offbus_person_count
+		FROM V_LINE_PSGFLOW T
+		<where>
+			<if test="lineId != null and lineId!='' ">
+				and t.line_id=#{lineId}
+			</if>
+			and t.dd in 
+				<foreach collection="items" item="it" open="(" close=")" separator=",">
+					#{it}
+				</foreach>
+		</where>
+		group by t.dd, t.d
+		order by t.dd 
+	</select>
+
+</mapper>

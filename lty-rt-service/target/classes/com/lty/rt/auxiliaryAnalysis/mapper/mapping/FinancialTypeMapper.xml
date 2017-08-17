@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.FinancialTypeMapper" >
+  
+  <!-- Auxiliary line scheme result map -->
+  <resultMap id="FinancialTypeResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.FinancialType" >
+  	<id property="financialtype_id" column="financialtype_id" />
+    <result column="financialtype_name" property="financialtype_name" />
+    <result column="financialtype_object" property="financialtype_object" />
+    <result column="user_id" property="user_id" />
+    <result column="user_name" property="user_name" />
+    <result column="create_time" property="create_time" />
+    <result column="note" property="note" />
+  </resultMap>
+  
+  <!-- 查询子表 -->
+  <select id="queryFinancialTypes" resultType="java.util.HashMap" parameterType="com.lty.rt.auxiliaryAnalysis.entity.FinancialType" >
+    SELECT rownum as number_seq,financialtype_id,financialtype_name,financialtype_object,user_id,to_char(create_time,'yyyy-mm-dd hh24:mi:ss') create_time,note,user_name FROM PJMK_FINANCIALTYPE WHERE financialtype_object = #{ financialtype_object }
+  </select>
+  
+  <!-- 插入数据 -->
+  <insert id="insertFinancialType" parameterType="com.lty.rt.auxiliaryAnalysis.entity.FinancialType">
+  	INSERT INTO PJMK_FINANCIALTYPE(financialtype_id, financialtype_name,financialtype_object, user_id, create_time, note,user_name) 
+  	VALUES(#{financialtype_id},#{ financialtype_name},#{ financialtype_object},#{ user_id},#{ create_time},#{ note},#{user_name})
+  </insert>
+  
+   <!-- 更新数据 -->
+  <update id="updateFinancialType" parameterType="com.lty.rt.auxiliaryAnalysis.entity.FinancialType">
+  	UPDATE PJMK_FINANCIALTYPE SET
+  	 financialtype_name = #{financialtype_name},
+  	 financialtype_object = #{financialtype_object},
+  	 user_id = #{user_id},
+  	 create_time = #{create_time},
+  	 note = #{note},
+  	 user_name = #{user_name}
+  	WHERE financialtype_id = #{financialtype_id}
+  </update>
+  
+  <delete id="bathDelFinancialType" parameterType="list">
+        <![CDATA[
+            DELETE FROM PJMK_FINANCIALTYPE WHERE financialtype_id in
+        ]]>
+        <foreach collection="list" item="financialtype_ids"  open="(" separator="," close=")">  
+            #{financialtype_ids} 
+         </foreach>
+   </delete>
+   
+    <!-- 条件删除数据 -->
+  <delete id="delFinancialTypeByCondition" parameterType="com.lty.rt.auxiliaryAnalysis.entity.FinancialType">
+  	DELETE FROM PJMK_FINANCIALTYPE WHERE FINANCIALTYPE_NAME = #{financialtype_name}
+  </delete>
+  
+   <!-- 条件删除数据 -->
+  <delete id="delFinancialType" parameterType="java.lang.String">
+  	DELETE FROM PJMK_FINANCIALTYPE WHERE FINANCIALTYPE_ID = #{financialtype_id}
+  </delete>
+</mapper>

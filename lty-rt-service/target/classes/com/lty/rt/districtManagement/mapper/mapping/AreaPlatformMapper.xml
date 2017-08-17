@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.districtManagement.mapper.AreaPlatformMapper" >
+  <resultMap id="BaseResultMap" type="AreaPlatform" >
+    <id column="PLATFORMID" property="platformid" jdbcType="VARCHAR" />
+    <result column="AREAID" property="areaid" jdbcType="VARCHAR" />
+    <result column="AREACODEID" property="areacodeid" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="AreaPlatResultMap" type="com.lty.rt.districtManagement.vo.AreaPlatResultVo" >
+    <result column="areaid" property="areaId" />
+    <result column="platformid" property="platFormId" />
+    <result column="numbered" property="numbered" />
+    <result column="name" property="name" />
+    <result column="described" property="described" />
+    <result column="direct" property="direct" />
+    <result column="remark" property="remark"/>
+  </resultMap>
+  
+  <resultMap id="PlatformResultMap" type="com.lty.rt.basicData.bean.PlatForm" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="DELETED" property="deleted" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="IS_DISABLE" property="isDisable" jdbcType="DECIMAL" />
+    <result column="DESCRIBED" property="described" jdbcType="VARCHAR" />
+    <result column="NUMBERED" property="numbered" jdbcType="VARCHAR" />
+    <result column="DIRECT" property="direct" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    PLATFORMID, AREAID, AREACODEID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA_PLATFORM
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAreaPlat" resultMap="AreaPlatResultMap" parameterType="java.lang.String" >
+    select a.areaid,a.platformid, b.numbered, b.name, b.described, b.direct, b.remark 
+    from pjmk_area_platform a 
+    left join PJMK_PLATFORM b on a.platformid = b.id and b.deleted = 0 and b.is_disable = 0
+    where a.areaid = #{areaId,jdbcType=VARCHAR}
+  </select>
+  <select id="findAllAvaliblePlat" resultMap="AreaPlatResultMap" parameterType="java.lang.String" >
+    select a.id as platformid, a.numbered, a.name, a.described, a.direct, a.remark
+    from PJMK_PLATFORM a where not exists (
+      select 1 from pjmk_area_platform b where a.id = b.platformid
+    ) and a.is_disable = 0 and a.deleted = 0
+  </select>
+  
+  <select id="queryAvailablePlatform" resultMap="PlatformResultMap" parameterType="java.lang.String" >
+    select a.* from PJMK_PLATFORM a
+	 where not exists
+	 (select 1 from pjmk_area_platform b where a.id = b.platformid)
+	   and a.is_disable = 0
+	   and a.deleted = 0
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_AREA_PLATFORM
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="AreaPlatform" >
+    insert into PJMK_AREA_PLATFORM (PLATFORMID, AREAID, AREACODEID
+      )
+    values (#{platformid,jdbcType=VARCHAR}, #{areaid,jdbcType=VARCHAR}, #{areacodeid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="AreaPlatform" >
+    insert into PJMK_AREA_PLATFORM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="platformid != null" >
+        PLATFORMID,
+      </if>
+      <if test="areaid != null" >
+        AREAID,
+      </if>
+      <if test="areacodeid != null" >
+        AREACODEID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="platformid != null" >
+        #{platformid,jdbcType=VARCHAR},
+      </if>
+      <if test="areaid != null" >
+        #{areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="areacodeid != null" >
+        #{areacodeid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+   <insert id="insertIntoPlat" parameterType="Map" >
+    <![CDATA[ INSERT INTO PJMK_AREA_PLATFORM(areaid, platformid, areacodeid) ]]>  
+    select #{areaId},id, #{areaCodeId} from PJMK_PLATFORM where id in 
+	<foreach collection="platId" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </insert> 
+  
+  <insert id="batchInsertPlat" parameterType="PlatForm" >
+    <![CDATA[ INSERT INTO PJMK_AREA_PLATFORM(areaid, platformid, areacodeid) ]]>  
+	<foreach collection="list" index="index" item="item" open="(" separator="union" close=")">  
+        select #{item.areaId}, #{item.platFormId}, #{item.areaCodeId} from dual 
+    </foreach>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="AreaPlatform" >
+    update PJMK_AREA_PLATFORM
+    <set >
+      <if test="areaid != null" >
+        AREAID = #{areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="areacodeid != null" >
+        AREACODEID = #{areacodeid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="AreaPlatform" >
+    update PJMK_AREA_PLATFORM
+    set AREAID = #{areaid,jdbcType=VARCHAR},
+      AREACODEID = #{areacodeid,jdbcType=VARCHAR}
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="delByIds" parameterType="Map" >
+    delete from PJMK_AREA_PLATFORM
+    where AREAID =  #{areaId} and PLATFORMID in
+    <foreach collection="platFormId" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <delete id="delByAreaIds" parameterType="Map" >
+    delete from PJMK_AREA_PLATFORM
+    where AREAID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <select id="queryAreaPlatform" resultMap="PlatformResultMap" parameterType="java.lang.String" >
+    select t1.* from pjmk_platform t1 where t1.id in(select t.platformid from pjmk_area_platform t where t.areaid = #{areaId,jdbcType=VARCHAR})
+  </select>
+</mapper>

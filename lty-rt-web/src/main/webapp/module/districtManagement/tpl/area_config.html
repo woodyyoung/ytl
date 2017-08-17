@@ -1,0 +1,101 @@
+<!-- 
+<div class="panel panel-default">
+  <div class="panel-heading">区域附近站台</div>
+  <div class="panel-body">
+  	<div class="user_btn">
+		<button type="button" class="btn btn-danger" id="add-platform" data-toggle="modal">添加站台</button>
+		<button type="button" class="btn btn-primary" id="del-platform">删除站台</button>
+	</div>
+	
+  	<table id="platform-tab" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+    		</table>
+  </div>
+</div>
+ 
+地图区域
+<div class="panel panel-default">
+  <div class="panel-heading">区域地图展示</div>
+  <div class="panel-body">
+  	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+           地图
+	       <div id="visitorsFlowRate_map"></div>
+	       
+	       画笔工具
+	       <div class="drawingBoard">
+				<input type="button" class="button open" value="打开画笔" id = "opendraw"/>
+				<input type="button" class="button clear" value="清空" id="cleardraw"/>
+				<input type="button" class="button" value="保存" id="drawsubmit"/>
+		   </div>
+	     </div>
+      </div>
+  </div>
+</div>
+
+dialog platform
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg">
+   <div class="modal-content">
+     <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+       <h4 class="modal-title" id="myModalLabel">添加站台</h4>
+     </div>
+     <div class="modal-body">
+       <table id="addPlatForm" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+       </table>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal">取消</button>
+       <button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+     </div>
+   </div>
+ </div>
+</div> -->
+
+<!-- 小区包含的站台 -->
+
+  	<div class="user_btn">
+		<button type="button" class="btn btn-danger" id="add-platform" data-toggle="modal">添加站台</button>
+		<button type="button" class="btn btn-primary" id="del-platform">删除站台</button>
+	</div>
+	
+  	<table id="platform-tab" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+    		</table>
+
+ 
+<!--地图区域-->
+
+  	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+           <!-- 地图 -->
+	       <div id="visitorsFlowRate_map"></div>
+	       
+	       <!-- 画笔工具 -->
+	       <div class="drawingBoard">
+				<input type="button" class="button open" value="打开画笔" id = "opendraw"/>
+				<input type="button" class="button clear" value="清空" id="cleardraw"/>
+				<!-- <input type="button" class="button" value="保存" id="drawsubmit"/> -->
+		   </div>
+	     </div>
+      </div>
+
+
+<!-- dialog platform -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg">
+   <div class="modal-content">
+     <div class="modal-header">
+       <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+       <h4 class="modal-title" id="myModalLabel">添加站台</h4>
+     </div>
+     <div class="modal-body">
+       <table id="addPlatForm" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+       </table>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" id="closeModal">取消</button>
+       <button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+     </div>
+   </div>
+ </div>
+</div>

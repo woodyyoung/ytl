@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.assessment.mapper.IndexLevelMapper" >
+  <resultMap id="BaseResultMap" type="IndexLevel" >
+    <result column="INDEX_ID" property="indexId" jdbcType="VARCHAR" />
+    <result column="INDEX_LEVEL" property="indexLevel" jdbcType="VARCHAR" />
+    <result column="TOP_LIMIT" property="topLimit" jdbcType="DECIMAL" />
+    <result column="LOWER_LIMIT" property="lowerLimit" jdbcType="DECIMAL" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DATE" />
+    <result column="PROPOSAL" property="proposal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    INDEX_ID, INDEX_LEVEL, TOP_LIMIT, LOWER_LIMIT, DESCRIPTION, CREATETIME, UPDATETIME, PROPOSAL
+  </sql>
+  
+  <insert id="insert" parameterType="IndexLevel" >
+    insert into PJMK_INDEX_LEVEL (INDEX_ID, INDEX_LEVEL, TOP_LIMIT, 
+      LOWER_LIMIT, DESCRIPTION, CREATETIME, 
+      UPDATETIME, PROPOSAL)
+    values (#{indexId,jdbcType=VARCHAR}, #{indexLevel,jdbcType=VARCHAR}, #{topLimit,jdbcType=DECIMAL}, 
+      #{lowerLimit,jdbcType=DECIMAL}, #{description,jdbcType=VARCHAR}, #{createtime,jdbcType=DATE}, 
+      #{updatetime,jdbcType=DATE}, #{proposal,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="IndexLevel" >
+    insert into PJMK_INDEX_LEVEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="indexId != null" >
+        INDEX_ID,
+      </if>
+      <if test="indexLevel != null" >
+        INDEX_LEVEL,
+      </if>
+      <if test="topLimit != null" >
+        TOP_LIMIT,
+      </if>
+      <if test="lowerLimit != null" >
+        LOWER_LIMIT,
+      </if>
+      <if test="description != null" >
+        DESCRIPTION,
+      </if>
+      <if test="createtime != null" >
+        CREATETIME,
+      </if>
+      <if test="updatetime != null" >
+        UPDATETIME,
+      </if>
+      <if test="proposal != null" >
+        PROPOSAL
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="indexId != null" >
+        #{indexId,jdbcType=VARCHAR},
+      </if>
+      <if test="indexLevel != null" >
+        #{indexLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="topLimit != null" >
+        #{topLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="lowerLimit != null" >
+        #{lowerLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=DATE},
+      </if>
+      <if test="proposal != null" >
+        #{proposal,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="batchInsert" parameterType="IndexLevel">
+    insert into PJMK_INDEX_LEVEL
+    <foreach collection="list" index="index" item="item" open="(" separator="union" close=")">    
+            select #{item.indexId},#{item.indexLevel},#{item.topLimit},#{item.lowerLimit},#{item.description},sysdate,sysdate,#{item.proposal} from dual    
+    </foreach>
+  </insert>
+  
+  <update id="update" parameterType="IndexLevel" >
+   update PJMK_INDEX_LEVEL set TOP_LIMIT = #{topLimit}, LOWER_LIMIT = #{lowerLimit},UPDATETIME = sysdate
+   where INDEX_ID = #{indexId} and INDEX_LEVEL = #{indexLevel}
+  </update>
+  
+  <delete id="delByIndexId" parameterType="Map" >
+    delete from PJMK_INDEX_LEVEL
+    where INDEX_ID IN
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <select id="getListByMap" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDEX_LEVEL
+    where 1=1 
+    <if test="indexId != null" >
+        and index_id = #{indexId,jdbcType=VARCHAR}
+    </if>
+    order by index_level
+  </select>
+</mapper>

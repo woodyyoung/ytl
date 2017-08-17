@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.BusRevenueMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.BusRevenue" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="REVENUE" property="revenue" jdbcType="DECIMAL" />
+    <result column="OCCURRENCEYEAR" property="occurrenceyear" jdbcType="TIMESTAMP" />
+    <result column="ENTRYTIME" property="entrytime" jdbcType="TIMESTAMP" />
+    <result column="INPUTMAN" property="inputman" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, REVENUE, OCCURRENCEYEAR, ENTRYTIME, INPUTMAN, REMARKS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_BUSREVENUE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_BUSREVENUE a
+    where a.id = #{id}
+  </delete>
+  <delete id="deleteByYear" parameterType="java.lang.String" >
+    delete from PJMK_BUSREVENUE
+    where to_char(occurrenceyear,'YYYY') = #{date}
+  </delete>
+  <insert id="insert" parameterType="com.lty.rt.auxiliaryAnalysis.entity.BusRevenue" >
+    insert into PJMK_BUSREVENUE (ID, REVENUE, OCCURRENCEYEAR, 
+       INPUTMAN, REMARKS
+      )
+    values (#{id,jdbcType=VARCHAR}, #{revenue,jdbcType=DECIMAL}, #{occurrenceyear,jdbcType=TIMESTAMP}, 
+      #{inputman,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.auxiliaryAnalysis.entity.BusRevenue" >
+    insert into PJMK_BUSREVENUE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="revenue != null" >
+        REVENUE,
+      </if>
+      <if test="occurrenceyear != null" >
+        OCCURRENCEYEAR,
+      </if>
+      <if test="entrytime != null" >
+        ENTRYTIME,
+      </if>
+      <if test="inputman != null" >
+        INPUTMAN,
+      </if>
+      <if test="remarks != null" >
+        REMARKS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="revenue != null" >
+        #{revenue,jdbcType=DECIMAL},
+      </if>
+      <if test="occurrenceyear != null" >
+        #{occurrenceyear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrytime != null" >
+        #{entrytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inputman != null" >
+        #{inputman,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.auxiliaryAnalysis.entity.BusRevenue" >
+    update PJMK_BUSREVENUE
+    <set >
+      <if test="revenue != null" >
+        REVENUE = #{revenue,jdbcType=DECIMAL},
+      </if>
+      <if test="occurrenceyear != null" >
+        OCCURRENCEYEAR = #{occurrenceyear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="entrytime != null" >
+        ENTRYTIME = #{entrytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inputman != null" >
+        INPUTMAN = #{inputman,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        REMARKS = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.auxiliaryAnalysis.entity.BusRevenue" >
+    update PJMK_BUSREVENUE
+    set REVENUE = #{revenue,jdbcType=DECIMAL},
+      OCCURRENCEYEAR = #{occurrenceyear,jdbcType=TIMESTAMP},
+      ENTRYTIME = #{entrytime,jdbcType=TIMESTAMP},
+      INPUTMAN = #{inputman,jdbcType=VARCHAR},
+      REMARKS = #{remarks,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <sql id="PaginationPrefix" >
+    <if test="page != null" >
+      select * from ( select row_.*, rownum rownum_ from ( 
+    </if>
+  </sql>
+  <sql id="PaginationSuffix" >
+    <if test="page != null" >
+      <![CDATA[ ) row_ ) where rownum_ > #{page.begin} and rownum_ <= #{page.end} ]]>
+    </if>
+  </sql>
+  
+  
+    <select id="listAll" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+	    <include refid="Base_Column_List" />
+	    from PJMK_BUSREVENUE a 
+	    <where>
+  		<if test="startTime != null  and startTime !=''">
+			AND a.occurrenceyear &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+  		<if test="startTime != null  and startTime !=''">
+			AND a.occurrenceyear &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+  		</where>
+   </select> 
+   
+    <!-- <select id="findChatsDataByMap" resultType="java.util.HashMap" parameterType="java.util.Map">
+	select to_char(t.occurrenceyear,'YYYY') occurtime, t.revenue from PJMK_BUSREVENUE  t
+	<where>
+		<if test="startTime != null  and startTime !=''">
+			AND T.occurrenceyear &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND T.occurrenceyear &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+	</where>
+  </select> -->
+  
+  <select id="findChatsDataByMap" resultType="java.util.HashMap" parameterType="java.util.Map">
+	<!--  select nvl(c.year, b.year) year,
+       nvl(c.revenue, 0) revenue,
+       nvl(b.money, 0) money
+       from (select to_char(t.occurrenceyear, 'yyyy') year, t.revenue
+          from PJMK_BUSREVENUE t ) c
+       full join
+      (select t.year, sum(t.money) money from PJMK_FINANCIAL t group by t.year order by t.year) b
+    on c.year = b.year  -->
+    
+     
+	 select  * from 
+	 
+	( select nvl(c.year, b.year) year,
+	        nvl(c.revenue, 0) revenue,
+	        nvl(b.money, 0) money
+	   from (select to_char(t.occurrenceyear, 'yyyy') year, t.revenue
+	           from PJMK_BUSREVENUE t) c
+	   full join (select t.year, sum(t.money) money
+	                from PJMK_FINANCIAL t
+	               group by t.year
+	               order by t.year) b
+	     on c.year = b.year 
+	     ) t 
+	     
+	     <where>
+	     	 <if test="startTime != null  and startTime !=''">
+				AND t.YEAR &gt;= #{startTime}
+			</if>
+			<if test="endTime != null  and endTime !=''">
+				AND t.YEAR &lt;= #{endTime}
+			</if> 
+	     </where>
+     
+    
+     <!-- select nvl(c.year, b.year) year,
+       nvl(c.revenue, 0) revenue ,
+       nvl(b.money, 0) money
+      from (select to_char(t.occurrenceyear, 'yyyy') year, t.revenue
+          from PJMK_BUSREVENUE t) c
+      full join
+     (select t.year, sum(t.money) money from PJMK_FINANCIAL t group by t.year order by t.year) b
+    on c.year = b.year -->
+  </select>
+  
+  <select id="findPieDataByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select   t.financialtype_name, nvl(sum(c.money),0)money from PJMK_FINANCIALTYPE t, PJMK_FINANCIAL c  
+	<where>
+		AND t.financialtype_id = c.financialtype_type
+	    <if test="startTime != null  and startTime !=''">
+			AND C.YEAR &gt;= #{startTime}
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND C.YEAR &lt;= #{endTime}
+		</if> 
+	</where>
+    group by t.financialtype_name
+	order by financialtype_name
+  </select>
+  
+ <!--  <select id="getquerData" resultType="java.util.HashMap" parameterType="java.util.Map">
+  		select * from PJMK_BUSREVENUE  a
+  		<where>
+  		<if test="startTime != null  and startTime !=''">
+			AND a.occurrenceyear &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+  		<if test="startTime != null  and startTime !=''">
+			AND a.occurrenceyear &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+  		</where>
+  </select> -->
+   
+</mapper>

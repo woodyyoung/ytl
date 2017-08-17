@@ -1,0 +1,71 @@
+<div class="form-group">
+	<label class="col-sm-1 control-label">工作日</label>
+	<div class="col-sm-9">
+		<div>
+			<label class="radio-inline"> <input type="radio"
+				name="inlineRadioOptions" id="inlineRadio1" value="option1"
+				checked="checked">全部
+			</label> <label class="radio-inline"> <input type="radio"
+				name="inlineRadioOptions" id="inlineRadio2" value="1">工作日
+			</label> <label class="radio-inline"> <input type="radio"
+				name="inlineRadioOptions" id="inlineRadio2" value="0">非工作日
+			</label>
+			<label class="radio-inline"> <input type="radio"
+				name="inlineRadioOptions" id="inlineRadio2" value="-1">节假日
+			</label>
+		</div>
+	</div>
+
+</div>
+
+<div class="form-group">
+	<label class="col-sm-1 control-label">选择区域</label>
+	<div class="col-sm-4">
+		<select class="form-control selectpicker" id="xqselect">
+		</select>
+	</div>
+</div>
+
+<div class="form-group">
+	<div id="multipleStation">
+		<label class="col-sm-1 control-label">分析时段</label>
+		<div class="col-sm-2">
+			<input class="form-control" id="begin_date" name="begin_date"
+				placeholder="选择日期">
+		</div>
+		<label class="col-sm-1 control-label xlklcx_lab">至</label>
+		<div class="col-sm-2">
+			<input class="form-control" id="end_date" name="end_date"
+				placeholder="选择日期">
+		</div>
+		
+		<div class="col-sm-4">
+			<label class="radio-inline"> <input type="radio"
+				name="forecastType" id="forecastType1" value="0"
+				checked="checked">全部
+			</label> <label class="radio-inline"> <input type="radio"
+				name="forecastType" id="forecastType2" value="1">同期
+			</label>
+		</div>
+		
+	</div>
+</div>
+
+<div class="form-group">
+	<div id="multipleStation">
+		<label class="col-sm-1 control-label">预测月份</label>
+		<div class="col-sm-2">
+			<input class="form-control" id="yc_date" name="yc_date"
+				placeholder="选择月份">
+		</div>
+		<label class="col-sm-1 control-label xlklcx_lab">至</label>
+		<div class="col-sm-2">
+			<input class="form-control" id="yc_date2" name="yc_date2"
+				placeholder="选择月份">
+		</div>
+	</div>
+
+	<div class="col-sm-2">
+		<button type="button" class="btn btn-primary" id="btn_hours_confirm">预测</button>
+	</div>
+</div>

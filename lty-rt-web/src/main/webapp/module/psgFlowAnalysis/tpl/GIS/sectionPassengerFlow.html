@@ -1,0 +1,72 @@
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+		             <div class="panel panel-default">
+		               		<div class="panel-heading">
+								<h3 class="panel-title" id="panel-title-kLfx">断面客流展示</h3>
+							</div>
+							<div class="panel-body">
+								<form class="form-horizontal passengerFlows_from" role="form">
+						
+										<div class="form-group">
+					                      	<label class="control-label passenger_size">工作日</label>
+					                        <label class="checkbox-inline">
+					                          <input type="radio" name="optionsRadios1" id="optionsRadios1" value="" checked>全部
+					                        </label>
+					                        <label class="checkbox-inline">
+					                          <input type="radio" name="optionsRadios1" id="optionsRadios2" value="1">工作日
+					                        </label>
+					                        <label class="checkbox-inline">
+					                          <input type="radio" name="optionsRadios1" id="optionsRadios3" value="0">非工作日
+					                        </label>
+					                        <label class="checkbox-inline">
+					                          <input type="radio" name="optionsRadios1" id="optionsRadios4" value="-1">节假日
+					                        </label>
+					                        
+					                    </div>
+					                    <div class="form-group">
+					                      <label class="control-label passenger_size">路段</label>
+					                      <select id="section" class="form-control passengerFlows_sel"></select>
+						                </div>
+									</form>
+								
+								<ul class="nav nav-tabs" role="tablist" id="xlklfx_tab">
+										<li role="presentation" class="active" id="xlklfx_hours"><a
+											href="#">按小时</a></li>
+										<li role="presentation" id="xlklfx_days"><a href="#">按日</a></li>
+										<li role="presentation" id="xlklfx_weeks"><a href="#">按周</a></li>
+										<li role="presentation" id="xlklfx_months"><a href="#">按月</a></li>
+							    </ul>
+							    <form class="form-horizontal" role="form" id="xlklfx_form"></form>
+							</div>
+		               	</div><!-- panel panel-default -->
+		             </div><!-- col-md-12 col-sm-12 col-xs-12 -->                
+			
+	<div class="col-sm-12">
+            <div class="x_panel">
+              <div class="x_content">
+	
+                <div id="visitorsFlow_mapZ"></div><!-- visitorsFlow_mapZ -->  
+                <div class="passenger_rightBtn_click"><a class="passenger_rightBtn_toggle passenger_btn_open"></a></div>
+                <div class="linePassengerFlow_sign">
+                	<div class="total_txt">
+				                      <select id="planName" class="form-control passengerFlows_sel"></select>
+					</div>
+                  <ul class="linePassengerFlowSign_ul"></ul><!-- linePassengerFlowSign_ul --> 
+                  <div class="total_txt">
+              		<div class="total_txt1"><p class="total_p1">客流总量</p><p class="total_p2">0</p></div>
+              	</div>
+                </div><!-- linePassengerFlow_sign --> 
+                <div class="passenger_btn_click"><a class="passenger_btn_toggle passenger_btn_open"></a></div>
+                <div class="passenger_float">
+                	<div id="xlklfxCharts" style="height: 300px;"></div>
+                </div><!-- passenger_float --> 
+                  
+                
+              </div><!-- x_content -->
+            </div><!-- x_panel -->
+          </div><!-- col -->
+          
+          
+  </div><!-- row -->
+                
+          

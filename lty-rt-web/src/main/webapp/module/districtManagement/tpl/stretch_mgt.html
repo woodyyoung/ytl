@@ -1,0 +1,98 @@
+
+        
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="perInfo_title"><h3>路段管理</h3></div>
+            </div>
+          </div><!-- row -->
+          
+          <div class="row">
+          
+            <div class="col-md-3 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+	                 <div>
+	                	<button type="button" class="btn btn-info" id="btn-insert" data-toggle="modal">添加</button>
+	                	<button type="button" class="btn btn-primary" id="btn-update" data-toggle="modal">修改</button>
+	                	<button type="button" class="btn btn-danger" id="btn-del" data-toggle="modal">删除</button>
+	                </div>
+                 <!--  <h2>路段</h2> -->
+                  <div class="clearfix"></div>
+                </div>
+               
+                <div class="x_content">
+                  <div id="treeview-searchable" class=""></div><!-- treeview-searchable -->
+                  <div>
+                    <input type="input" class="form-control" id="input-search" placeholder="路段搜索..." value=""/>
+                    <input type="hidden" id = "dyglId" value/>
+                  </div>    
+                </div>
+              </div>
+            </div><!-- col-md-3 -->
+            
+
+            <div class="col-md-9 col-xs-12" >
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>路段关联站台列表</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">	
+              		
+                	<div class="user_btn">
+              			<button type="button" class="btn btn-info" data-toggle="modal" id = "btn-add-platform">添加站台</button>
+	                    <button type="button" class="btn btn-danger" id="btn-del-platform">删除站台</button>
+	                </div>
+                 <table id="gl_platform_table" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+                 </table>
+                <!-- </div> -->
+                <!--地图-->
+                <div class="row">
+			       <div class="col-md-12 col-sm-12 col-xs-12">
+				       <div id="visitorsFlowRate_map"></div>
+				       <div class="drawingBoard">
+				       		<input type="button" class="btn  btn-default" value="编辑路段" id = "opendraw"/>
+				       		<!-- <input type="button" class="btn  btn-primary" value="编辑路段" id = "editdraw"/> -->
+				       		<input type="button" class="btn  btn-default" value="撤销" id="resetdraw"/>
+							<input type="button" class="btn  btn-default" value="重绘路段" id="cleardraw"/>
+							<input type="button" class="btn  btn-default" value="保存路段" id="drawsubmit" />
+					   </div>
+				    </div>
+		        </div>
+              </div><!-- x_panel -->
+            </div><!-- col-md-9 -->
+          </div><!-- row -->
+        
+        
+        </div><!-- index_padd -->
+        
+        
+        
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">添加站台</h4>
+			</div>
+			<div class="modal-body">
+				<table id="addPlatForm" class="display table" cellspacing="0"
+					width="100%" role="grid" aria-describedby="example_info"
+					style="width: 100%;">
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="dialogDiv"> </div>
+
+
+        

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.PlatFormMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.basicData.bean.PlatForm" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="DELETED" property="deleted" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="IS_DISABLE" property="isDisable" jdbcType="DECIMAL" />
+    <result column="DESCRIBED" property="described" jdbcType="VARCHAR" />
+    <result column="NUMBERED" property="numbered" jdbcType="VARCHAR" />
+    <result column="DIRECT" property="direct" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="AREACODEID" property="areaCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CREATE_TIME, DELETED, NAME, LONGITUDE, LATITUDE, IS_DISABLE,DESCRIBED, NUMBERED, DIRECT, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_PLATFORM
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_PLATFORM
+  </select>
+  
+  <select id="listAllPlatform" resultMap="BaseResultMap" parameterType="java.lang.String" >
+   SELECT   ID,NAME, LONGITUDE, LATITUDE ,AP.AREACODEID
+    FROM PJMK_PLATFORM  P,PJMK_AREA_PLATFORM AP 
+    WHERE P.ID = AP.PLATFORMID(+)
+      AND  P.DELETED = 0 AND P.IS_DISABLE = 0
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_PLATFORM
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.lty.rt.basicData.bean.PlatForm" >
+    insert into PJMK_PLATFORM (ID, CREATE_TIME, DELETED, 
+      NAME, LONGITUDE, LATITUDE, 
+      IS_DISABLE,DESCRIBED, NUMBERED, DIRECT, REMARK)
+    values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=DATE}, #{deleted,jdbcType=DECIMAL}, 
+      #{name,jdbcType=VARCHAR}, #{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, 
+      #{isDisable,jdbcType=DECIMAL},#{described,jdbcType=VARCHAR},#{numbered,jdbcType=VARCHAR},#{direct,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.basicData.bean.PlatForm" >
+    insert into PJMK_PLATFORM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="deleted != null" >
+        DELETED,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE,
+      </if>
+      <if test="latitude != null" >
+        LATITUDE,
+      </if>
+      <if test="isDisable != null" >
+        IS_DISABLE,
+      </if>
+      <if test="described != null" >
+        DESCRIBED,
+      </if>
+      <if test="numbered != null" >
+        NUMBERED,
+      </if>
+      <if test="direct != null" >
+        DIRECT,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="deleted != null" >
+        #{deleted,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="isDisable != null" >
+        #{isDisable,jdbcType=DECIMAL},
+      </if> 
+      <if test="described != null" >
+        #{described,jdbcType=VARCHAR},
+      </if>
+      <if test="numbered != null" >
+        #{numbered,jdbcType=VARCHAR},
+      </if>
+      <if test="direct != null" >
+        #{direct,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.basicData.bean.PlatForm" >
+    update PJMK_PLATFORM
+    <set >
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="deleted != null" >
+        DELETED = #{deleted,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="isDisable != null" >
+        IS_DISABLE = #{isDisable,jdbcType=DECIMAL},
+      </if>
+      <if test="described != null" >
+        DESCRIBED = #{described,jdbcType=VARCHAR},
+      </if>
+      <if test="numbered != null" >
+        NUMBERED = #{numbered,jdbcType=VARCHAR},
+      </if>
+      <if test="direct != null" >
+        DIRECT = #{direct,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.basicData.bean.PlatForm" >
+    update PJMK_PLATFORM
+    set CREATE_TIME = #{createTime,jdbcType=DATE},
+      DELETED = #{deleted,jdbcType=DECIMAL},
+      NAME = #{name,jdbcType=VARCHAR},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      IS_DISABLE = #{isDisable,jdbcType=DECIMAL}, 
+      DESCRIBED = #{described,jdbcType=VARCHAR},
+      NUMBERED = #{numbered,jdbcType=VARCHAR},
+      DIRECT = #{direct,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

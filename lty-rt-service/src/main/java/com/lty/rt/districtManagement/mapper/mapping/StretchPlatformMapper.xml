@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.districtManagement.mapper.StretchPlatformMapper" >
+  <resultMap id="BaseResultMap" type="StretchPlatform" >
+    <id column="PLATFORMID" property="platformid" jdbcType="VARCHAR" />
+    <result column="STRETCHID" property="stretchid" jdbcType="VARCHAR" />
+    <result column="STRETCHLINEID" property="stretchlineId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="StretchPlatResultMap" type="com.lty.rt.districtManagement.vo.AreaPlatResultVo" >
+    <result column="stretchid" property="areaId" />
+    <result column="platformid" property="platFormId" />
+    <result column="numbered" property="numbered" />
+    <result column="name" property="name" />
+    <result column="described" property="described" />
+    <result column="direct" property="direct" />
+    <result column="remark" property="remark"/>
+  </resultMap>
+  
+  <resultMap id="StretchAndPlatResultMap" type="com.lty.rt.passengerFlows.bean.StretchPlatFormLine" >
+    <result column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="pid" property="pid" />
+    <result column="level" property="level" />
+    <result column="arg" property="arg" />
+    <collection property="list" column="id" javaType="ArrayList" 
+                ofType="PlatFormAndLine" select="getPlatAndLine"/>
+  </resultMap>
+  
+   <resultMap id="PlatAndLineResultMap" type="com.lty.rt.passengerFlows.bean.PlatFormAndLine">
+    <result column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="pid" property="pid" />
+    <result column="level" property="level" />
+    <result column="arg" property="arg" />
+    <result column="arg1" property="arg1" />
+    <!-- <collection property="list" column="id" javaType="ArrayList" 
+                ofType="Line" select="getLines"/> -->
+    <collection property="list" column="{pid=arg1,dr=arg}" javaType="ArrayList" 
+    ofType="PlatFormAndLine" select="getLines"/>
+  </resultMap>
+  
+  <resultMap id="LineResultMap" type="com.lty.rt.basicData.bean.Line">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    PLATFORMID, STRETCHID, STRETCHLINEID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STRETCH_PLATFORM
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_STRETCH_PLATFORM
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="StretchPlatform" >
+    insert into PJMK_STRETCH_PLATFORM (PLATFORMID, STRETCHID, STRETCHLINEID
+      )
+    values (#{platformid,jdbcType=VARCHAR}, #{stretchid,jdbcType=VARCHAR}, #{stretchlineid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="StretchPlatform" >
+    insert into PJMK_STRETCH_PLATFORM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="platformid != null" >
+        PLATFORMID,
+      </if>
+      <if test="stretchid != null" >
+        STRETCHID,
+      </if>
+      <if test="stretchlineid != null" >
+        STRETCHLINEID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="platformid != null" >
+        #{platformid,jdbcType=VARCHAR},
+      </if>
+      <if test="stretchid != null" >
+        #{stretchid,jdbcType=VARCHAR},
+      </if>
+      <if test="stretchlineid != null" >
+        #{stretchlineid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="StretchPlatform" >
+    update PJMK_STRETCH_PLATFORM
+    <set >
+      <if test="stretchid != null" >
+        STRETCHID = #{stretchid,jdbcType=VARCHAR},
+      </if>
+      <if test="stretchlineid != null" >
+        STRETCHLINEID = #{stretchlineid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="StretchPlatform" >
+    update PJMK_STRETCH_PLATFORM
+    set STRETCHID = #{stretchid,jdbcType=VARCHAR},
+      STRETCHLINEID = #{stretchlineid,jdbcType=VARCHAR}
+    where PLATFORMID = #{platformid,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectStretchAndPlat" resultMap="StretchAndPlatResultMap" parameterType="java.lang.String" >
+    select id,lineName||'(路段)' name,'0' as "level",'' as pid  from pjmk_stretch
+  </select>
+  
+ <!--  <select id="getPlatAndLine" resultMap="PlatAndLineResultMap" parameterType="java.lang.String" >
+    select s.stretchid as pid,'1' as "level",p.id,p.name||'(站台)' as name from pjmk_stretch_platform s,pjmk_platform  p
+         where s.stretchid=#{id} 
+         and s.platformid=p.id(+)
+  </select> -->
+  
+   <select id="getPlatAndLine" resultMap="PlatAndLineResultMap" parameterType="java.lang.String" >
+      <!--  select s.stretchid as pid,
+              '1' as "level",
+              p.platform_id||'='||p.direction  as id,
+              p.platform_id as arg1,
+              p.platform_name || '(站台)' as name,
+              p.direction as arg
+         from pjmk_stretch_platform s, pjmk_platform_station p
+        where s.stretchid = #{id} 
+          and s.platformid = p.platform_id(+) -->
+          
+		          SELECT T.PID, T."LEVEL", T.ID, T.ARG1, T.NAME, ARG
+		  FROM (
+		        SELECT S.STRETCHID AS PID,
+		                '1' AS "LEVEL",
+		                P.PLATFORM_ID || '=' || P.DIRECTION AS ID,
+		                P.PLATFORM_ID AS ARG1,
+		                P.PLATFORM_NAME || '(站台)' AS NAME,
+		                P.DIRECTION AS ARG
+		          FROM PJMK_STRETCH_PLATFORM S, PJMK_PLATFORM_STATION P
+		         WHERE S.STRETCHID = #{id}
+		           AND S.PLATFORMID = P.PLATFORM_ID(+)
+		           
+		           ) T 
+		           
+		
+		 GROUP BY T.PID, T."LEVEL", T.ID, T.ARG1, T.NAME, ARG 
+		 
+		 ORDER BY T.NAME ,T.ARG
+          
+  </select>
+  
+  
+ <!--  <select id="getLines" resultMap="LineResultMap" parameterType="java.lang.String" >
+     select distinct l.id,l.name ||'(线路)' as name,'2' as "level",p.id as pid from pjmk_platform p,pjmk_station s,pjmk_line l
+     where p.id=s.platform_id(+)
+     and s.lineid = l.id(+)
+     and p.id=#{id} 
+  </select> -->
+  
+   <select id="getLines" resultMap="LineResultMap" parameterType="java.util.Map" >
+    select l.GPRSID id, l.lname ||','||l.FIRSNAME ||'到'|| l.LASNAME || ' (线路) '|| decode(l.DIRECTION,0,'上行','下行') as name,'2' as "level",#{pid}||'='||#{dr} as  pid
+    from pjmk_platform_station t  ,(
+select t.GPRSID,
+       1 as direction,
+       t.FIRSORDERNO,
+       t.FIRSNAME,
+       t.LASORDERNO,
+       t.LASNAME,
+       t.lname
+  from v_line_start_end_station t
+ where t.GPRSID in (select t.GPRSID
+                      from v_line_start_end_station t
+                     group by t.GPRSID
+                    having(max(t.DIRECTION) = 0))
+
+union
+
+select t.GPRSID,
+       t.direction,
+       t.FIRSORDERNO,
+       t.FIRSNAME,
+       t.LASORDERNO,
+       t.LASNAME,
+       t.lname
+  from v_line_start_end_station t
+    ) l   
+       where t.grpsid = l.gprsid 
+       and t.orderno &gt;= l.firsorderno 
+       and t.orderno &lt;= l.lasorderno
+       and t.direction = l.direction
+       and  t.platform_id = #{pid}
+       and t.direction = #{dr}
+     
+  </select>
+  
+  
+  <select id="selectStretchPlat" resultMap="StretchPlatResultMap" parameterType="java.lang.String" >
+    select a.stretchid,a.platformid,b.numbered, b.name, b.described, b.direct, b.remark from pjmk_stretch_platform a 
+         left join PJMK_PLATFORM b on a.platformid = b.id and b.deleted = 0 and b.is_disable = 0
+         where a.stretchid = #{lineId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectStretchPlatform" resultType="java.util.HashMap" parameterType="java.lang.String" >
+    select a.stretchid,a.platformid,b.numbered, b.name,b.latitude,b.longitude, b.described, b.direct, b.remark from pjmk_stretch_platform a 
+         left join PJMK_PLATFORM b on a.platformid = b.id and b.deleted = 0 and b.is_disable = 0
+         where a.STRETCHLINEID = #{lineId,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="findAllAvaliblePlat" resultType="java.util.HashMap" parameterType="java.lang.String" >
+    SELECT A.ID AS PLATFORMID, A.NUMBERED, A.NAME,A.LATITUDE,A.LONGITUDE, A.DESCRIBED, A.DIRECT, A.REMARK
+    FROM PJMK_PLATFORM A WHERE NOT EXISTS (
+      SELECT 1 FROM PJMK_STRETCH_PLATFORM B WHERE A.ID = B.PLATFORMID
+    ) AND A.IS_DISABLE = 0 AND A.DELETED = 0
+  </select>
+  
+   <select id="findNotRefrencePlatfom" resultType="java.util.HashMap" parameterType="java.lang.String" >
+    SELECT A.ID AS PLATFORMID, A.NUMBERED, A.NAME, A.LATITUDE,A.LONGITUDE, A.DESCRIBED, A.DIRECT, A.REMARK
+    FROM PJMK_PLATFORM A WHERE NOT EXISTS (
+      SELECT 1 FROM PJMK_STRETCH_PLATFORM B WHERE A.ID = B.PLATFORMID AND B.STRETCHLINEID = #{lineId,jdbcType=VARCHAR}
+    ) AND A.IS_DISABLE = 0 AND A.DELETED = 0
+    
+  </select>
+  
+  
+  
+  <insert id="insertIntoPlat" parameterType="Map" >
+    <![CDATA[ INSERT INTO PJMK_STRETCH_PLATFORM(stretchid, platformid, stretchlineid) ]]>  
+    select #{stretchid},id, #{stretchlineid} from PJMK_PLATFORM where id in 
+	<foreach collection="platId" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+    </insert>
+    
+    <delete id="delByIds" parameterType="Map" >
+    delete from PJMK_STRETCH_PLATFORM
+    where STRETCHLINEID =  #{stretchId} and PLATFORMID in
+    <foreach collection="platFormId" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+    </delete>
+</mapper>

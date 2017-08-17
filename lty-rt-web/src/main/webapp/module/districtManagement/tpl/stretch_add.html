@@ -1,0 +1,62 @@
+
+      
+
+<div class="modal fade" id="addStretchModal" tabindex="-1" role="dialog"  aria-labelledby="addStretchModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabelTile">添加路段</h4>
+			</div>
+			<div class="modal-body">
+				<form class="perInfo_form" role="form" id="ldgl_form">
+						<!-- <input type="text" hidden="true" name="id" value="">
+						<input type="text" hidden="true" name="levels" value="">
+						<input type="text" hidden="true" name="lineid" value="">
+						<input type="text" hidden="true" name="parentlineid" value="">
+						<input type="text" hidden="true" name="state" value="">
+						<div class="col-md-5 col-xs-12 perInfo_margB">
+							<label>路段名称</label> <input type="text" class="form-control"
+								name="linename" value="" placeholder="路段名称">
+						</div>
+						<div class="col-md-5 col-xs-12 perInfo_margB">
+							<label>长度</label> <input type="text" class="form-control"
+								name="linelength" value="" placeholder="路段长度">
+						</div>
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>备注</label>
+							<textarea class="form-control" rows="3" name="remark"></textarea>
+						</div> -->
+						
+						<input type="text" hidden="true" name="id" value="<%=obj.id%>">
+						<input type="text" hidden="true" name="levels" value="<%=obj.levels%>">
+						<input type="text" hidden="true" name="lineid" value="<%=obj.lineid%>">
+						<input type="text" hidden="true" name="parentlineid" value="<%=obj.parentlineid%>">
+						<input type="text" hidden="true" name="state" value="<%=obj.state%>">
+						<div class="col-md-6 col-xs-12 perInfo_margB">
+							<label>路段名称</label> <input type="text" class="form-control"
+								name="linename" value="<%=obj.linename%>" id="add_linename" placeholder="">
+						</div>
+						<div class="col-md-4 col-xs-12 perInfo_margB">
+							<label>长度(km)</label> <input type="text" class="form-control"
+								name="linelength" value="<%=obj.linelength%>" id="add_linelength" placeholder="">
+						</div>
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>备注</label>
+							<textarea class="form-control" rows="3" name="remark"><%=obj.remark%></textarea>
+						</div>
+						
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="btn_add_stretch">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+        

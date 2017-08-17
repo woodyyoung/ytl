@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lty.rt.sysMgmt.mapper.UserMgmtMapper">
+
+  <!-- user result map -->
+  <resultMap id="UserResultMap" type="com.lty.rt.sysMgmt.entity.User">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="userName" jdbcType="VARCHAR" property="userName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="phoneNumber" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="sex" jdbcType="DECIMAL" property="sex" />
+    <result column="state" jdbcType="DECIMAL" property="state" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="realName" jdbcType="DECIMAL" property="realName" />
+    <result column="createDate" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="modifyDate" jdbcType="TIMESTAMP" property="modifyDate" />
+    <result column="role_id" jdbcType="DECIMAL" property="roleId" />
+    <association property="role" column="role_id" select="com.lty.rt.sysMgmt.mapper.RoleMapper.getRoleById" />
+  </resultMap>
+  
+  <select id="queryUser" resultMap="UserResultMap" parameterType="java.util.Map">
+    SELECT
+		T.id,
+		T.user_name userName,
+		T.password,
+		T.create_time createDate,
+		T.modify_time modifyDate,
+		T.state,
+		T.phone_number phoneNumber,
+		T.email,
+		T.address,
+		T.sex,
+		T.description,
+		T.real_name realName,
+		T.role_id 
+	FROM
+		pjmk_user T
+	WHERE T.state = 0
+	<if test="id != null and id != ''">
+		and T.id = #{id}
+	</if>
+	<if test="username != null and username != ''">
+		and T.user_name = #{username}
+	</if>
+  </select>
+  
+  <insert id="insertUser" parameterType="com.lty.rt.sysMgmt.entity.User">
+  	insert into pjmk_user
+  	(
+  		id,
+		user_name,
+		password,
+		create_time,
+		state,
+		phone_number,
+		email,
+		address,
+		sex,
+		description,
+		real_name
+  	)
+  	values
+  	(
+  		#{id},
+  		#{userName},
+  		#{password},
+  		#{createDate},
+  		#{state},
+  		#{phoneNumber},
+  		#{email},
+  		#{address},
+  		#{sex},
+  		#{description},
+  		#{realName}
+  	)
+  </insert>
+  
+  <update id="updateUser" parameterType="com.lty.rt.sysMgmt.entity.User">
+  	update pjmk_user
+  	
+  	<set>
+  		
+  		<if test="userName!=null">
+  			user_name = #{userName},
+  		</if>
+  		
+  		<if test="password!=null">
+  			password = #{password},
+  		</if>
+  		
+  		<if test="modifyDate!=null">
+  			modify_time = #{modifyDate},
+  		</if>
+  		
+  		<if test="phoneNumber!=null">
+  			phone_number = #{phoneNumber},
+  		</if>
+  		
+  		<if test="email!=null">
+  			email = #{email},
+  		</if>
+  		
+  		<if test="address!=null">
+  			address = #{address},
+  		</if>
+  		
+  		<if test="sex!=null">
+  			sex = #{sex},
+  		</if>
+  		
+  		<if test="description!=null">
+  			description = #{description},
+  		</if>
+  		
+  		<if test="realName!=null">
+  			real_name = #{realName},
+  		</if>
+  		<if test="roleId!=null">
+  			role_id = #{roleId},
+  		</if>
+  		
+  	</set>
+  	
+	where id = #{id}
+  </update>
+  
+  <update id="delUser" parameterType="java.util.List">
+  	update pjmk_user
+  		set STATE = 1 
+  	where id in
+  	<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	  #{item}  
+	</foreach> 
+  </update> 
+</mapper>

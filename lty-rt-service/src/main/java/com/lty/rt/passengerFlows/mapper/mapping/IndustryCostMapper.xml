@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.IndustryCostMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.passengerFlows.bean.IndustryCost" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="OCCURTIME" property="occurtime" jdbcType="VARCHAR" />
+    <result column="COST_TYPE_NO" property="costTypeNo" jdbcType="VARCHAR" />
+    <result column="COST" property="cost" jdbcType="DECIMAL" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="CREATEBY" property="createby" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, to_char(OCCURTIME,'YYYY') OCCURTIME, COST_TYPE_NO, COST, CREATETIME, CREATEBY, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDUSTRY_COST
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+    <select id="selectByYearAndCostType" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDUSTRY_COST
+    where to_char(OCCURTIME,'YYYY') = #{occurtime}
+    AND COST_TYPE_NO = #{costType}
+  	</select>
+  
+   <select id="findListByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select
+	p.ID, to_char(p.OCCURTIME,'YYYY') OCCURTIME, t.type_name COST_TYPE_NO, p.COST,to_char( p.CREATETIME,'YYYY-MM-DD')CREATETIME, p.CREATEBY CREATEBY, p.REMARK
+	from PJMK_INDUSTRY_COST p,PJMK_COST_TYPE t
+	<where>
+		and p.COST_TYPE_NO = t.id(+)
+		<if test="startTime != null  and startTime !=''">
+			AND P.OCCURTIME &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND P.OCCURTIME &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+		<if test="costType != null  and costType !=''">
+			AND P.COST_TYPE_NO = #{costType}
+		</if>
+	</where>
+	order by COST_TYPE_NO,COST
+  </select>
+  
+  <select id="findTableDataByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select to_char(t.OCCURTIME,'YYYY') occurtime,nvl(sum(t.cost),0)cost,t.cost_type_no,c.type_name from pjmk_industry_cost t,pjmk_cost_type c
+	<where>
+		AND t.cost_type_no = c.id(+)
+		<if test="costType != null  and costType !=''">
+			AND T.COST_TYPE_NO = #{costType}
+		</if>
+		<if test="startTime != null  and startTime !=''">
+			AND T.OCCURTIME &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND T.OCCURTIME &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+	</where>
+	group by t.occurtime,t.cost_type_no,c.type_name
+	order by t.occurtime,t.cost_type_no
+	
+  </select>
+  
+  
+  <select id="findChatsDataByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select to_char(t.OCCURTIME,'YYYY') occurtime,nvl(sum(t.cost),0)cost,t.cost_type_no,c.type_name from pjmk_industry_cost t,pjmk_cost_type c
+	<where>
+		AND t.cost_type_no = c.id(+)
+		<if test="costType != null  and costType !=''">
+			AND T.COST_TYPE_NO = #{costType}
+		</if>
+		<if test="startTime != null  and startTime !=''">
+			AND T.OCCURTIME &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND T.OCCURTIME &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+		<if test="occurtime != null  and occurtime !=''">
+			AND to_char(T.OCCURTIME,'YYYY') = #{occurtime}
+		</if>
+	</where>
+	group by t.occurtime,t.cost_type_no,c.type_name
+	order by t.occurtime,t.cost_type_no
+  </select>
+  
+  <select id="findPieDataByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select nvl(sum(t.cost),0)cost,c.type_name type_name from pjmk_industry_cost t,pjmk_cost_type c
+	<where>
+		AND t.cost_type_no = c.id(+)
+		<if test="costType != null  and costType !=''">
+			AND T.COST_TYPE_NO = #{costType}
+		</if>
+		<if test="startTime != null  and startTime !=''">
+			AND T.OCCURTIME &gt;= TO_DATE(#{startTime}, 'YYYY')
+		</if>
+		<if test="endTime != null  and endTime !=''">
+			AND T.OCCURTIME &lt;= TO_DATE(#{endTime}, 'YYYY')
+		</if>
+		<if test="occurtime != null  and occurtime !=''">
+			AND to_char(T.OCCURTIME,'YYYY') = #{occurtime}
+		</if>
+	</where>
+	group by c.type_name
+	order by type_name
+  </select>
+  
+  
+  
+<!--   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_INDUSTRY_COST
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+   -->
+   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_INDUSTRY_COST
+    where ID in <!-- (#{value,jdbcType=VARCHAR}) -->
+    <foreach item="empnoItem" collection="array" open="(" separator="," close=")">	
+            #{empnoItem}
+    </foreach>
+  </delete>
+  
+  
+  <insert id="insert" parameterType="com.lty.rt.passengerFlows.bean.IndustryCost" >
+    insert into PJMK_INDUSTRY_COST (ID, OCCURTIME, COST_TYPE_NO, 
+      COST, CREATETIME, CREATEBY, 
+      REMARK)
+    values (#{id,jdbcType=VARCHAR}, to_date(#{occurtime},'YYYY'), #{costTypeNo,jdbcType=VARCHAR}, 
+      #{cost,jdbcType=DECIMAL}, sysdate, #{createby,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.passengerFlows.bean.IndustryCost" >
+    insert into PJMK_INDUSTRY_COST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME,
+      </if>
+      <if test="costTypeNo != null" >
+        COST_TYPE_NO,
+      </if>
+      <if test="cost != null" >
+        COST,
+      </if>
+      <if test="createtime != null" >
+        CREATETIME,
+      </if>
+      <if test="createby != null" >
+        CREATEBY,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="occurtime != null" >
+        #{occurtime,jdbcType=DATE},
+      </if>
+      <if test="costTypeNo != null" >
+        #{costTypeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cost != null" >
+        #{cost,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="createby != null" >
+        #{createby,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.passengerFlows.bean.IndustryCost" >
+    update PJMK_INDUSTRY_COST
+    <set >
+      <if test="occurtime != null" >
+        OCCURTIME = #{occurtime,jdbcType=DATE},
+      </if>
+      <if test="costTypeNo != null" >
+        COST_TYPE_NO = #{costTypeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cost != null" >
+        COST = #{cost,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        CREATETIME = #{createtime,jdbcType=DATE},
+      </if>
+      <if test="createby != null" >
+        CREATEBY = #{createby,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.passengerFlows.bean.IndustryCost" >
+    update PJMK_INDUSTRY_COST
+    set OCCURTIME = to_date(#{occurtime},'YYYY'),
+      COST_TYPE_NO = #{costTypeNo,jdbcType=VARCHAR},
+      COST = #{cost,jdbcType=DECIMAL},
+      CREATEBY = #{createby,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

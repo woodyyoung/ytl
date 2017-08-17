@@ -1,0 +1,142 @@
+<div class="row">
+
+	<div class="col-sm-12">
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-assess-sub">分项评价计算</h3>
+			</div>
+
+
+			<div class="panel-body">
+
+				<ul class="nav nav-tabs" role="tablist" id="assess_sub_tab">
+					<li role="presentation" class="active" id="assess_sub_days"><a
+						href="#">按日</a></li>
+					<li role="presentation" id="assess_sub_weeks"><a href="#">按周</a></li>
+					<li role="presentation" id="assess_sub_months"><a href="#">按月</a></li>
+					<li role="presentation" id="assess_sub_years"><a href="#">按年</a></li>
+				</ul>
+
+
+				<form class="form-horizontal" role="form" id="assess_sub_form">
+				</form>
+
+
+
+
+			</div>
+
+
+		</div>
+	</div>
+
+</div>
+
+<div class="row">
+
+	<div class="col-sm-3">
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-assess-sub">指标列表</h3>
+			</div>
+			<div class="panel-body">
+				<input type="input" class="form-control" id="input-search"
+						placeholder="指标搜索..." value="" /> 
+						<input type="hidden" name="id"  id="id"  value />
+				<div id="treeview-searchable" class=""></div>
+				<!-- treeview-searchable -->
+				<div>
+					
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<div class="col-sm-9">
+
+		<div class="row" id="fxpjjs_panel">
+
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div id="dCharts" style="width: 100%; height: 500px;"></div>
+				</div>
+
+			</div>
+			
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div id="indexDescription" style="height: 100px; border-bottom: 1px solid #E6E9ED" >
+					</div>
+					<div class="x_panel">
+					<div id="zCharts" class="x_content" style="width: 60%; height: 500px;"></div>
+					<div id="descCharts" class="x_content" style="width: 40%;position: absolute;left: 62%;top: 31%;"></div>
+					</div>
+					
+					
+					<div id="index" style="height: 100px; border-bottom: 1px solid #E6E9ED"></div>
+					
+					<div id="proposal" style="height: 100px; border-bottom: 1px solid #cccccc"></div>
+				</div>
+
+			</div>
+			
+			
+			
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div class="panel-body">
+
+						<div class="row">
+
+							<div class="col-sm-12 xlklcx_btn">
+
+								<!-- Contextual button for informational alert messages -->
+								<!-- <button type="button" class="btn btn-info">打印</button> -->
+
+								<!-- Indicates caution should be taken with this action -->
+								<button type="button" class="btn btn-warning" id="btn-export">导出图表</button>
+							</div>
+
+						</div>
+
+
+						<table class="table responsive table-bordered col-sm-12"
+							id="table_list_template">
+
+							<thead>
+								<tr>
+									<th>指标ID</th>
+									<th>指标名称</th>
+									<th>统计日期</th>
+									<th>统计数量</th>
+									<th>统计总数</th>
+									<th>指标值</th>
+									<th>指标等级</th>
+									<th>等级范围</th>
+								</tr>
+							</thead>
+
+						</table>
+
+					</div>
+				</div>
+			</div>
+			
+			
+			
+		
+		</div>
+		
+		
+
+	</div>
+
+
+</div>
+
+

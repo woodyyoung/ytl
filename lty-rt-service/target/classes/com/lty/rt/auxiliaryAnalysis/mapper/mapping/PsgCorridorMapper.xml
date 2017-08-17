@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.PsgCorridorMapper" >
+
+  <!-- 按天统计小区的OD客流总量 -->
+  <select id="queryTotalODByday" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+	  select t.s_area_code, t.dd, sum(t.onbus_person_count) od_value
+             from v_od_psgflow t
+            where t.s_area_code = #{areaCode}
+            	 and t.occur_time &gt;= to_date(#{beginDate}, 'yyyy-mm-dd')
+				and t.occur_time &lt; to_date(#{endDate}, 'yyyy-mm-dd')+1
+              and t.t_area_code ! = #{areaCode}
+            group by t.s_area_code, t.dd
+            order by t.dd
+  </select>
+  
+  <!-- 按天统计小区到其他各个小区的客流总量 -->
+  <select id="queryToOtherAreaODByDay" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		select sa.codename s_area_name,
+	       sl.lan      slan,
+	       tl.lan      tlan,
+	       ta.codename t_area_name,
+	       o.*
+	  from pjmk_area sa,
+	       pjmk_area ta,
+	       v_area_lat_lng tl,
+	       v_area_lat_lng sl,
+	       (select t.s_area_code,
+	               t.t_area_code,
+	               sum(t.onbus_person_count) od_value
+	          from v_od_psgflow t
+	         where t.s_area_code = #{areaCode}
+	           and to_char(t.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+			   and to_char(t.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+	           and t.t_area_code ! = #{areaCode}
+	         group by t.s_area_code, t.t_area_code) o
+	 where sa.codeid = o.s_area_code
+	   and ta.codeid = o.t_area_code
+	   and sa.id = sl.areaid
+	   and ta.id = tl.areaid
+  </select>
+  
+  <select id="queryAreaInfo" resultType="java.util.HashMap" parameterType="java.lang.String">
+	  select t1.areaid,
+	       t1.platformid,
+	       t2.codename,
+	       t2.codeid,
+	       t3.id         stationid,
+	       t3.name       stationname,
+	       t3.orderno,
+	       t4.id         lineid,
+	       t4.name       linename,
+	       t4.gprsid,
+	       v1.lan
+	  from pjmk_area_platform t1
+	  join pjmk_area t2
+	    on t1.areaid = t2.id
+	  join pjmk_station t3
+	    on t1.platformid = t3.platform_id
+	  join pjmk_line t4
+	    on t4.gprsid = t3.gprsid
+	  join v_area_lat_lng v1
+	    on v1.areaid = t1.areaid
+	 where t2.state = 0
+	   and t3.direction = 0
+	   and t4.gprsid in
+	       (select distinct (t.gprsid)
+	          from pjmk_station t
+	         where t.platform_id in
+	               (select t.platformid
+	                  from pjmk_area_platform t
+	                 where t.areaid in
+	                       (select t.id
+	                          from pjmk_area t
+	                         where t.codeid like #{areaCode}||'%')))
+	 order by gprsid asc, orderno asc
+  </select>
+  
+  <select id="queryAreaODByHour" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		select v.hh, sum(v.onbus_person_count) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		 group by v.hh
+		 order by v.hh
+  </select>
+  
+  <select id="queryFlowOutTop" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select v.s_area_code code, sum(v.onbus_person_count) flow 
+  	  from v_od_psgflow v  
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.s_area_code in (${areaCodeStr})
+		   </if>
+  	  group by s_area_code order by flow desc
+  </select>
+  
+  <select id="queryFlowInTop" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select v.t_area_code code, sum(v.onbus_person_count) flow 
+  	  from v_od_psgflow v 
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.t_area_code in (${areaCodeStr})
+		   </if>
+  	  group by t_area_code order by flow desc
+  </select>
+  
+  <select id="queryFlowAnalysisByHour" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select  v.hh time, sum(v.onbus_person_count)flow 
+  	  from v_od_psgflow v 
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.t_area_code in (${areaCodeStr})
+		   </if>
+  	  group by v.hh order by hh
+  </select>
+  
+  <select id="queryFlowAnalysisByDay" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select  v.dd time, sum(v.onbus_person_count)flow 
+  	  from v_od_psgflow v 
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.t_area_code in (${areaCodeStr})
+		   </if>
+  	  group by  v.dd order by dd
+  </select>
+  
+  <select id="queryFlowAnalysisByWeek" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select  v.iw time, sum(v.onbus_person_count)flow 
+  	  from v_od_psgflow v 
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.t_area_code in (${areaCodeStr})
+		   </if>
+  	  group by  v.iw order by iw
+  </select>
+  
+  <select id="queryFlowAnalysisByMonth" resultType="java.util.HashMap"  parameterType="java.util.Map">
+  	  select  v.mm time, sum(v.onbus_person_count)flow 
+  	  from v_od_psgflow v 
+  	  where to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		   <if test="areaCodeStr != null and areaCodeStr != '' ">
+		       and v.t_area_code in (${areaCodeStr})
+		   </if>
+  	  group by  v.mm order by mm
+  </select>
+  
+  <select id="queryTotleAreaODByTime" resultType="java.lang.Integer"  parameterType="java.util.Map" >
+		select nvl(sum(v.onbus_person_count), 0) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+  </select>
+  
+  <select id="queryTotleAreaODByDay" resultType="java.lang.Integer"  parameterType="java.util.Map" >
+		select nvl(sum(v.onbus_person_count), 0) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+  </select>
+  
+  <select id="queryAreaODByDay" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		select v.dd, sum(v.onbus_person_count) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		 group by v.dd
+		 order by v.dd
+  </select>
+  
+  <select id="queryAreaODByWeek" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		select v.iw, sum(v.onbus_person_count) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		 group by v.iw
+		 order by v.iw
+  </select>
+  
+  <select id="queryAreaODByMonth" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		select v.mm, sum(v.onbus_person_count) flow
+		  from V_OD_PSGFLOW v
+		 where v.s_area_code = #{source}
+		   and v.t_area_code = #{target}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &gt;= #{beginDate}
+		   and to_char(v.occur_time, 'YYYY-MM-DD') &lt;= #{endDate}
+		   <if test="workType != null and workType != '' and workType!='-1'  "> and v.holiday_flag = #{workType}  </if>  <if  test="workType=='-1' " >  and to_char(v.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)  </if>
+		 group by v.mm
+		 order by v.mm
+  </select>
+  
+</mapper>

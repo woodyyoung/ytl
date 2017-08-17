@@ -1,0 +1,165 @@
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>添加评价指标</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="user_btn">
+					<button type="button" class="btn btn-danger" id="index_save">保存</button>
+					<button type="button" class="btn btn-primary" id="index_back">返回</button>
+				</div>
+				<!-- user_btn -->
+				<form class="perInfo_form" role="form" id="index_form">
+					<div class="form-group row">
+					  <div class="col-md-3 col-xs-12">
+              			<div class="x_panel">
+                		  <div class="x_title">
+                  		  <h2>指标</h2>
+                  		  <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                  		<div id="treeview-searchable" class=""></div><!-- treeview-searchable -->
+                  		<div>
+                    	<input type="input" class="form-control" id="input-search" placeholder="指标搜索..." value=""/>
+                    	<input type="hidden" name="pkid" id = "pkid" value="<%=obj.pkid%>"/>
+                    	<input type="hidden" name="parentid" id = "parentid" value="<%=obj.parentid%>"/>
+                    	<input type="hidden" name="id" id = "id" value="<%=obj.id%>"/>
+                    	<input type="hidden" name="indexType" id = "indexType" value="<%=obj.indexType%>"/>
+                  		</div>    
+                  		</div>
+              			</div>
+            		</div><!-- col-md-3 -->
+					  
+					  <div class="col-md-9 col-xs-12">
+						
+						
+						<div class="row">
+							<div class="col-md-2 col-xs-12 perInfo_margB">
+								<label>指标名称</label> 
+								<input type="text" class="form-control" maxlength="30" name="name" value="<%=obj.name%>" placeholder="">
+							</div>
+							
+							<div class="col-md-2 col-xs-12 perInfo_margB">
+								<label>目标等级</label> 
+								<input type="text" class="form-control" name="targetlevel" maxlength="2" onkeyup="this.value=this.value.replace(/\D/g,'')"  value="<%=obj.targetlevel%>" placeholder="">
+							</div>
+						</div>
+						
+						
+						<div class="row">
+							<div class="col-md-2 col-xs-12 perInfo_margB">
+								<label>指标单位</label>
+								<input type="text" class="form-control" name="levelUnit" maxlength="18" value="<%=obj.levelUnit%>" placeholder="">
+								<!-- <br/><label>
+								<select class="form-control" name="levelUnit">  
+	  								<option value ="%" <%= '%' == obj.levelUnit ? selected = 'selected' :'' %> >%</option>
+	  								<option value ="次" <%= '次' == obj.levelUnit ? selected = 'selected' :'' %> >次</option> 
+	  								<option value ="年" <%= '年' == obj.levelUnit ? selected = 'selected' :'' %> >年</option> 
+	  							</select>  
+	  							</label> -->
+							</div>
+							
+							
+							<div class="col-md-2 col-xs-12 perInfo_margB">
+								<label>权重%</label> 
+								<input type="text" class="form-control" maxlength="2" onkeyup="this.value=this.value.replace(/\D/g,'')"  name="weight" value="<%=obj.weight%>" placeholder="">
+							</div>
+						
+						</div>
+						
+						<div class="row">
+						<div class="col-md-2 col-xs-12 perInfo_margB">
+							<label>综合权重%</label> 
+							<input type="text" class="form-control" maxlength="2" onkeyup="this.value=this.value.replace(/\D/g,'')" name="syntheticWeight" value="<%=obj.syntheticWeight%>" placeholder="">
+						</div>
+						
+						
+						<div class="col-md-2 col-xs-12 perInfo_margB">
+							<label>是否启用</label> 
+							<div>
+								<label class="radio-inline"><input type="radio" name="isAble" value="0" placeholder="" checked="checked">是</label>
+								<label class="radio-inline"><input type="radio" name="isAble" value="1" placeholder="">否</label>
+							</div>
+						</div>
+						</div>
+						<!-- <div class="row">
+							<div class="col-md-12 col-xs-12 perInfo_margB">
+								<label>指标计算公式</label> 
+							</div>
+							<div class="col-md-12 col-xs-12 perInfo_margB">
+								
+								<input type="text" class="form-inline" name="syntheticWeightsss" placeholder="输入计算项名称">
+								<input type="text" size=6 placeholder="单位"> 
+								<select style="width:40px;">
+								<option value="/"> / </option>
+								<option value="*"> * </option>
+								<option value="+"> + </option>
+								<option value="-"> - </option>
+								</select>  
+								<input type="text"  name="syntheticWeightsss" placeholder="输入计算项名称">
+								<input type="text" size=6 placeholder="单位"> 
+							</div>
+							<div class="col-md-12 col-xs-12 perInfo_margB">
+								<label>  示例： 平均线路长度 = 总体线路长度/线路总条数   公式录入如下图所示： </label> 
+							</div>
+							<div class="col-md-12 col-xs-12 perInfo_margB">
+								<label><img alt="" src="images/indexDemo.png"></label>
+							</div>
+						</div> -->
+						
+						<!-- <div class="col-md-2 col-xs-12 perInfo_margB">
+							<label>指标数据统计单位(目标值)</label> 
+							<input type="text" class="form-control" name="targetCountUnit" value="<%=obj.targetCountUnit%>" placeholder="">
+						</div>
+						<div class="col-md-2 col-xs-12 perInfo_margB">
+							<label>指标数据统计单位(总值)</label> 
+							<input type="text" class="form-control" name="totalCountUnit" value="<%=obj.totalCountUnit%>" placeholder="">
+						</div> -->
+						<div class="row">
+							<div class="col-md-5 col-xs-12 perInfo_margB">
+								<label>指标说明</label> 
+								<textarea rows="3" class="form-control" name="descriptions" placeholder=""><%=obj.descriptions%></textarea>
+								<!-- <input type="text" class="form-control" name="descriptions" value="<%=obj.descriptions%>" placeholder=""> -->
+							</div>
+						</div>
+						
+						<div class="row">
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>评分等级设置</label>
+							<table border="1">
+								<tr>
+									<th width="5%" >评分等级</th>
+									<th width="10%">范围下限(<%=obj.levelUnit%>)</th>
+									<th width="10%">范围上限(<%=obj.levelUnit%>)</th>
+									<th width="10%">描述(个性设置)</th>
+									<th width="65%">评价建议</td>
+								</tr>
+								<%								
+								if(obj.indexLevelList != null){ 
+								      for(var i = 0; i != obj.indexLevelList.length ; i++){
+								%>
+								<tr>
+								  <td><input type="text" class="form-control"  name="indexLevelList[<%=i%>].indexLevel" value="<%=obj.indexLevelList[i].indexLevel %>" placeholder="" readonly="readonly"></td>
+								  <td><input type="number" class="form-control" maxlength="6"   name="indexLevelList[<%=i%>].lowerLimit" value="<%=obj.indexLevelList[i].lowerLimit %>" placeholder=""></td>
+								  <td><input type="number" class="form-control" maxlength="6"   name="indexLevelList[<%=i%>].topLimit" value="<%=obj.indexLevelList[i].topLimit %>" placeholder=""></td>
+								  <td><input type="text" class="form-control"  name="indexLevelList[<%=i%>].description" value="<%=obj.indexLevelList[i].description %>" placeholder="" readonly="readonly"></td>
+								  <td><input type="text" class="form-control" maxlength="99"  name="indexLevelList[<%=i%>].proposal" value="<%=obj.indexLevelList[i].proposal %>" placeholder=""></td>
+								</tr>
+								   
+								<%} }%>
+							</table>
+						</div>
+						</div>
+						
+						
+						
+					</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- x_panel -->
+	</div>
+</div>

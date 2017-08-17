@@ -1,0 +1,1657 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.LinePsgflowAnalysisMapper">
+
+	<resultMap id="platFormPsgResultMap" type="com.lty.rt.passengerFlows.bean.PlatFormPsgFlow">
+	<result column="line_id" jdbcType="VARCHAR" property="lineId" />
+	<result column="line_name" jdbcType="VARCHAR" property="lineName" />
+	<result column="longitude" jdbcType="VARCHAR" property="longitude" />
+	<result column="latitude" jdbcType="VARCHAR" property="latitude" />
+	<result column="platform_id" jdbcType="VARCHAR" property="platformId" />
+	<result column="platform_name" jdbcType="VARCHAR" property="platformName" />
+	<result column="TOTAL_PERSON_COUNT" jdbcType="DECIMAL" property="totalPersonCount" />
+	<result column="ONBUS_PERSON_COUNT" jdbcType="DECIMAL" property="onbusPersonCount" />
+	<result column="OFFBUS_PERSON_COUNT" jdbcType="DECIMAL" property="offbusPersonCount"/>
+	</resultMap>
+	
+	
+	<!--新改造线路站间客流方法begin -->
+   <select id="queryLineODPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT
+			 <include refid="ODPsgFlow_Column" />
+			  FROM v_od_psgflow T
+			  <where>
+			   <include refid="ODPsgFlow_condition" />
+			  </where>
+			 <include refid="ODPsgFlow_groupby" />
+			  <include refid="ODPsgFlow_orderby" />
+	</select>
+	
+	<sql id="ODPsgFlow_Column" >
+ 		 T.SOURCE_PLATFORM_NAME,
+		 T.TAGET_PLATFORM_NAME,
+		 <if test="queryType == 'days'" >
+		 T.DD as showDate,
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW as showDate,
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM as showDate,
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH as showDate,
+		 </if>
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT
+	</sql>
+	
+	<sql id="ODPsgFlow_condition">
+		<if test="queryType == 'hours'" >
+		 	<if test="startDate != null and startDate != ''">
+			AND T.DD = #{startDate}
+			</if>
+		</if>
+		<if test="queryType != 'hours'" >
+			<if test="startDate != null and startDate != '' and endDate !=null and endDate !=''">
+				AND T.OCCUR_TIME &gt; TO_DATE(#{startDate}, 'yyyy-mm-dd')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			</if>
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND T.station_id = #{stationId}
+		AND T.target_station_id = #{tStationId}
+		
+	</sql>
+	
+	<sql id="ODPsgFlow_groupby">
+		 GROUP BY T.SOURCE_PLATFORM_NAME, T.TAGET_PLATFORM_NAME, 
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<sql id="ODPsgFlow_orderby">
+		ORDER BY T.SOURCE_PLATFORM_NAME,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<!--新改造查询线路站间客流方法 end  -->
+	
+	
+	 <!--新改造查询线路客流集散量方法begin  -->
+	<select id="queryLineDefaultPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT
+			 <include refid="DefaultPsgFlow_Column" />
+			  FROM v_platform_psgflow T
+			  <where>
+			   <include refid="DefaultPsgFlow_condition" />
+			  </where>
+			 <include refid="DefaultPsgFlow_groupby" />
+			  <include refid="DefaultPsgFlow_orderby" />
+	</select>
+	
+	<sql id="DefaultPsgFlow_Column" >
+ 		 T.LINE_NAME,
+		 T.LINE_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD as showDate,
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW as showDate,
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM as showDate,
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH as showDate,
+		 </if>
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT
+	</sql>
+	
+	<sql id="DefaultPsgFlow_condition">
+		<if test="queryType == 'hours'" >
+		 	<if test="startDate != null and startDate != ''">
+			AND T.DD = #{startDate}
+			</if>
+		</if>
+		<if test="queryType != 'hours'" >
+			<if test="startDate != null and startDate != '' and endDate !=null and endDate !=''">
+				AND T.OCCUR_TIME &gt; TO_DATE(#{startDate}, 'yyyy-mm-dd')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			</if>
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<if test="stationId != null and stationId!='' " >
+			AND t.STATION_ID = #{stationId}
+		</if>
+		AND t.LINE_ID = #{lineId}
+	</sql>
+	
+	<sql id="DefaultPsgFlow_groupby">
+		 GROUP BY  
+		 T.LINE_NAME,
+		 T.LINE_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<sql id="DefaultPsgFlow_orderby">
+		ORDER BY  
+		 T.LINE_NAME,
+		 T.LINE_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	
+	 <!--新改造查询线路客流集散量方法 end  -->
+	
+
+	<select id="queryPsgFlowForHours" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE
+		<if test="endDate != null and endDate!='' " >
+		(T.DD = #{beginDate}
+		OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' " >
+		T.DD = #{beginDate}
+		</if>
+		and t.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.DD,T.HH
+		ORDER BY
+		T.LINE_NAME,T.DD,T.HH
+	</select>
+	
+	<select id="queryPsgFlowForHoursOD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		T.line_name,
+		T.line_id,
+		T.dd,
+		T.hh,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM v_od_psgflow T WHERE
+		<if test="endDate != null and endDate!='' " >
+		(T.DD = #{beginDate}
+		OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' " >
+		T.DD = #{beginDate}
+		</if>
+		and t.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		GROUP BY T.line_name,T.line_id,T.dd,T.hh
+		ORDER BY T.line_name,T.dd,T.hh
+	</select>
+	
+	<select id="queryPsgFlowForHourToHour" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		<where>
+			<if test="startTime != null and startTime !=''" >
+				T.DD = #{startTime}
+			</if>
+			<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			<if test="aloneHour != null and aloneHour !=''" >
+				AND T.HH = #{aloneHour}
+			</if>
+			<if test="lineId != null and lineId !=''" >
+				and t.LINE_ID = #{lineId}
+			</if>
+		</where>
+		GROUP BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,T.LINE_ID, 
+		</if>
+		T.DD,T.HH
+		ORDER BY
+		<if test="lineId != null and lineId !=''" >
+		T.LINE_NAME,
+		</if>
+		T.DD,T.HH
+	</select>
+	
+	<select id="queryLineTopPsgFlowForHourToHour" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		<where>
+			<if test="startTime != null and startTime !=''" >
+			T.DD = #{startTime}
+			</if>
+			<if test="aloneHour != null and aloneHour !=''" >
+			AND T.HH = #{aloneHour}
+			</if>
+			<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		</where>
+		GROUP BY T.LINE_NAME, T.LINE_ID
+		ORDER BY
+		T.LINE_NAME)
+		where rownum &lt;= 10
+	</select>
+	
+	<select id="queryLineTopPsgFlowForToday" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		SUM(T.TOTAL_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		GROUP BY T.LINE_NAME, T.LINE_ID
+		ORDER BY
+		T.LINE_NAME)
+		where rownum &lt;= 1
+	</select>
+	
+	<select id="queryStationTopPsgFlowForHourToHour" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_NAME,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE t.LINE_ID = #{lineId}
+		<if test="startTime != null and startTime != ''" >
+			and T.DD = #{startTime}
+		</if>
+		<if test="aloneHour != null and aloneHour !=''" >
+			AND T.HH = #{aloneHour}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID,T.STATION_NAME,T.STATION_ID
+		ORDER BY
+		ONBUS_PERSON_COUNT DESC)
+		where rownum &lt;= 10
+	</select>
+	
+	
+	<select id="queryStationTopPsgFlowForDayToDay" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_NAME,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE t.LINE_ID = #{lineId}
+		<if test="startTime != null and startTime!='' and endTime != null and endTime!=''" >
+			AND T.DD &gt;= #{startTime} and T.DD &lt;= #{endTime}
+		</if>
+		<if test="aloneDay != null and aloneDay !=''" >
+			AND T.DD = #{aloneDay}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID,T.STATION_NAME,T.STATION_ID
+		ORDER BY
+		ONBUS_PERSON_COUNT DESC)
+		where rownum &lt;= 10
+	</select>
+	
+	
+	<select id="queryStationTopPsgFlowForWeekToWeek" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_NAME,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE t.LINE_ID = #{lineId}
+		<if test="startTime != null and startTime!='' and endTime != null and endTime!=''" >
+			AND T.DD &gt;= #{startTime} and T.DD &lt;= #{endTime}
+		</if>
+		<if test="aloneWeek != null and aloneWeek !=''" >
+			AND T.IW = #{aloneWeek}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID,T.STATION_NAME,T.STATION_ID
+		ORDER BY
+		ONBUS_PERSON_COUNT DESC)
+		where rownum &lt;= 10
+	</select>
+	
+	<select id="queryStationTopPsgFlowForMonthToMonth" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_NAME,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE t.LINE_ID = #{lineId}
+		<if test="startTime != null and startTime!='' and endTime != null and endTime!=''" >
+			AND T.DD &gt;= #{startTime} and T.DD &lt;= #{endTime}
+		</if>
+		<if test="aloneMonth != null and aloneMonth !=''" >
+			AND T.MM = #{aloneMonth}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID,T.STATION_NAME,T.STATION_ID
+		ORDER BY
+		ONBUS_PERSON_COUNT DESC)
+		where rownum &lt;= 10
+	</select>
+	
+	<select id="queryStationPsgFlowByLineId" resultType="java.util.HashMap"
+			parameterType="java.util.Map">
+		SELECT *
+		FROM PJMK_STATION T,
+		(SELECT T.STATION_ID,T.STATION_NAME,
+		<if test="dataType=='0' and aloneHour != null and aloneHour !=''">
+	        TO_CHAR(T.OCCUR_TIME, 'HH24') HH,
+		</if>
+		<if test="dataType =='1'">
+			TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') DD,
+		</if>
+		<if test="dataType == '2'">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') IW,
+		</if>
+		<if test="dataType == '3'">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') MM,
+		</if>
+		NVL(SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT),0) TOTAL_PERSON_COUNT,
+		NVL(SUM(T.ONBUS_PERSON_COUNT),0) ONBUS_PERSON_COUNT,
+		NVL(SUM(T.OFFBUS_PERSON_COUNT),0) OFFBUS_PERSON_COUNT
+		FROM PJMK_STATION_PSGFLOW T
+		WHERE T.LINE_ID = #{lineId}
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<choose>
+			<when test="dataType == 0">
+				<if test="aloneDay != null and (aloneHour == null or aloneHour =='')">
+					AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID
+				</if>
+				<if test="aloneHour != null and aloneHour !=''">
+					AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+					AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID,TO_CHAR(T.OCCUR_TIME, 'HH24')
+				</if>
+			</when>
+			<when test="dataType == 1">
+					<if test="aloneDay != null and aloneDay != ''">
+						AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}	
+					</if>
+					<if test="(aloneDay == null or aloneDay == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID
+			</when>
+			<when test="dataType == 2">
+					<if test="aloneWeek != null and aloneWeek !=''">
+						and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+					</if>
+					<if test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID
+			</when>
+			<when test="dataType == 3">
+					<if test="aloneMonth != null and aloneMonth !=''">
+						AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}	
+					</if>
+					<if test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID
+			</when>
+			<otherwise>
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+				GROUP BY
+				T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.STATION_ID
+			</otherwise>
+		</choose>
+		) T1
+		WHERE T.ID = T1.STATION_ID(+)
+		AND T.LINEID = #{lineId}
+		
+		ORDER BY T.ORDERNO
+	
+	
+	</select>
+	
+	
+	<select id="queryPlatFormPsgFlow" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+	SELECT T.LINE_NAME,NVL(SUM(T.ONBUS_PERSON_COUNT +
+	T.OFFBUS_PERSON_COUNT),0)TOTAL_PERSON_COUNT FROM PJMK_STATION_PSGFLOW T
+	WHERE T.PLATFORM_ID = #{platFormId}
+	<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+	<choose>
+		<when test="dataType == 0">
+			<if test="aloneDay != null and (aloneHour == null or aloneHour =='')">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if test="aloneHour != null and aloneHour !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+				AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+			</if>
+		</when>
+		<when test="dataType == 1">
+			<if test="aloneDay != null and aloneDay != ''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if
+				test="(aloneDay == null or aloneDay == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<when test="dataType == 2">
+			<if test="aloneWeek != null and aloneWeek !=''">
+				and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+			</if>
+			<if
+				test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+			</if>
+		</when>
+		<when test="dataType == 3">
+			<if test="aloneMonth != null and aloneMonth !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}
+			</if>
+			<if
+				test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<otherwise>
+			AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+			HH24:MI:SS')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+			HH24:MI:SS')+1
+		</otherwise>
+	</choose>
+	GROUP BY T.LINE_ID,T.LINE_NAME
+	</select>
+	
+	
+	<select id="queryPsgFlowForHours2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T WHERE
+		<if test="endDate != null and endDate!='' " >
+		(T.DD = #{beginDate}
+		OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' " >
+		T.DD = #{beginDate}
+		</if>
+		and t.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		GROUP BY
+		T.LINE_NAME, T.LINE_ID,T.STATION_ID,T.STATION_NAME, T.DD,T.HH ORDER BY
+		T.LINE_NAME,T.STATION_NAME,T.DD,T.HH
+	</select>
+	
+	<select id="queryPsgFlowForHours2OD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		T.line_name,
+		T.line_id,
+		T.station_id,
+		T.station_name,
+		T.TAGET_STATION_NAME,
+		T.dd,
+		T.hh,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM v_od_psgflow T WHERE
+		<if test="endDate != null and endDate!='' " >
+		(T.DD = #{beginDate}
+		OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' " >
+		T.DD = #{beginDate}
+		</if>
+		and t.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		GROUP BY T.line_name,T.line_id,T.station_id,T.station_name,T.TAGET_STATION_NAME,T.dd,T.hh
+		ORDER BY T.line_name,T.dd,T.hh
+	</select>
+
+
+
+
+	<select id="queryPsgFlowForDays" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.DD
+		ORDER BY T.LINE_NAME,T.DD
+	</select>
+	
+	<select id="queryPsgFlowForDaysOD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.DD,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.DD
+		ORDER BY T.LINE_NAME,T.DD
+	</select>
+	
+	<select id="queryPsgFlowForDayToDay" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		T.OCCUR_TIME &gt; TO_DATE(#{startTime},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+		
+		<if test="lineId != null and lineId !=''" >
+				and t.LINE_ID = #{lineId}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<if test="aloneDay != null and aloneDay !=''" >
+		AND T.DD = #{aloneDay}
+		</if>
+		GROUP BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.DD
+		ORDER BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+		</if>
+		T.DD
+	</select>
+	
+	<select id="queryLineTopPsgFlowForDayToDay" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select * from (SELECT
+	    T.LINE_NAME,
+	    T.LINE_ID,
+	    SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+	    TOTAL_PERSON_COUNT,
+	    SUM(T.ONBUS_PERSON_COUNT)
+	    ONBUS_PERSON_COUNT,
+	    SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+	    SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+	    FROM V_LINE_PSGFLOW T
+	    WHERE
+	    T.OCCUR_TIME &gt; TO_DATE(#{startTime},'YYYY-MM-DD')
+	    AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+	    <if test="aloneHour != null and aloneHour !=''" >
+			AND T.DD = #{aloneDay}
+		</if>
+	    GROUP BY T.LINE_NAME, T.LINE_ID
+	    ORDER BY T.LINE_NAME) where rownum &lt;= 10
+	</select>
+	
+
+
+	<select id="queryPsgFlowForDays2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME, T.DD
+		ORDER BY T.LINE_NAME, T.STATION_NAME,T.DD
+	</select>
+	
+	<select id="queryPsgFlowForDays2OD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.TAGET_STATION_NAME,
+		T.DD,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME,T.TAGET_STATION_NAME, T.DD
+		ORDER BY T.LINE_NAME, T.STATION_NAME,T.DD
+	</select>
+
+	<select id="queryPsgFlowForWeeks" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.IW
+		ORDER BY T.LINE_NAME,T.IW
+	</select>
+	
+	<select id="queryPsgFlowForWeeksOD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.IW,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		<choose>
+                <when test="endDate2 != null and endDate2 !='' and endDate != null and endDate != '' ">
+                 (
+		   			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},'YYYY-MM-DD') AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1 )
+		 		  or( T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD') AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1 )
+				 )
+                </when>
+                <when test="(endDate == null or endDate=='') and  (endDate2 != null and endDate2 != '')">
+                 ( T.OCCUR_TIME &gt; TO_DATE(#{beginDate2},'YYYY-MM-DD') AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1 )
+                </when>
+                <when test="(beginDate2 == null or beginDate2=='') and  (endDate != null and endDate != '')">
+                 ( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},'YYYY-MM-DD') AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1 )
+                </when>
+                <otherwise>
+                1=1
+                </otherwise>
+          </choose>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.IW
+		ORDER BY T.LINE_NAME,T.IW
+	</select>
+	
+	<select id="queryPsgFlowForWeekToWeek" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		( T.OCCUR_TIME &gt; TO_DATE(#{startTime},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+		)
+		<if test="lineId != null and lineId !=''" >
+				and t.LINE_ID = #{lineId}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<if test="aloneWeek != null and aloneWeek !=''" >
+		and t.IW = #{aloneWeek}
+		</if>
+		GROUP BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.IW
+		ORDER BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+		</if>
+		T.IW
+
+	</select>
+	
+	<select id="queryLineTopPsgFlowForWeekToWeek" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT * from (
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		( T.OCCUR_TIME &gt; TO_DATE(#{startTime},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+		)
+		<if test="aloneWeek != null and aloneWeek !=''" >
+			and t.IW = #{aloneWeek}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID
+		ORDER BY T.LINE_NAME)
+		where rownum &lt;= 10
+
+	</select>
+
+	<select id="queryPsgFlowForWeeks2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME,T.IW
+		ORDER BY T.LINE_NAME,T.STATION_NAME, T.IW
+
+	</select>
+	
+	
+	<select id="queryPsgFlowForWeeks2OD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.TAGET_STATION_NAME,
+		T.IW,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME,T.TAGET_STATION_NAME,T.IW
+		ORDER BY T.LINE_NAME,T.STATION_NAME, T.IW
+
+	</select>
+
+
+	<select id="queryPsgFlowForMonths" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.MM
+		ORDER BY
+		T.LINE_NAME, T.MM
+
+	</select>
+
+
+	<select id="queryPsgFlowForMonthsOD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.MM,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.MM
+		ORDER BY
+		T.LINE_NAME, T.MM
+
+	</select>
+
+	<select id="queryPsgFlowForMonthToMonth" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		( T.OCCUR_TIME &gt; TO_DATE(#{startTime},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+		)
+		<if test="lineId != null and lineId !=''" >
+				and t.LINE_ID = #{lineId}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<if test="aloneMonth != null and aloneMonth !=''" >
+		and t.MM = #{aloneMonth}
+		</if>
+		GROUP BY 
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+			T.LINE_ID,
+		</if>
+		T.MM
+		ORDER BY
+		<if test="lineId != null and lineId !=''" >
+			T.LINE_NAME,
+		</if>
+		T.MM
+	</select>
+	
+	<select id="queryLineTopPsgFlowForMonthToMonth" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT * FROM (
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)
+		ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		( T.OCCUR_TIME &gt; TO_DATE(#{startTime},'YYYY-MM-DD')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD')+1
+		)
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.LINE_NAME, T.LINE_ID
+		ORDER BY
+		T.LINE_NAME)
+		WHERE ROWNUM &lt; = 10
+	</select>
+
+	<select id="queryPsgFlowForMonths2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_LINE_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME, T.MM
+		ORDER BY T.LINE_NAME,T.STATION_NAME, T.MM
+
+	</select>
+	
+	<select id="queryPlatFormPsgFlowByLineId" resultType="java.util.HashMap"
+			parameterType="java.util.Map">
+		SELECT *
+		FROM PJMK_PLATFORM T,
+		(SELECT T.PLATFORM_ID,T.STATION_NAME,
+		<if test="dataType=='0' and aloneHour != null and aloneHour !=''">
+	        TO_CHAR(T.OCCUR_TIME, 'HH24') HH,
+		</if>
+		<if test="dataType =='1'">
+			TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') DD,
+		</if>
+		<if test="dataType == '2'">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') IW,
+		</if>
+		<if test="dataType == '3'">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') MM,
+		</if>
+		NVL(SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT),0) TOTAL_PERSON_COUNT,
+		NVL(SUM(T.ONBUS_PERSON_COUNT),0) ONBUS_PERSON_COUNT,
+		NVL(SUM(T.OFFBUS_PERSON_COUNT),0) OFFBUS_PERSON_COUNT
+		FROM PJMK_STATION_PSGFLOW T
+		WHERE T.LINE_ID = #{lineId}
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		<choose>
+			<when test="dataType == 0">
+				<if test="aloneDay != null and (aloneHour == null or aloneHour =='')">
+					AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID
+				</if>
+				<if test="aloneHour != null and aloneHour !=''">
+					AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+					AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID,TO_CHAR(T.OCCUR_TIME, 'HH24')
+				</if>
+			</when>
+			<when test="dataType == 1">
+					<if test="aloneDay != null and aloneDay != ''">
+						AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}	
+					</if>
+					<if test="(aloneDay == null or aloneDay == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID
+			</when>
+			<when test="dataType == 2">
+					<if test="aloneWeek != null and aloneWeek !=''">
+						and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+					</if>
+					<if test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID
+			</when>
+			<when test="dataType == 3">
+					<if test="aloneMonth != null and aloneMonth !=''">
+						AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}	
+					</if>
+					<if test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID
+			</when>
+			<otherwise>
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+				GROUP BY
+				T.LINE_NAME,T.LINE_ID,T.STATION_NAME,T.PLATFORM_ID
+			</otherwise>
+		</choose>
+		) T1
+		WHERE T.ID(+) = T1.PLATFORM_ID
+		<!-- WHERE T.ID = T1.STATION_ID(+)
+		AND T.LINEID = #{lineId} -->
+	
+	</select>
+	
+	
+	<select id="getAllPlatFormData" resultMap="platFormPsgResultMap"
+		parameterType="java.util.Map">
+	select t.platform_id,t.platform_name,trunc(t1.longitude,8)longitude,trunc(t1.latitude,8)latitude,NVL(SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT),0) TOTAL_PERSON_COUNT,
+    NVL(SUM(T.ONBUS_PERSON_COUNT),0) ONBUS_PERSON_COUNT,
+    NVL(SUM(T.OFFBUS_PERSON_COUNT),0) OFFBUS_PERSON_COUNT from PJMK_STATION_PSGFLOW t,pjmk_platform t1
+    where t.platform_id = t1.id(+)
+    <if test="lineId != null and lineId !=''">
+		AND T.line_id = #{lineId}
+	</if>
+	<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+	<choose>
+		<when test="dataType == 0">
+			<if test="aloneDay != null and (aloneHour == null or aloneHour =='')">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if test="aloneHour != null and aloneHour !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+				AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+			</if>
+		</when>
+		<when test="dataType == 1">
+			<if test="aloneDay != null and aloneDay != ''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if
+				test="(aloneDay == null or aloneDay == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<when test="dataType == 2">
+			<if test="aloneWeek != null and aloneWeek !=''">
+				and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+			</if>
+			<if
+				test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<when test="dataType == 3">
+			<if test="aloneMonth != null and aloneMonth !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}
+			</if>
+			<if
+				test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<otherwise>
+			AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+			HH24:MI:SS')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+			HH24:MI:SS')+1
+		</otherwise>
+	</choose>
+	group by t.platform_id,t.platform_name,t1.longitude,t1.latitude
+    order by t.platform_id
+	</select>
+	
+	
+	<select id="getLinePsgByPlatFormId" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+	select t.line_name,t.line_id,t.platform_id,t.platform_name,NVL(SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT),0) TOTAL_PERSON_COUNT,
+    NVL(SUM(T.ONBUS_PERSON_COUNT),0) ONBUS_PERSON_COUNT,
+    NVL(SUM(T.OFFBUS_PERSON_COUNT),0) OFFBUS_PERSON_COUNT from PJMK_STATION_PSGFLOW t
+    where t.platform_id=#{platform_id}
+	<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+	<choose>
+		<when test="dataType == 0">
+			<if test="aloneDay != null and (aloneHour == null or aloneHour =='')">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if test="aloneHour != null and aloneHour !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+				AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+			</if>
+		</when>
+		<when test="dataType == 1">
+			<if test="aloneDay != null and aloneDay != ''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+			</if>
+			<if
+				test="(aloneDay == null or aloneDay == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<when test="dataType == 2">
+			<if test="aloneWeek != null and aloneWeek !=''">
+				and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+			</if>
+			<if
+				test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<when test="dataType == 3">
+			<if test="aloneMonth != null and aloneMonth !=''">
+				AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}
+			</if>
+			<if
+				test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+				AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+				HH24:MI:SS')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+				HH24:MI:SS')+1
+			</if>
+		</when>
+		<otherwise>
+			AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD
+			HH24:MI:SS')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endTime}, 'YYYY-MM-DD
+			HH24:MI:SS')+1
+		</otherwise>
+	</choose>
+	group by t.line_name,t.line_id,t.platform_id,t.platform_name
+	</select>
+
+	<select id="queryPsgFlowForMonths2OD" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.LINE_NAME,
+		T.LINE_ID,
+		T.STATION_ID,
+		T.STATION_NAME,
+		T.TAGET_STATION_NAME,
+		T.MM,
+		SUM(T.onbus_person_count) ONBUS_PERSON_COUNT,
+		SUM(T.onbus_person_count) TOTAL_PERSON_COUNT
+		FROM V_OD_PSGFLOW T
+		WHERE
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		AND T.LINE_ID = #{lineId}
+		<if test="stationId != null and stationId!='' " >
+		and t.STATION_ID = #{stationId}
+		</if>
+		<if test="targetStationId != null and targetStationId!='' " >
+		and t.target_station_id = #{targetStationId}
+		</if>
+		<if test="iswork != null and iswork != '' and iswork!='-1' " >  and t.HOLIDAY_FLAG  = #{iswork}  </if>  <if  test="iswork=='-1' " > and to_char(t.occur_time, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.LINE_NAME, T.LINE_ID, T.STATION_ID,
+		T.STATION_NAME,T.TAGET_STATION_NAME, T.MM
+		ORDER BY T.LINE_NAME,T.STATION_NAME, T.MM
+
+	</select>
+
+
+	<select id="queryplatform" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+	select t.name,t.orderno,trunc(t2.longitude,8)longitude,trunc(t2.latitude,8)latitude from pjmk_station
+	t,pjmk_platform t2 where t.lineid =
+	#{lineId} and t.platform_id=t2.id(+)
+	and t.direction=0
+	group by t.name,t.orderno,t2.longitude,t2.latitude
+	order by t.orderno
+	</select>
+	
+
+	<select id="queryAllplatform" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+	   select t.name,trunc(t.longitude,8) longitude,trunc(t.latitude,8)latitude from pjmk_platform t order by t.name
+	</select>
+	
+
+</mapper>

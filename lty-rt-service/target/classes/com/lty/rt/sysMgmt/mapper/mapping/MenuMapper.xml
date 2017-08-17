@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lty.rt.sysMgmt.mapper.MenuMapper">
+
+	<resultMap type="com.lty.rt.sysMgmt.entity.Menu" id="menuResultMap">
+		<id column="menu_id" property="menuId"/>
+		<result column="menu_name" property="menuName"/>
+		<result column="menu_url" property="menuUrl"/>
+		<result column="parent_id" property="parentId"/>
+	</resultMap>
+	
+	<resultMap id="MenuTreeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+	    <result column="menu_id" property="id" />
+	    <result column="parent_id" property="pid" />
+	    <result column="menu_name" property="nodeName" />
+	    <result column="menu_url" property="arg" />
+  	</resultMap>
+	
+
+	<select id="listAllParentMenu" resultMap="menuResultMap">
+		select * from pjmk_menu where parent_id is null
+	</select>
+	<select id="listSubMenuByParentId" parameterType="int" resultMap="menuResultMap">
+		select * from pjmk_menu where parent_id=#{parentId}
+	</select>
+	<select id="getMenuById" parameterType="int" resultMap="menuResultMap">
+		select * from pjmk_menu where menu_id=#{menuId}
+	</select>
+	<select id="listAllSubMenu" resultMap="menuResultMap">
+		select * from pjmk_menu where parent_id is not null
+	</select>
+	
+	<insert id="insertMenu" parameterType="com.lty.rt.sysMgmt.entity.Menu" >
+		insert into pjmk_menu (menu_id,menu_name,menu_url,parent_id) values (#{menuId},#{menuName},#{menuUrl},#{parentId})
+	</insert>
+	
+	<update id="updateMenu" parameterType="com.lty.rt.sysMgmt.entity.Menu">
+		update pjmk_menu set 
+		menu_name=#{menuName},
+		menu_url=#{menuUrl}
+		where menu_id=#{menuId}
+	</update>
+	
+	<delete id="deleteMenuById" parameterType="int">
+		delete from pjmk_menu where menu_id=#{menuId} or parent_id=#{menuId}
+	</delete>
+	
+	<select id="getMenuTree" resultMap="MenuTreeResultMap" parameterType="java.util.Map" >
+		select t.menu_id,t.menu_name,t.menu_url,t.parent_id from PJMK_menu t
+  	</select>
+  	
+  	<select id="getMaxMenuId" resultType="java.lang.Integer" parameterType="int" >
+		SELECT MAX(T.MENU_ID )+1 MAXID  FROM PJMK_MENU T WHERE T.PARENT_ID = #{parentId}
+  	</select>
+	
+</mapper>

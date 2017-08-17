@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.StationPsgflowMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.passengerFlows.bean.StationPsgflow" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="DELETED" property="deleted" jdbcType="VARCHAR" />
+    <result column="STATION_ID" property="stationId" jdbcType="VARCHAR" />
+    <result column="PLATFORM_ID" property="platformId" jdbcType="VARCHAR" />
+    <result column="ONBOARD_ID" property="onboardId" jdbcType="VARCHAR" />
+    <result column="OCCUR_TIME" property="occurTime" jdbcType="TIMESTAMP" />
+    <result column="TOTAL_PERSON_COUNT" property="totalPersonCount" jdbcType="DECIMAL" />
+    <result column="ONBUS_PERSON_COUNT" property="onbusPersonCount" jdbcType="DECIMAL" />
+    <result column="OFFBUS_PERSON_COUNT" property="offbusPersonCount" jdbcType="DECIMAL" />
+    <result column="HOLIDAY_FLAG" property="holidayFlag" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    ID, CREATE_TIME, DELETED, STATION_ID, PLATFORM_ID, ONBOARD_ID, OCCUR_TIME, TOTAL_PERSON_COUNT, 
+    ONBUS_PERSON_COUNT, OFFBUS_PERSON_COUNT, HOLIDAY_FLAG
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STATION_PSGFLOW
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <!--新改造查询站间客流方法begin -->
+   <select id="queryStationODPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT
+			 <include refid="ODPsgFlow_Column" />
+			  FROM v_od_psgflow T
+			  <where>
+			   <include refid="ODPsgFlow_condition" />
+			  </where>
+			 <include refid="ODPsgFlow_groupby" />
+			  <include refid="ODPsgFlow_orderby" />
+	</select>
+	
+	<sql id="ODPsgFlow_Column" >
+ 		 T.SOURCE_PLATFORM_NAME,
+		 T.TAGET_PLATFORM_NAME,
+		 <if test="queryType == 'days'" >
+		 T.DD as showDate,
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW as showDate,
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM as showDate,
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH as showDate,
+		 </if>
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT
+	</sql>
+	
+	<sql id="ODPsgFlow_condition">
+		<if test="queryType == 'hours'" >
+		 	<if test="startDate != null and startDate != ''">
+			AND T.DD = #{startDate}
+			</if>
+		</if>
+		<if test="queryType != 'hours'" >
+			<if test="startDate != null and startDate != '' and endDate !=null and endDate !=''">
+				AND T.OCCUR_TIME &gt; TO_DATE(#{startDate}, 'yyyy-mm-dd')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			</if>
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		<if
+	test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if>
+	<if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd') in (select
+		to_char(t.fday, 'yyyy-MM-dd') from pjmk_jjr t where t.fiswork = -1)
+	</if>
+		AND T.SOURCE_PLATFORM_ID = #{sPlatformId}
+		AND T.TAGET_PLATFORM_ID = #{tPlatformId}
+		
+	</sql>
+	
+	<sql id="ODPsgFlow_groupby">
+		 GROUP BY T.SOURCE_PLATFORM_NAME, T.TAGET_PLATFORM_NAME, 
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<sql id="ODPsgFlow_orderby">
+		ORDER BY T.SOURCE_PLATFORM_NAME,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	  <!--新改造查询站间客流方法 end  -->
+	
+	
+	 <!--新改造查询站台客流集散量方法begin  -->
+	<select id="queryStationDefaultPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT
+			 <include refid="DefaultPsgFlow_Column" />
+			  FROM v_platform_psgflow T
+			  <where>
+			   <include refid="DefaultPsgFlow_condition" />
+			  </where>
+			 <include refid="DefaultPsgFlow_groupby" />
+			  <include refid="DefaultPsgFlow_orderby" />
+	</select>
+	
+	<sql id="DefaultPsgFlow_Column" >
+ 		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD as showDate,
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW as showDate,
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM as showDate,
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH as showDate,
+		 </if>
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT
+	</sql>
+	
+	<sql id="DefaultPsgFlow_condition">
+		<if test="queryType == 'hours'" >
+		 	<if test="startDate != null and startDate != ''">
+			AND T.DD = #{startDate}
+			</if>
+		</if>
+		<if test="queryType != 'hours'" >
+			<if test="startDate != null and startDate != '' and endDate !=null and endDate !=''">
+				AND T.OCCUR_TIME &gt; TO_DATE(#{startDate}, 'yyyy-mm-dd')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			</if>
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND T.PLATFORM_ID = #{sPlatformId}
+		AND T.direction = #{platformDirection}
+	</sql>
+	
+	<sql id="DefaultPsgFlow_groupby">
+		 GROUP BY  
+		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<sql id="DefaultPsgFlow_orderby">
+		ORDER BY  
+		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	
+	 <!--新改造查询站台客流集散量方法 end  -->
+	
+	
+	
+	
+  
+  
+  <select id="queryPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+  		 <if test="endDate != null" >
+	        <include refid="queryPsgFlow2" />
+	    </if>
+	    <if test="endDate == null" >
+		   SELECT T.P_NAME,
+		       T.PLATFORM_ID,
+		       T.DD,
+		       T.HH,
+		       SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		       SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		       SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		       SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		  FROM v_platform_psgflow T  WHERE T.DD = #{beginDate} 
+		  <if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		  and t.PLATFORM_ID  = #{queryPlatforms}
+		  and t.direction = #{platformDirection}
+		 
+		 GROUP BY T.P_NAME, T.PLATFORM_ID, T.DD,T.HH  ORDER BY T.P_NAME,T.HH
+		 </if>
+  </select>
+  
+  <select id="queryStationsPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT)  TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)  ONBUS_PERSON_COUNT
+		FROM v_od_psgflow T
+		WHERE T.SOURCE_PLATFORM_ID = #{queryYPlatform}
+		AND T.TAGET_PLATFORM_ID = #{queryTPlatform}
+		AND (T.DD = #{beginDate} OR
+		T.DD = #{endDate})
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.DD,
+		T.HH
+		ORDER BY T.SOURCE_PLATFORM_NAME, DD, HH
+  
+  </select>
+  
+  <select id="queryStationsPsgFlowForDays" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT)  TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)  ONBUS_PERSON_COUNT
+		FROM v_od_psgflow T
+		WHERE T.SOURCE_PLATFORM_ID = #{queryYPlatform}
+		AND T.TAGET_PLATFORM_ID = #{queryTPlatform}
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND
+		(	(T.OCCUR_TIME &gt;=  TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt;= TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			)
+		<if test="beginDate2 != null and beginDate2 != '' and endDate2 != null and endDate2 != ''">
+			or(
+			T.OCCUR_TIME &gt;= TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+			)
+		</if>
+		)
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+	    </if>
+		GROUP BY 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.DD
+		ORDER BY T.SOURCE_PLATFORM_NAME,T.DD 
+  
+  </select>
+  
+  <select id="queryStationsPsgFlowForWeeks" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT)  TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)  ONBUS_PERSON_COUNT
+		FROM v_od_psgflow T
+		WHERE T.SOURCE_PLATFORM_ID = #{queryYPlatform}
+		AND T.TAGET_PLATFORM_ID = #{queryTPlatform}
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND
+		((T.OCCUR_TIME &gt;= TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+		)
+		<if test="beginDate2 != null and beginDate2 != '' and endDate2 != null and endDate2 != ''">
+			or(
+			T.OCCUR_TIME &gt;= TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+			)
+		</if>
+		)
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		
+		GROUP BY 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.IW
+		ORDER BY T.SOURCE_PLATFORM_NAME,T.IW
+  </select>
+  
+  <select id="queryStationsPsgFlowForMonths" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT)  TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT)  ONBUS_PERSON_COUNT
+		FROM v_od_psgflow T
+		WHERE T.SOURCE_PLATFORM_ID = #{queryYPlatform}
+		AND T.TAGET_PLATFORM_ID = #{queryTPlatform}
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND
+		((T.OCCUR_TIME &gt;= TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+		)
+		<if test="beginDate2 != null and beginDate2 != '' and endDate2 != null and endDate2 != ''">
+			or(
+			T.OCCUR_TIME &gt;= TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+			)
+		</if>
+		)
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		GROUP BY 
+		T.SOURCE_PLATFORM_NAME,
+		T.TAGET_PLATFORM_NAME,
+		T.MM
+		ORDER BY T.SOURCE_PLATFORM_NAME,T.MM
+  </select>
+  
+  
+   <sql id="queryPsgFlow2" >
+  		SELECT T.P_NAME,
+		       T.PLATFORM_ID,
+		       T.DD,
+		       T.HH,
+		       SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)TOTAL_PERSON_COUNT,
+		       SUM(T.ONBUS_PERSON_COUNT)ONBUS_PERSON_COUNT,
+		       SUM(T.OFFBUS_PERSON_COUNT)OFFBUS_PERSON_COUNT,
+		       SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		  FROM v_platform_psgflow T  WHERE 
+		 	(T.DD =  #{beginDate} 
+		  	 OR T.DD =  #{endDate} ) 
+	  	  <if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		  and t.PLATFORM_ID  = #{queryPlatforms}
+		  and t.direction = #{platformDirection} 
+		 GROUP BY T.P_NAME, T.PLATFORM_ID, T.DD,T.HH  ORDER BY T.P_NAME,T.DD,T.HH
+   </sql>
+  
+  
+  <select id="queryPsgFlowForDays" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+  		<if test="endDate2 != null and endDate2!='' " >
+	        <include refid="queryPsgFlowForDays2" />
+	    </if>
+	    <if test="endDate2 == null or endDate2 == '' " >
+			SELECT
+			 T.P_NAME,
+			 T.PLATFORM_ID,
+			 T.DD,
+			 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+			 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+			 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+			 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+			  FROM v_platform_psgflow T
+			 WHERE T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+			   AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			   <if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+					AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+			   </if>
+			   
+			   <if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			  and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection} 
+			
+			 GROUP BY T.P_NAME, T.PLATFORM_ID, T.DD
+			 ORDER BY T.P_NAME, T.DD
+		 </if>
+
+  </select>
+ <sql id="queryPsgFlowForDays2" >
+  	
+			SELECT
+			 T.P_NAME,
+			 T.PLATFORM_ID,
+			 T.DD,
+			 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+			 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+			 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+			 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+			  FROM v_platform_psgflow T
+			 WHERE 
+			 (
+			 	(	T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+			   		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			   	)
+			   	or(
+			   		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+			   		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+			   	)
+					 )
+			<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+					AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+			</if>
+			<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			    and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection} 
+			
+			 GROUP BY T.P_NAME, T.PLATFORM_ID, T.DD
+			 ORDER BY T.P_NAME, T.DD
+   </sql>
+  
+  <select id="queryPsgFlowForWeeks" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+  		<if test="endDate2 != null and endDate2!='' " >
+	        <include refid="queryPsgFlowForWeeks2" />
+	    </if>
+	    <if test="endDate2 == null or endDate2 == '' " >
+		SELECT
+		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 T.IW,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		  FROM v_platform_psgflow T
+		 WHERE T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		   AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+				 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+				 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+			</if>
+		   <if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		    and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection}  
+		
+		 GROUP BY T.P_NAME, T.PLATFORM_ID, T.IW
+		 ORDER BY T.P_NAME, T.IW
+		</if>
+
+  </select>
+  
+  <sql id="queryPsgFlowForWeeks2">
+		SELECT
+		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 T.IW,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		  FROM v_platform_psgflow T
+		 WHERE 
+		 	 (
+				 	(	T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+				   		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+				   	)
+				   	or(
+				   		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+				   		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+				   	)
+					 )
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			     and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection} 
+		
+		 GROUP BY T.P_NAME, T.PLATFORM_ID, T.IW
+		 ORDER BY T.P_NAME, T.IW
+
+  </sql>
+  
+  <select id="queryPsgFlowForMonths" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+  		<if test="endDate2 != null and endDate2!='' " >
+	        <include refid="queryPsgFlowForMonths2" />
+	    </if>
+	    <if test="endDate2 == null or endDate2 == '' " >
+				SELECT
+		 T.P_NAME,
+		 T.PLATFORM_ID,
+		 T.MM,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		  FROM v_platform_psgflow T
+		 WHERE T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+			   AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		     and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection} 
+		
+		 GROUP BY T.P_NAME, T.PLATFORM_ID, T.MM
+		 ORDER BY T.P_NAME, T.MM
+		 </if>
+
+  </select>
+  
+	  <sql id="queryPsgFlowForMonths2">
+		SELECT
+		T.P_NAME,
+		T.PLATFORM_ID,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM v_platform_psgflow T
+		WHERE
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate}, 'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'yyyy-mm-dd')+1
+		)
+		)
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		 and t.PLATFORM_ID  = #{queryPlatforms}
+		  	  and t.direction = #{platformDirection} 
+	
+		GROUP BY T.P_NAME, T.PLATFORM_ID, T.MM
+		ORDER BY T.P_NAME, T.MM
+
+  </sql>
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_STATION_PSGFLOW
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  
+  
+  <insert id="insert" parameterType="com.lty.rt.passengerFlows.bean.StationPsgflow" >
+    insert into PJMK_STATION_PSGFLOW (ID, CREATE_TIME, DELETED, 
+      STATION_ID, PLATFORM_ID, ONBOARD_ID, 
+      OCCUR_TIME, TOTAL_PERSON_COUNT, ONBUS_PERSON_COUNT, 
+      OFFBUS_PERSON_COUNT, HOLIDAY_FLAG)
+    values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=VARCHAR}, 
+      #{stationId,jdbcType=VARCHAR}, #{platformId,jdbcType=VARCHAR}, #{onboardId,jdbcType=VARCHAR}, 
+      #{occurTime,jdbcType=TIMESTAMP}, #{totalPersonCount,jdbcType=DECIMAL}, #{onbusPersonCount,jdbcType=DECIMAL}, 
+      #{offbusPersonCount,jdbcType=DECIMAL}, #{holidayFlag,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.passengerFlows.bean.StationPsgflow" >
+    insert into PJMK_STATION_PSGFLOW
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="deleted != null" >
+        DELETED,
+      </if>
+      <if test="stationId != null" >
+        STATION_ID,
+      </if>
+      <if test="platformId != null" >
+        PLATFORM_ID,
+      </if>
+      <if test="onboardId != null" >
+        ONBOARD_ID,
+      </if>
+      <if test="occurTime != null" >
+        OCCUR_TIME,
+      </if>
+      <if test="totalPersonCount != null" >
+        TOTAL_PERSON_COUNT,
+      </if>
+      <if test="onbusPersonCount != null" >
+        ONBUS_PERSON_COUNT,
+      </if>
+      <if test="offbusPersonCount != null" >
+        OFFBUS_PERSON_COUNT,
+      </if>
+      <if test="holidayFlag != null" >
+        HOLIDAY_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null" >
+        #{deleted,jdbcType=VARCHAR},
+      </if>
+      <if test="stationId != null" >
+        #{stationId,jdbcType=VARCHAR},
+      </if>
+      <if test="platformId != null" >
+        #{platformId,jdbcType=VARCHAR},
+      </if>
+      <if test="onboardId != null" >
+        #{onboardId,jdbcType=VARCHAR},
+      </if>
+      <if test="occurTime != null" >
+        #{occurTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalPersonCount != null" >
+        #{totalPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="onbusPersonCount != null" >
+        #{onbusPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="offbusPersonCount != null" >
+        #{offbusPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="holidayFlag != null" >
+        #{holidayFlag,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.passengerFlows.bean.StationPsgflow" >
+    update PJMK_STATION_PSGFLOW
+    <set >
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null" >
+        DELETED = #{deleted,jdbcType=VARCHAR},
+      </if>
+      <if test="stationId != null" >
+        STATION_ID = #{stationId,jdbcType=VARCHAR},
+      </if>
+      <if test="platformId != null" >
+        PLATFORM_ID = #{platformId,jdbcType=VARCHAR},
+      </if>
+      <if test="onboardId != null" >
+        ONBOARD_ID = #{onboardId,jdbcType=VARCHAR},
+      </if>
+      <if test="occurTime != null" >
+        OCCUR_TIME = #{occurTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalPersonCount != null" >
+        TOTAL_PERSON_COUNT = #{totalPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="onbusPersonCount != null" >
+        ONBUS_PERSON_COUNT = #{onbusPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="offbusPersonCount != null" >
+        OFFBUS_PERSON_COUNT = #{offbusPersonCount,jdbcType=DECIMAL},
+      </if>
+      <if test="holidayFlag != null" >
+        HOLIDAY_FLAG = #{holidayFlag,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.passengerFlows.bean.StationPsgflow" >
+    update PJMK_STATION_PSGFLOW
+    set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      DELETED = #{deleted,jdbcType=VARCHAR},
+      STATION_ID = #{stationId,jdbcType=VARCHAR},
+      PLATFORM_ID = #{platformId,jdbcType=VARCHAR},
+      ONBOARD_ID = #{onboardId,jdbcType=VARCHAR},
+      OCCUR_TIME = #{occurTime,jdbcType=TIMESTAMP},
+      TOTAL_PERSON_COUNT = #{totalPersonCount,jdbcType=DECIMAL},
+      ONBUS_PERSON_COUNT = #{onbusPersonCount,jdbcType=DECIMAL},
+      OFFBUS_PERSON_COUNT = #{offbusPersonCount,jdbcType=DECIMAL},
+      HOLIDAY_FLAG = #{holidayFlag,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <sql id="PaginationPrefix" >
+    <if test="page != null" >
+      select * from ( select row_.*, rownum rownum_ from ( 
+    </if>
+  </sql>
+  <sql id="PaginationSuffix" >
+    <if test="page != null" >
+      <![CDATA[ ) row_ ) where rownum_ > #{page.begin} and rownum_ <= #{page.end} ]]>
+    </if>
+  </sql>
+</mapper>

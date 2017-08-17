@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.PVCostTypeMapper" >
+  
+  <!-- Auxiliary line scheme result map -->
+  <resultMap id="PVCostTypeResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.PVCostType" >
+    <result column="pvcosttype_id" property="pvcosttype_id" />
+    <result column="pvcosttype_name" property="pvcosttype_name" />
+    <result column="user_id" property="user_id" />
+    <result column="user_name" property="user_name" />
+    <result column="create_time" property="create_time"   jdbcType="DATE" />
+    <result column="note" property="note" />
+  </resultMap>
+  
+  <!-- 查询子表 -->
+  <select id="queryPVCostTypes" resultType="java.util.HashMap" >
+    SELECT rownum number1,pvcosttype_id,pvcosttype_name,user_id,to_char(create_time,'yyyy-mm-dd hh24:mi:ss') create_time,note,user_name FROM PJMK_PVCOSTTYPE
+  </select>
+  
+  <!-- 插入数据 -->
+  <insert id="insertPVCostType" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCostType">
+  	INSERT INTO PJMK_PVCOSTTYPE(pvcosttype_id, pvcosttype_name, user_id, create_time, note,user_name) VALUES(#{pvcosttype_id},#{ pvcosttype_name},#{ user_id},#{ create_time},#{ note},#{user_name})
+  </insert>
+  
+   <!-- 更新数据 -->
+  <update id="updatePVCostType" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCostType">
+  	UPDATE PJMK_PVCOSTTYPE SET
+  	 pvcosttype_name = #{pvcosttype_name},
+  	 user_id = #{user_id},
+  	 create_time = #{create_time},
+  	 note = #{note},
+  	 user_name = #{user_name}
+  	WHERE pvcosttype_id = #{pvcosttype_id}
+  </update>
+  
+  <delete id="bathDelPVCostType" parameterType="list">
+        <![CDATA[
+            DELETE FROM PJMK_PVCOSTTYPE WHERE pvcosttype_id in
+        ]]>
+        <foreach collection="list" item="pvcosttype_ids"  open="(" separator="," close=")">  
+            #{pvcosttype_ids} 
+         </foreach>
+   </delete>
+   
+   <delete id="delPVCostType" parameterType="java.lang.String">
+            DELETE FROM PJMK_PVCOSTTYPE WHERE pvcosttype_id = #{pvcosttype_id}
+   </delete>
+   
+   
+   <!-- 条件删除数据 -->
+  <delete id="delPVCostTypeByCondition" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCostType">
+  	DELETE FROM PJMK_PVCOSTTYPE WHERE PVCOSTTYPE_NAME = #{pvcosttype_name}
+  </delete>
+</mapper>

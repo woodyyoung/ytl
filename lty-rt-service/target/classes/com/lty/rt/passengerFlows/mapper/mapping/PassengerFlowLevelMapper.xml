@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.PassengerFlowLevelMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.passengerFlows.bean.PassengerFlowLevel" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="DELETED" property="deleted" jdbcType="VARCHAR" />
+    <result column="LEVELNAME" property="levelname" jdbcType="VARCHAR" />
+    <result column="CIRCLECOLOR" property="circlecolor" jdbcType="VARCHAR" />
+    <result column="CIRCLESIZE" property="circlesize" jdbcType="DECIMAL" />
+    <result column="MAXDATA" property="maxdata" jdbcType="DECIMAL" />
+    <result column="MINDATA" property="mindata" jdbcType="DECIMAL" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="ISDISABLE" property="isdisable" jdbcType="DECIMAL" />
+    <result column="DATATYPE" property="dataType" jdbcType="VARCHAR" />
+    <result column="PLANID" property="planid" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="PlanAndLevelMap" type="com.lty.rt.passengerFlows.bean.PsgLevelPlan" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="PLANNAME" property="planName" jdbcType="VARCHAR" />
+    <result column="DATATYPE" property="dataType" jdbcType="VARCHAR" />
+    <result column="DATATYPEID" property="dataTypeId" jdbcType="VARCHAR" />
+    <result column="MENUID" property="menuId" jdbcType="VARCHAR" />
+    <collection property="levelList" column="DATATYPEID" javaType="ArrayList" 
+                ofType="PassengerFlowLevel" select="getpsgLevelByDataTypeId"/>
+  </resultMap>
+  
+  <resultMap id="DistrictTreeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+    <result column="CODEID" property="id" />
+    <result column="PARENTCODEID" property="pid" />
+    <result column="CODENAME" property="nodeName" />
+    <result column="id" property="arg" />
+    <result column="arg" property="arg1" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CREATETIME, DELETED, LEVELNAME, CIRCLECOLOR, CIRCLESIZE, MAXDATA, MINDATA, REMARK, 
+    ISDISABLE,DATATYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_PGFEVEL
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+   <select id="getpsgPlanAndLevelByMap" resultMap="PlanAndLevelMap"
+	parameterType="java.lang.String">
+	select P.ID,P.PLANNAME,P.DATATYPE,P.DATATYPEID,P.MENUID
+	from PJMK_PGFLEVEL_PLAN p
+	where p.datatypeid like #{dataType}||'%'
+	order by p.planName
+   </select>
+   
+   
+   
+   <select id="getpsgLevelByDataTypeId" resultMap="BaseResultMap"
+	parameterType="java.util.Map">
+	select
+	<include refid="Base_Column_List" />
+	from PJMK_PGFEVEL p
+	where p.datatype=#{DATATYPEID}
+	order by DATATYPE,mindata,maxdata 
+   </select>
+
+   <select id="findListByMap" resultType="java.util.HashMap"
+	parameterType="java.util.Map">
+	select
+	<include refid="Base_Column_List" />
+	from PJMK_PGFEVEL p
+	<where>
+		<if test="dataType != null  and dataType !=''">
+			P.DATATYPE like #{dataType}||'%'
+		</if>
+		<if test="isDisable != null  and isDisable !=''">
+			AND P.ISDISABLE = 1
+		</if>
+		<if test="levelName != null  and levelName !=''">
+			and p.levelName like #{levelName}
+		</if>
+	</where>
+	order by DATATYPE,mindata,maxdata 
+</select>
+
+   <select id="findTreeListByMap" resultMap="DistrictTreeResultMap"
+	parameterType="java.util.Map">
+	SELECT T.PLANNAME AS NODENAME, T.MENUID AS PID, T.DATATYPEID AS
+	CODEID,T.DATATYPEID AS ID,(select nvl(max(l.isdisable),0) from
+	pjmk_pgfevel l where l.datatype = t.datatypeid )as arg
+	FROM PJMK_PGFLEVEL_PLAN T
+	UNION ALL
+	SELECT M.MENUNAME AS NODENAME, '-1' AS PID, M.ID AS CODEID,M.DATATYPE AS ID,0 as arg
+	FROM PJMK_PGFLEVEL_MENU M
+</select>
+
+  <select id="getMaxdataTypeId" resultType = "String" parameterType="String" >
+    select max(DATATYPEID) from PJMK_PGFLEVEL_PLAN where menuId = #{menuId,jdbcType=VARCHAR}
+  </select>
+  	
+  <select id="getPlanByName" resultType = "String" parameterType="java.util.Map" >
+    select planName from PJMK_PGFLEVEL_PLAN where planName = #{planName,jdbcType=VARCHAR} and menuId = #{menuId,jdbcType=VARCHAR}
+  </select>
+  	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_PGFEVEL
+    where ID in <!-- (#{value,jdbcType=VARCHAR}) -->
+    <foreach item="empnoItem" collection="array" open="(" separator="," close=")">	
+            #{empnoItem}
+     </foreach>
+  </delete>
+  
+   <update id="closePlan" parameterType="java.util.Map" >
+   	begin 
+    update pjmk_pgfevel set ISDISABLE = 0 where DATATYPE like substr(#{dataType},0,3) ||'%';
+    update pjmk_pgfevel set ISDISABLE = 1 where DATATYPE = #{dataType};
+    end;
+  </update >
+  
+  
+  <delete id="deleteByDataTypeId" parameterType="java.lang.String" >
+    delete from PJMK_PGFEVEL where DATATYPE = #{dataTypeId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deletePlan" parameterType="java.lang.String" >
+    delete from pjmk_pgflevel_plan where datatypeid=#{dataTypeId,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.lty.rt.passengerFlows.bean.PassengerFlowLevel" >
+    insert into PJMK_PGFEVEL (ID, CREATETIME, DELETED, 
+      LEVELNAME, CIRCLECOLOR, CIRCLESIZE, 
+      MAXDATA, MINDATA, REMARK, 
+      ISDISABLE,DATATYPE)
+    values (#{id,jdbcType=VARCHAR}, #{createtime,jdbcType=DATE}, #{deleted,jdbcType=VARCHAR}, 
+      #{levelname,jdbcType=VARCHAR}, #{circlecolor,jdbcType=VARCHAR}, #{circlesize,jdbcType=DECIMAL}, 
+      #{maxdata,jdbcType=DECIMAL}, #{mindata,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, 
+      #{isdisable,jdbcType=DECIMAL}, #{dataType,jdbcType=DECIMAL})
+  </insert>
+  
+   <insert id="batchInsert" parameterType="AreaMap">
+    insert into PJMK_PGFEVEL
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">    
+            select #{item.id},sysdate,#{item.deleted},#{item.levelname},#{item.circlecolor},#{item.circlesize},#{item.maxdata},#{item.mindata},#{item.remark},#{item.isdisable},#{item.planid},#{item.datatype} from dual    
+    </foreach>
+  </insert>
+  
+  <insert id="insertPsgLevelPlan" parameterType="com.lty.rt.passengerFlows.bean.PsgLevelPlan" >
+    insert into PJMK_PGFLEVEL_PLAN (ID, PLANNAME, REMARK, DATATYPE,
+      DATATYPEID, MENUID)
+    values (#{id,jdbcType=VARCHAR},#{planName,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{dataType,jdbcType=VARCHAR}, #{dataTypeId,jdbcType=VARCHAR}, #{menuId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.passengerFlows.bean.PassengerFlowLevel" >
+    insert into PJMK_PGFEVEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="createtime != null" >
+        CREATETIME,
+      </if>
+      <if test="deleted != null" >
+        DELETED,
+      </if>
+      <if test="levelname != null" >
+        LEVELNAME,
+      </if>
+      <if test="circlecolor != null" >
+        CIRCLECOLOR,
+      </if>
+      <if test="circlesize != null" >
+        CIRCLESIZE,
+      </if>
+      <if test="maxdata != null" >
+        MAXDATA,
+      </if>
+      <if test="mindata != null" >
+        MINDATA,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="isdisable != null" >
+        ISDISABLE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="deleted != null" >
+        #{deleted,jdbcType=VARCHAR},
+      </if>
+      <if test="levelname != null" >
+        #{levelname,jdbcType=VARCHAR},
+      </if>
+      <if test="circlecolor != null" >
+        #{circlecolor,jdbcType=VARCHAR},
+      </if>
+      <if test="circlesize != null" >
+        #{circlesize,jdbcType=DECIMAL},
+      </if>
+      <if test="maxdata != null" >
+        #{maxdata,jdbcType=DECIMAL},
+      </if>
+      <if test="mindata != null" >
+        #{mindata,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isdisable != null" >
+        #{isdisable,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.passengerFlows.bean.PassengerFlowLevel" >
+    update PJMK_PGFEVEL
+    <set >
+      <if test="createtime != null" >
+        CREATETIME = #{createtime,jdbcType=DATE},
+      </if>
+      <if test="deleted != null" >
+        DELETED = #{deleted,jdbcType=VARCHAR},
+      </if>
+      <if test="levelname != null" >
+        LEVELNAME = #{levelname,jdbcType=VARCHAR},
+      </if>
+      <if test="circlecolor != null" >
+        CIRCLECOLOR = #{circlecolor,jdbcType=VARCHAR},
+      </if>
+      <if test="circlesize != null" >
+        CIRCLESIZE = #{circlesize,jdbcType=DECIMAL},
+      </if>
+      <if test="maxdata != null" >
+        MAXDATA = #{maxdata,jdbcType=DECIMAL},
+      </if>
+      <if test="mindata != null" >
+        MINDATA = #{mindata,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isdisable != null" >
+        ISDISABLE = #{isdisable,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.passengerFlows.bean.PassengerFlowLevel" >
+    update PJMK_PGFEVEL
+    set CREATETIME = #{createtime,jdbcType=DATE},
+      DELETED = #{deleted,jdbcType=VARCHAR},
+      LEVELNAME = #{levelname,jdbcType=VARCHAR},
+      CIRCLECOLOR = #{circlecolor,jdbcType=VARCHAR},
+      CIRCLESIZE = #{circlesize,jdbcType=DECIMAL},
+      MAXDATA = #{maxdata,jdbcType=DECIMAL},
+      MINDATA = #{mindata,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      ISDISABLE = #{isdisable,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

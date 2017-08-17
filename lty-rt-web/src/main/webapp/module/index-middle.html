@@ -1,0 +1,135 @@
+<!-- top tiles -->
+<div class="x_panel">
+	<div class="col-md-4 col-sm-4 col-xs-4">
+		<h5>今日客流总量：<span id="todayTotalPas"></span></h5>
+	</div>
+	<div class="col-md-8 col-sm-8 col-xs-8">
+		<h5>最拥挤线路：<span id="todayMaxCrowdedLine"></span>
+		;高峰满载率:<span id="todayMaxCrowdedUtilised"></span>%; 平均满载率：<span id="todayAVGCrowdedUtilised"></span>%
+		</h5>
+	</div>
+	<div class="col-md-4 col-sm-4 col-xs-4">
+		<h5>客流最大站台：<lable class="todayMaxPlatForm"></lable></h5>
+	</div>
+	<div class="col-md-8 col-sm-8 col-xs-8">
+		<h5>客流最大小区：<lable  class="todayMaxCommunity"></lable></h5>
+	</div>
+</div>
+
+<!-- /top tiles -->
+
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="dashboard_graph" >
+
+			<div class="row x_title">
+				<div class="col-md-12">
+					<h3>
+						 <small>全网24小时客流波动</small>
+					</h3>
+				</div>
+				
+			</div>
+
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div style="width: 100%;">
+					<div id="canvas_dahs" class="demo-placeholder"
+						style="width: 100%; height: 270px;"></div>
+				</div>
+			</div>
+			
+			<!-- <div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="center-block" style="text-align: center;">
+						<label class="radio-inline"> <input type="checkbox"
+							name="inlineRadioOptions" id="inlineRadio1" value="option1"
+							checked="checked">对比前一日
+						</label> <label class="radio-inline"> <input type="checkbox"
+							name="inlineRadioOptions" id="inlineRadio2" value="option2">对比上周同期
+						</label> 
+				   </div>
+				
+			</div>
+			 -->
+			<div class="clearfix"></div>
+		</div>
+	</div>
+
+</div>
+<br />
+
+<div class="row">
+
+
+	<div class="col-md-6 col-sm-6 col-xs-6" id="colmd6">
+		<div class="x_panel tile fixed_height_320 overflow_hidden">
+			<div class="x_title">
+				<h2>站台客流TOP10</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content" style="width: 100%; height: 250px;" id="ztkltop10">
+			
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="col-md-6 col-sm-6 col-xs-6">
+		<div class="x_panel tile fixed_height_320 overflow_hidden">
+			<div class="x_title">
+				<h2>区域客流TOP10</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content" style="width: 100%; height: 250px;" id="areakltop10">
+				
+			</div>
+		</div>
+	</div>
+
+
+
+</div>
+
+
+<div class="row">
+
+
+	<div class="col-md-6 col-sm-6 col-xs-6">
+		<div class="x_panel tile fixed_height_320 overflow_hidden">
+			<div class="x_title">
+				<h2>线路满载率TOP10(百分比)</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content" id="mzltop10"  style="width: 100%; height: 250px;"  >
+			
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="col-md-6 col-sm-6 col-xs-6">
+		<div class="x_panel tile fixed_height_320 overflow_hidden">
+			<!-- <div class="x_title">
+				<h2>地域分布</h2>
+				<div class="clearfix"></div>
+			</div> -->
+			<div class="x_content" id="qyfbmap" style="width: 100%; height: 290px;">
+				
+			</div>
+		</div>
+	</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+

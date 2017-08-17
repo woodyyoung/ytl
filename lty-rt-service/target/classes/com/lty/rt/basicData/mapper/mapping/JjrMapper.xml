@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.JjrMapper" >
+  <sql id="Base_Column_List">
+    fday fday, fmonth fmonth, fyear fyear, fisWork fiswork, 
+    fcreateTime fcreateTime, fusername fusername
+  </sql>
+  
+  <select id="selectByMonth" resultType="map" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_jjr
+    where fmonth = #{month,jdbcType=VARCHAR}
+    order by fiswork
+  </select>
+  
+  <update id="updateDayState" >
+  	update PJMK_jjr set fiswork=#{state, jdbcType=INTEGER}, fusername=#{username, jdbcType=VARCHAR}  
+  	where fday in 
+  	<foreach collection="dates" item="date" open="(" close=")" separator=",">
+  		#{date, jdbcType=DATE}
+  	</foreach>
+  </update>
+  
+  <select id="selectAll" resultType="map">
+  	select 
+ 	to_char(fday, 'yyyy-mm-dd') fday, to_char(fday, 'dd')||'号'  fday2, fmonth fmonth, fyear fyear, '节假日' fiswork, 
+    to_char(fcreateTime, 'yyyy-mm-dd') fcreateTime, fusername fusername
+  	from pjmk_jjr
+  	<where>
+  		fiswork=-1 
+  		<if test="begin!=null">
+  			and fday  <![CDATA[ >=  ]]> #{begin, jdbcType=DATE}
+  		</if>
+  		<if test="end!=null">
+  			and fday <![CDATA[ <  ]]> #{end, jdbcType=DATE}
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="flushStatus" statementType="CALLABLE">
+  	 {call proc_flush_workStatus()}
+  </select>
+  
+</mapper>

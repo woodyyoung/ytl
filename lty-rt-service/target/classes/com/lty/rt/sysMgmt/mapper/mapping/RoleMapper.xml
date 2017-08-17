@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lty.rt.sysMgmt.mapper.RoleMapper">
+
+	<resultMap type="com.lty.rt.sysMgmt.entity.Role" id="roleResultMap">
+		<id column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+		<result column="rights" property="rights"/>
+		<collection property="menus" ofType="com.lty.rt.sysMgmt.entity.Menu">
+            <!-- id:唯一标识
+                 property：要将订单明细的唯一标识映射到com.mybatis.entity.OrderDetail的那个属性
+             -->
+			<id column="menu_id" property="menuId"/>
+			<result column="menu_name" property="menuName"/>
+			<result column="menu_url" property="menuUrl"/>
+			<result column="parent_id" property="parentId"/>
+        </collection>
+		
+	</resultMap>
+	
+	<select id="listAllRoles" resultMap="roleResultMap">
+		 <include refid="roleView" />
+		 order by role_id
+	</select>
+	
+	<sql id="roleView">
+	 select t.role_id,
+	         t.role_name,
+	         t.rights,
+	         rm.menu_id,
+	         rm.menu_name,
+	         rm.menu_url,
+	         rm.parent_id
+	    from pjmk_role t,
+	         (select rm.role_id, m.*
+	            from PJMK_MENU_ROLE rm, PJMK_menu m
+	           where rm.menu_id = m.menu_id) rm
+	   where t.role_id = rm.role_id(+)
+	 </sql>
+	
+	<select id="getRoleById" parameterType="int" resultMap="roleResultMap">
+		select * from ( <include refid="roleView" /> ) where role_id=#{roleId}
+	</select>
+	<select id="getCountByName" parameterType="com.lty.rt.sysMgmt.entity.Role" resultType="int">
+		select count(role_id) from ( <include refid="roleView" /> ) where role_name=#{roleName}
+		<if test="roleId!=null or roleId>0">
+		 and role_id!=#{roleId}
+		</if>
+	</select>
+	<select id="getMaxRoleId" resultType="int" parameterType="int">
+		SELECT NVL((MAX(T.ROLE_ID )+1),1) MAXID  FROM PJMK_ROLE T
+	</select>
+	
+	<insert id="insertRole" parameterType="com.lty.rt.sysMgmt.entity.Role">
+		insert into pjmk_role (ROLE_ID,role_name,rights) values (#{roleId},#{roleName},#{rights})
+	</insert>
+	
+	<update id="updateRoleBaseInfo" parameterType="com.lty.rt.sysMgmt.entity.Role">
+		update pjmk_role set role_name=#{roleName} , rights = #{rights}  where role_id=#{roleId}
+	</update>
+	<update id="updateRoleRights" parameterType="com.lty.rt.sysMgmt.entity.Role">
+		update pjmk_role set rights=#{rights} where role_id=#{roleId}
+	</update>
+	<delete id="deleteRoleById" parameterType="int">
+		delete from pjmk_role where role_id=#{roleId}
+	</delete>
+	
+	<insert id="insertRoleMenuRefrence" parameterType="java.util.Map">
+		insert into pjmk_menu_role (role_id,menu_id) values (#{roleId},#{menuId})
+	</insert>
+	
+	<insert id="deleteRoleMenuRefrenceByRowId" parameterType="java.util.Map">
+		delete from  pjmk_menu_role where role_id = #{roleId} 
+	</insert>
+	
+	
+	
+</mapper>

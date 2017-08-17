@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.assessment.mapper.IndexMapper" >
+  <resultMap id="BaseResultMap" type="Index" >
+    <id column="PKID" property="pkid" jdbcType="VARCHAR" />
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="DESCRIPTIONS" property="descriptions" jdbcType="VARCHAR" />
+    <result column="PARENTID" property="parentid" jdbcType="VARCHAR" />
+    <result column="WEIGHT" property="weight" jdbcType="DECIMAL" />
+    <result column="SYNTHETIC_WEIGHT" property="syntheticWeight" jdbcType="DECIMAL" />
+    <result column="INDEX_TYPE" property="indexType" jdbcType="INTEGER" />
+    <result column="LEVEL_UNIT" property="levelUnit" jdbcType="VARCHAR" />
+    <result column="TARGET_COUNT_UNIT" property="targetCountUnit" jdbcType="VARCHAR" />
+    <result column="TOTAL_COUNT_UNIT" property="totalCountUnit" jdbcType="VARCHAR" />
+    <result column="IS_ABLE" property="isAble" jdbcType="DECIMAL" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DATE" />
+    <result column="TARGETLEVEL" property="targetlevel" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="IndexTreeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+    <result column="id" property="id" />
+    <result column="parentid" property="pid" />
+    <result column="name" property="nodeName" />
+    <result column="pkid" property="arg" />
+  </resultMap>
+  
+  <resultMap id="IndexResultMap" type="Index" >
+    <id column="PKID" property="pkid" jdbcType="VARCHAR" />
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="DESCRIPTIONS" property="descriptions" jdbcType="VARCHAR" />
+    <result column="PARENTID" property="parentid" jdbcType="VARCHAR" />
+    <result column="WEIGHT" property="weight" jdbcType="DECIMAL" />
+    <result column="SYNTHETIC_WEIGHT" property="syntheticWeight" jdbcType="DECIMAL" />
+    <result column="LEVEL_UNIT" property="levelUnit" jdbcType="VARCHAR" />
+    <result column="TARGET_COUNT_UNIT" property="targetCountUnit" jdbcType="VARCHAR" />
+    <result column="TOTAL_COUNT_UNIT" property="totalCountUnit" jdbcType="VARCHAR" />
+    <result column="IS_ABLE" property="isAble" jdbcType="DECIMAL" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DATE" />
+    <result column="TARGETLEVEL" property="targetlevel" jdbcType="VARCHAR" />
+    <collection property="indexLevelList" column="ID" javaType="ArrayList" 
+                ofType="IndexLevel" select="getIndexLevelByIndexId"/>
+  </resultMap>
+  
+  <resultMap id="IndexLevelResultMap" type="IndexLevel" >
+    <result column="INDEX_ID" property="indexId" jdbcType="VARCHAR" />
+    <result column="INDEX_LEVEL" property="indexLevel" jdbcType="VARCHAR" />
+    <result column="TOP_LIMIT" property="topLimit" jdbcType="DECIMAL" />
+    <result column="LOWER_LIMIT" property="lowerLimit" jdbcType="DECIMAL" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CREATETIME" property="createtime" jdbcType="DATE" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="DATE" />
+    <result column="PROPOSAL" property="proposal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapVo" type="com.lty.rt.assessment.vo.IndexTotalDataVo" >
+    <id column="id" property="indexId" />
+    <result column="name" property="name" />
+    <result column="weight" property="weight" />
+    <result column="targetlevel" property="targetLevel" />
+    <result column="count_date" property="countDate" />
+    <result column="actual_level" property="actualLevel"/>
+    <result column="description" property="description"/>
+    <result column="actual_score" property="actualScore"/>
+    <result column="level_unit" property="levelUnit"/>
+    
+    <collection property="targetIndexLevel" column="{indexId=id,level=targetlevel}"  ofType="com.lty.rt.assessment.bean.IndexLevel" select="getIndexLevelByLevel"/>
+    <collection property="actualIndexLevel" column="{indexId=id,level=actual_level}"  ofType="com.lty.rt.assessment.bean.IndexLevel" select="getIndexLevelByLevel"/>
+    
+  </resultMap>
+  
+  <resultMap id="TotalBaseResultMapVo" type="com.lty.rt.assessment.vo.IndexTotalDataVo" >
+    <id column="id" property="indexId" />
+    <result column="name" property="name" />
+    <result column="weight" property="weight" />
+    <result column="targetlevel" property="targetLevel" />
+    <result column="count_date" property="countDate" />
+    <result column="actual_level" property="actualLevel"/>
+    <result column="description" property="description"/>
+  </resultMap>
+  
+  
+  
+  
+   <select id="getIndexLevelByLevel" resultMap="IndexLevelResultMap" parameterType="java.util.Map" >
+    select INDEX_ID, INDEX_LEVEL, TOP_LIMIT, LOWER_LIMIT, DESCRIPTION, CREATETIME, UPDATETIME, PROPOSAL
+    from PJMK_INDEX_LEVEL
+    where INDEX_LEVEL = trunc(#{level,jdbcType=DECIMAL})
+    and INDEX_ID = #{indexId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <sql id="Base_Column_List" >
+    PKID, ID, NAME, DESCRIPTIONS, PARENTID, WEIGHT,SYNTHETIC_WEIGHT, INDEX_TYPE, LEVEL_UNIT, TARGET_COUNT_UNIT, TOTAL_COUNT_UNIT, TARGETLEVEL,
+    IS_ABLE, CREATETIME, UPDATETIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDEX
+    where PKID = #{pkid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_INDEX
+    where PKID = #{pkid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="Index" >
+    insert into PJMK_INDEX (PKID, ID, NAME, 
+      DESCRIPTIONS, PARENTID, WEIGHT, SYNTHETIC_WEIGHT,INDEX_TYPE,
+      LEVEL_UNIT, TARGET_COUNT_UNIT, TOTAL_COUNT_UNIT, 
+      IS_ABLE, CREATETIME, UPDATETIME,TARGETLEVEL
+      )
+    values (#{pkid,jdbcType=VARCHAR}, #{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{descriptions,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, #{weight,jdbcType=DECIMAL},#{syntheticWeight,jdbcType=DECIMAL},#{indexType,jdbcType=INTEGER},
+      #{levelUnit,jdbcType=VARCHAR}, #{targetCountUnit,jdbcType=VARCHAR}, #{totalCountUnit,jdbcType=VARCHAR}, 
+      #{isAble,jdbcType=DECIMAL}, sysdate, sysdate, #{targetlevel,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="Index" >
+    insert into PJMK_INDEX
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        PKID,
+      </if>
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="descriptions != null" >
+        DESCRIPTIONS,
+      </if>
+      <if test="parentid != null" >
+        PARENTID,
+      </if>
+      <if test="weight != null" >
+        WEIGHT,
+      </if>
+      <if test="syntheticWeight != null" >
+        SYNTHETIC_WEIGHT,
+      </if>
+      <if test="indexType != null" >
+        INDEX_TYPE,
+      </if>
+      <if test="levelUnit != null" >
+        LEVEL_UNIT,
+      </if>
+      <if test="targetCountUnit != null" >
+        TARGET_COUNT_UNIT,
+      </if>
+      <if test="totalCountUnit != null" >
+        TOTAL_COUNT_UNIT,
+      </if>
+      <if test="isAble != null" >
+        IS_ABLE,
+      </if>
+      <if test="createtime != null" >
+        CREATETIME,
+      </if>
+        UPDATETIME,
+      <if test="targetlevel != null" >
+        TARGETLEVEL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        #{pkid,jdbcType=VARCHAR},
+      </if>
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="descriptions != null" >
+        #{descriptions,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="syntheticWeight != null" >
+        #{syntheticWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="levelUnit != null" >
+        #{levelUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCountUnit != null" >
+        #{targetCountUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCountUnit != null" >
+        #{totalCountUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="isAble != null" >
+        #{isAble,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=DATE},
+      </if>
+      sysdate,
+      <if test="targetlevel != null" >
+        #{targetlevel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Index" >
+    update PJMK_INDEX
+    <set >
+      <if test="id != null" >
+        ID = #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="descriptions != null" >
+        DESCRIPTIONS = #{descriptions,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        PARENTID = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        WEIGHT = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="syntheticWeight != null" >
+        SYNTHETIC_WEIGHT = #{syntheticWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="indexType != null" >
+        INDEX_TYPE = #{indexType,jdbcType=INTEGER},
+      </if>
+      <if test="levelUnit != null" >
+        LEVEL_UNIT = #{levelUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCountUnit != null" >
+        TARGET_COUNT_UNIT = #{targetCountUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCountUnit != null" >
+        TOTAL_COUNT_UNIT = #{totalCountUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="isAble != null" >
+        IS_ABLE = #{isAble,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        CREATETIME = #{createtime,jdbcType=DATE},
+      </if>
+        UPDATETIME = sysdate,
+       <if test="targetlevel != null" >
+        TARGETLEVEL = #{targetlevel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PKID = #{pkid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Index" >
+    update PJMK_INDEX
+    set ID = #{id,jdbcType=VARCHAR},
+      NAME = #{name,jdbcType=VARCHAR},
+      DESCRIPTIONS = #{descriptions,jdbcType=VARCHAR},
+      PARENTID = #{parentid,jdbcType=VARCHAR},
+      WEIGHT = #{weight,jdbcType=DECIMAL},
+      SYNTHETIC_WEIGHT = #{syntheticWeight,jdbcType=DECIMAL},
+      INDEX_TYPE = #{indexType,jdbcType=INTEGER},
+      LEVEL_UNIT = #{levelUnit,jdbcType=VARCHAR},
+      TARGET_COUNT_UNIT = #{targetCountUnit,jdbcType=VARCHAR},
+      TOTAL_COUNT_UNIT = #{totalCountUnit,jdbcType=VARCHAR},
+      IS_ABLE = #{isAble,jdbcType=DECIMAL},
+      CREATETIME = #{createtime,jdbcType=DATE},
+      UPDATETIME = sysdate,
+      TARGETLEVEL = #{targetlevel,jdbcType=VARCHAR}
+    where PKID = #{pkid,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getLists" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDEX
+    where INDEX_TYPE = #{indexType}  order by id
+  </select>
+  
+  <select id="getListByMap" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDEX
+    where 1=1 
+    <if test="parentId != null" >
+        and parentId = #{parentId,jdbcType=VARCHAR}
+    </if>
+    <if test="indexType != null" >
+        and INDEX_TYPE = #{indexType}
+    </if>
+    order by id
+  </select>
+  
+  <select id="getIndexTree" resultMap="IndexTreeResultMap" parameterType="java.util.Map" >
+    select a.id, a.parentid, a.name, a.pkid from pjmk_index a where a.is_able = 0
+    <if test="indexType != null and indexType != ''" >
+        and INDEX_TYPE = #{indexType}
+    </if>
+    
+  </select>
+  
+  <select id="getMaxId" resultType = "String" parameterType="String" >
+    select max(id) from pjmk_index where parentid = #{parentId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="delByIds" parameterType="Map" >
+    delete from pjmk_index
+    where id in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <select id="getIndexByID" resultMap="IndexResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_INDEX
+    where id = #{ID}
+  </select>
+  
+  
+   <select id="countIndexSourceData" resultType="java.lang.Integer" parameterType="java.lang.String" >
+     select count(1) from pjmk_index_source_data t where t.index_id like #{indexId}||'%'
+   </select>
+  
+  <select id="getIndexLevelByIndexId" resultMap="IndexLevelResultMap" parameterType="java.lang.String" >
+    select INDEX_ID, INDEX_LEVEL, TOP_LIMIT, LOWER_LIMIT, DESCRIPTION, CREATETIME, UPDATETIME, PROPOSAL
+    from PJMK_INDEX_LEVEL
+    where INDEX_ID = #{ID} order by INDEX_LEVEL
+  </select>
+  
+  <select id="getTotalChartDataByDays" resultMap="TotalBaseResultMapVo" parameterType="Map" >
+    select a.dd as count_date, round(avg(a.actual_level),2) as actual_level
+    from v_total_level a 
+    where a.dd &gt;= #{beginDate }
+    and a.dd &lt;= #{endDate }
+    and a.parentId = #{arg }
+     <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    group by a.dd order by a.dd
+  </select>
+  
+  <select id="getTotalChartDataByWeeks" resultMap="TotalBaseResultMapVo" parameterType="Map" >
+    select a.iw as count_date, round(avg(a.actual_level),2) as actual_level
+    from v_total_level a 
+    where a.dd &gt;= #{beginDate }
+    and a.dd &lt;= #{endDate }
+    and a.parentId = #{arg }
+     <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    group by a.iw order by a.iw
+  </select>
+  
+  <select id="getTotalChartDataByMonths" resultMap="TotalBaseResultMapVo" parameterType="Map" >
+    select a.mm as count_date, round(avg(a.actual_level),2) as actual_level
+    from v_total_level a 
+    where a.mm &gt;= #{beginDate }
+    and a.mm &lt;= #{endDate }
+    and a.parentId = #{arg }
+     <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    group by a.mm order by a.mm
+  </select>
+  
+  <select id="getTotalChartDataByYears" resultMap="TotalBaseResultMapVo" parameterType="Map" >
+    select a.yea as count_date, round(avg(a.actual_level),2) as actual_level
+    from v_total_level a 
+    where a.yea &gt;= #{beginDate }
+    and a.yea &lt;= #{endDate }
+    and a.parentId = #{arg }
+     <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+    group by a.yea order by a.yea
+  </select>
+  
+  <select id="getDetailChartDataByDays" resultMap="BaseResultMapVo" parameterType="Map" >
+     select  b.id,b.name, b.level_unit,b.actual_score,b.weight, b.targetlevel,b.actual_level,c.description
+ 	 from 
+ 	 (select a.id,a.name,a.level_unit,round(avg(a.actual_score),2) as actual_score,round(avg(a.weight),2) as weight,round(avg(a.targetlevel),2) as targetlevel,round(avg(a.actual_level)) as   actual_level
+ 	 from v_total_level a 
+ 	 where a.parentId = #{arg } 
+ 	 and a.dd &gt;= #{beginDate }
+ 	 and a.dd &lt;= #{endDate }
+ 	  <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+ 	 group by a.id,a.name,a.level_unit) b left join pjmk_level c on b.actual_level||'' = c.levels
+  </select>
+  
+  <select id="getDetailChartDataByWeeks" resultMap="BaseResultMapVo" parameterType="Map" >
+     select  b.id,b.name,b.level_unit,b.actual_score, b.weight, b.targetlevel,b.actual_level,c.description
+ 	 from 
+ 	 (select a.id,a.name,a.level_unit,round(avg(a.actual_score),2) as actual_score,round(avg(a.weight),2) as weight,round(avg(a.targetlevel),2) as targetlevel,round(avg(a.actual_level)) as   actual_level
+ 	 from v_total_level a 
+ 	 where a.parentId = #{arg } 
+ 	 and a.dd &gt;= #{beginDate }
+ 	 and a.dd &lt;= #{endDate }
+ 	 <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+ 	 group by a.id,a.name,a.level_unit) b left join pjmk_level c on b.actual_level||'' = c.levels
+  </select>
+  
+  <select id="getDetailChartDataByMonths" resultMap="BaseResultMapVo" parameterType="Map" >
+     select  b.id,b.name,b.level_unit,b.actual_score, b.weight, b.targetlevel,b.actual_level,c.description
+ 	 from 
+ 	 (select a.id,a.name,a.level_unit,round(avg(a.actual_score),2) as actual_score,round(avg(a.weight),2) as weight,round(avg(a.targetlevel),2) as targetlevel,round(avg(a.actual_level)) as   actual_level
+ 	 from v_total_level a 
+ 	 where a.parentId = #{arg } 
+ 	 and a.mm &gt;= #{beginDate }
+ 	 and a.mm &lt;= #{endDate }
+ 	  <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+ 	 group by a.id,a.name,a.level_unit) b left join pjmk_level c on b.actual_level||'' = c.levels
+  </select>
+
+  <select id="getDetailChartDataByYears" resultMap="BaseResultMapVo" parameterType="Map" >
+     select  b.id,b.name,b.level_unit,b.actual_score, b.weight, b.targetlevel,b.actual_level,c.description
+ 	 from 
+ 	 (select a.id,a.name,a.level_unit,round(avg(a.actual_score),2) as actual_score,round(avg(a.weight),2) as weight,round(avg(a.targetlevel),2) as targetlevel,round(avg(a.actual_level)) as   actual_level
+ 	 from v_total_level a 
+ 	 where a.parentId = #{arg } 
+ 	 and a.yea &gt;= #{beginDate }
+ 	 and a.yea &lt;= #{endDate }
+ 	  <if test="isWork != null and isWork != '' and isWork!='-1' " >
+        and a.is_work = #{isWork }
+    </if>
+    <if  test="isWork=='-1' " >
+        and to_char(a.count_date, 'yyyy-MM-dd') in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1)
+    </if>
+ 	 group by a.id,a.name,a.level_unit) b left join pjmk_level c on b.actual_level||'' = c.levels
+  </select>
+</mapper>

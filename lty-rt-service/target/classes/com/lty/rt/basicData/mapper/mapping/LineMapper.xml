@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.LineMapper" >
+   <resultMap id="BaseResultMap" type="com.lty.rt.basicData.bean.Line">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="GPRSID" jdbcType="DECIMAL" property="gprsid" />
+    <result column="IS_DISABLE" jdbcType="DECIMAL" property="isDisable" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="DELETED" jdbcType="DECIMAL" property="deleted" />
+    <result column="SHORTNAME" jdbcType="VARCHAR" property="shortname" />
+    <result column="LINETYPE" jdbcType="DECIMAL" property="linetype" />
+    <result column="RUNTYPE" jdbcType="DECIMAL" property="runtype" />
+    <result column="DISPATCHMODE" jdbcType="DECIMAL" property="dispatchmode" />
+    <result column="DIRECTION" jdbcType="DECIMAL" property="direction" />
+    <result column="DEPARTMENTID" jdbcType="VARCHAR" property="departmentid" />
+    <result column="AREATYPE" jdbcType="DECIMAL" property="areatype" />
+    <result column="TOTALBUS" jdbcType="DECIMAL" property="totalbus" />
+    <result column="TICKETTYPE" jdbcType="VARCHAR" property="tickettype" />
+    <result column="TICKETPRICE" jdbcType="VARCHAR" property="ticketprice" />
+    <result column="DCOLOR" jdbcType="VARCHAR" property="dcolor" />
+    <result column="DTEXT" jdbcType="VARCHAR" property="dtext" />
+    <result column="LWIDTH" jdbcType="DECIMAL" property="lwidth" />
+    <result column="LPATH" jdbcType="OTHER" property="lpath" />
+    <result column="LENGTH" jdbcType="DECIMAL" property="length" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, NAME, GPRSID, IS_DISABLE, CREATE_TIME, DELETED, SHORTNAME, LINETYPE, RUNTYPE, 
+    DISPATCHMODE, DIRECTION, DEPARTMENTID, AREATYPE, TOTALBUS, TICKETTYPE, TICKETPRICE, 
+    DCOLOR, DTEXT, LWIDTH, LPATH, KM AS LENGTH
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_LINE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="listAllLine" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select   ID,NAME, GPRSID
+    from PJMK_LINE  P  WHERE P.DELETED = 0 AND P.IS_DISABLE = 0
+  </select>
+  
+  <select id="listAllLineDetail" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select   ID,NAME, GPRSID, lpath
+    from PJMK_LINE  P  WHERE P.DELETED = 0 AND P.IS_DISABLE = 0
+  </select>
+  
+  <select id="findListByMap" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+ 	select   ID,NAME, GPRSID
+    from PJMK_LINE  P  WHERE P.DELETED = 0 AND P.IS_DISABLE = 0
+     <if test="name!= null and name != '' ">
+     and P.NAME LIEK #{name}
+    </if>
+    
+  <where>
+    
+    </where>
+  </select>
+  	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_LINE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.lty.rt.basicData.bean.Line" >
+    insert into PJMK_LINE (ID, NAME, GPRSID, 
+      IS_DISABLE, CREATE_TIME, DELETED, 
+      SHORTNAME, LINETYPE, RUNTYPE, 
+      DISPATCHMODE, DIRECTION, DEPARTMENTID, 
+      AREATYPE, TOTALBUS, TICKETTYPE, 
+      TICKETPRICE, DCOLOR, DTEXT, 
+      LWIDTH, LPATH)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{gprsid,jdbcType=DECIMAL}, 
+      #{isDisable,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=DECIMAL}, 
+      #{shortname,jdbcType=VARCHAR}, #{linetype,jdbcType=DECIMAL}, #{runtype,jdbcType=DECIMAL}, 
+      #{dispatchmode,jdbcType=DECIMAL}, #{direction,jdbcType=DECIMAL}, #{departmentid,jdbcType=VARCHAR}, 
+      #{areatype,jdbcType=DECIMAL}, #{totalbus,jdbcType=DECIMAL}, #{tickettype,jdbcType=VARCHAR}, 
+      #{ticketprice,jdbcType=VARCHAR}, #{dcolor,jdbcType=VARCHAR}, #{dtext,jdbcType=VARCHAR}, 
+      #{lwidth,jdbcType=DECIMAL}, #{lpath,jdbcType=OTHER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.basicData.bean.Line">
+    update PJMK_LINE
+    set NAME = #{name,jdbcType=VARCHAR},
+      GPRSID = #{gprsid,jdbcType=DECIMAL},
+      IS_DISABLE = #{isDisable,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      DELETED = #{deleted,jdbcType=DECIMAL},
+      SHORTNAME = #{shortname,jdbcType=VARCHAR},
+      LINETYPE = #{linetype,jdbcType=DECIMAL},
+      RUNTYPE = #{runtype,jdbcType=DECIMAL},
+      DISPATCHMODE = #{dispatchmode,jdbcType=DECIMAL},
+      DIRECTION = #{direction,jdbcType=DECIMAL},
+      DEPARTMENTID = #{departmentid,jdbcType=VARCHAR},
+      AREATYPE = #{areatype,jdbcType=DECIMAL},
+      TOTALBUS = #{totalbus,jdbcType=DECIMAL},
+      TICKETTYPE = #{tickettype,jdbcType=VARCHAR},
+      TICKETPRICE = #{ticketprice,jdbcType=VARCHAR},
+      DCOLOR = #{dcolor,jdbcType=VARCHAR},
+      DTEXT = #{dtext,jdbcType=VARCHAR},
+      LWIDTH = #{lwidth,jdbcType=DECIMAL},
+      LPATH = #{lpath,jdbcType=OTHER}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.basicData.bean.Line" >
+    update PJMK_LINE
+    <set >
+      <if test="lpath != null" >
+        LPATH = #{lpath,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  
+   <!-- 根据公司ID查询该公司的所有线路 -->
+   <select id="queryLines" resultType="java.util.HashMap"  parameterType="java.lang.String">
+    	SELECT t2.id,t2.name FROM pjmk_line t2 WHERE exists (
+		        SELECT 1 FROM pjmk_department  t1 WHERE t1.propertyex ='D1' AND EXISTS (
+		                SELECT 1 FROM pjmk_department t WHERE t.propertyex ='D'  
+		                								 <if test="_parameter !=null and _parameter!='' ">   
+		                									AND t.id||'' = #{_parameter}||'' 
+														</if>
+		                								AND t1.parentid||''=t.id||''
+		        ) AND t2.departmentid=t1.departmentid
+		)
+  </select>
+  
+</mapper>

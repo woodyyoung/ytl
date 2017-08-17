@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.StationMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.basicData.bean.Station" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="DELETED" property="deleted" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="LINEID" property="lineid" jdbcType="VARCHAR" />
+    <result column="GPRSID" property="gprsid" jdbcType="DECIMAL" />
+    <result column="ORDERNO" property="orderno" jdbcType="DECIMAL" />
+    <result column="DIRECTION" property="direction" jdbcType="DECIMAL" />
+    <result column="BYSTARTD_ISTANCE" property="bystartdIstance" jdbcType="DECIMAL" />
+    <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+    <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+    <result column="ANGLE" property="angle" jdbcType="DECIMAL" />
+    <result column="IS_DISABLE" property="isDisable" jdbcType="DECIMAL" />
+    <result column="PLATFORM_ID" property="platformId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CREATE_TIME, DELETED, NAME, LINEID, GPRSID, ORDERNO, DIRECTION, BYSTARTD_ISTANCE, 
+    LONGITUDE, LATITUDE, ANGLE, IS_DISABLE, PLATFORM_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STATION
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAllStation" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STATION
+  </select>
+  
+  <select id="queryStationByLineId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select t.id,t.LINEID, t.GPRSID, t.ORDERNO, t.DIRECTION, t.BYSTARTD_ISTANCE, 
+    t.LONGITUDE, t.LATITUDE, t.ANGLE, t.IS_DISABLE, t.PLATFORM_ID,
+    t.orderno || t.name || ',' ||
+       decode(t.direction, 0, '上行', 1, '下行', '') as name
+    from PJMK_STATION t
+    where LINEID = #{lineId,jdbcType=VARCHAR}
+    ORDER By DIRECTION,ORDERNO
+  </select>
+  
+  <select id="queryStationBySchemeId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	   select s.*
+	  from pjmk_auxiliary_line_station t, pjmk_station s
+	 where t.platform_id = s.id
+	   and t.scheme_id = #{schemeId}
+	   order by s.orderno
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_STATION
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.lty.rt.basicData.bean.Station" >
+    insert into PJMK_STATION (ID, CREATE_TIME, DELETED, 
+      NAME, LINEID, GPRSID, 
+      ORDERNO, DIRECTION, BYSTARTD_ISTANCE, 
+      LONGITUDE, LATITUDE, ANGLE, 
+      IS_DISABLE, PLATFORM_ID)
+    values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=DECIMAL}, 
+      #{name,jdbcType=VARCHAR}, #{lineid,jdbcType=VARCHAR}, #{gprsid,jdbcType=DECIMAL}, 
+      #{orderno,jdbcType=DECIMAL}, #{direction,jdbcType=DECIMAL}, #{bystartdIstance,jdbcType=DECIMAL}, 
+      #{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, #{angle,jdbcType=DECIMAL}, 
+      #{isDisable,jdbcType=DECIMAL}, #{platformId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.basicData.bean.Station" >
+    insert into PJMK_STATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="deleted != null" >
+        DELETED,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="lineid != null" >
+        LINEID,
+      </if>
+      <if test="gprsid != null" >
+        GPRSID,
+      </if>
+      <if test="orderno != null" >
+        ORDERNO,
+      </if>
+      <if test="direction != null" >
+        DIRECTION,
+      </if>
+      <if test="bystartdIstance != null" >
+        BYSTARTD_ISTANCE,
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE,
+      </if>
+      <if test="latitude != null" >
+        LATITUDE,
+      </if>
+      <if test="angle != null" >
+        ANGLE,
+      </if>
+      <if test="isDisable != null" >
+        IS_DISABLE,
+      </if>
+      <if test="platformId != null" >
+        PLATFORM_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null" >
+        #{deleted,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="lineid != null" >
+        #{lineid,jdbcType=VARCHAR},
+      </if>
+      <if test="gprsid != null" >
+        #{gprsid,jdbcType=DECIMAL},
+      </if>
+      <if test="orderno != null" >
+        #{orderno,jdbcType=DECIMAL},
+      </if>
+      <if test="direction != null" >
+        #{direction,jdbcType=DECIMAL},
+      </if>
+      <if test="bystartdIstance != null" >
+        #{bystartdIstance,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="angle != null" >
+        #{angle,jdbcType=DECIMAL},
+      </if>
+      <if test="isDisable != null" >
+        #{isDisable,jdbcType=DECIMAL},
+      </if>
+      <if test="platformId != null" >
+        #{platformId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.basicData.bean.Station" >
+    update PJMK_STATION
+    <set >
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null" >
+        DELETED = #{deleted,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="lineid != null" >
+        LINEID = #{lineid,jdbcType=VARCHAR},
+      </if>
+      <if test="gprsid != null" >
+        GPRSID = #{gprsid,jdbcType=DECIMAL},
+      </if>
+      <if test="orderno != null" >
+        ORDERNO = #{orderno,jdbcType=DECIMAL},
+      </if>
+      <if test="direction != null" >
+        DIRECTION = #{direction,jdbcType=DECIMAL},
+      </if>
+      <if test="bystartdIstance != null" >
+        BYSTARTD_ISTANCE = #{bystartdIstance,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null" >
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="angle != null" >
+        ANGLE = #{angle,jdbcType=DECIMAL},
+      </if>
+      <if test="isDisable != null" >
+        IS_DISABLE = #{isDisable,jdbcType=DECIMAL},
+      </if>
+      <if test="platformId != null" >
+        PLATFORM_ID = #{platformId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.basicData.bean.Station" >
+    update PJMK_STATION
+    set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      DELETED = #{deleted,jdbcType=DECIMAL},
+      NAME = #{name,jdbcType=VARCHAR},
+      LINEID = #{lineid,jdbcType=VARCHAR},
+      GPRSID = #{gprsid,jdbcType=DECIMAL},
+      ORDERNO = #{orderno,jdbcType=DECIMAL},
+      DIRECTION = #{direction,jdbcType=DECIMAL},
+      BYSTARTD_ISTANCE = #{bystartdIstance,jdbcType=DECIMAL},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      ANGLE = #{angle,jdbcType=DECIMAL},
+      IS_DISABLE = #{isDisable,jdbcType=DECIMAL},
+      PLATFORM_ID = #{platformId,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <sql id="PaginationPrefix" >
+    <if test="page != null" >
+      select * from ( select row_.*, rownum rownum_ from ( 
+    </if>
+  </sql>
+  <sql id="PaginationSuffix" >
+    <if test="page != null" >
+      <![CDATA[ ) row_ ) where rownum_ > #{page.begin} and rownum_ <= #{page.end} ]]>
+    </if>
+  </sql>
+</mapper>

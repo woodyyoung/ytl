@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.PjmkAreaMapper" >
+  <resultMap id="BaseResultMap" type="com.lty.rt.basicData.bean.PjmkArea" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CODENAME" property="codename" jdbcType="VARCHAR" />
+    <result column="CODEID" property="codeid" jdbcType="VARCHAR" />
+    <result column="PARENTCODEID" property="parentcodeid" jdbcType="VARCHAR" />
+    <result column="PROPERTIESID" property="propertiesid" jdbcType="INTEGER" />
+    <result column="PROPERTIES" property="properties" jdbcType="VARCHAR" />
+    <result column="AREA" property="area" jdbcType="DECIMAL" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="LEVELS" property="levels" jdbcType="INTEGER" />
+    <result column="STATE" property="state" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="DistrictTreeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+    <result column="CODEID" property="id" />
+    <result column="PARENTCODEID" property="pid" />
+    <result column="CODENAME" property="nodeName" />
+    <result column="id" property="arg" />
+    <result column="PROPERTIESID" property="arg1" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, CODENAME, CODEID, PARENTCODEID, PROPERTIESID, PROPERTIES, AREA, REMARK, LEVELS, STATE
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="selectByAreaCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA
+    where CODEID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getListByIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA
+    where ID in 
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </select>
+  
+  <select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA where 1=1
+    <if test="parentCodeId != null" >
+        and PARENTCODEID = #{parentCodeId,jdbcType=VARCHAR}
+      </if>
+    
+  </select>
+  
+  <select id="getChildsByParentIds" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA where 1=1 and PARENTCODEID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+    
+  </select>
+  
+  <select id="getDistrictTree" resultMap="DistrictTreeResultMap" parameterType="java.util.Map" >
+    select a.CODEID, a.PARENTCODEID, a.CODENAME, a.id, a.PROPERTIESID from PJMK_AREA a where a.state = 0
+  </select>
+  
+  <select id="getMaxCodeId" resultType = "String" parameterType="String" >
+    select max(codeid) from pjmk_area where parentcodeid = #{parentId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_AREA
+    where ID = #{id}
+  </delete>
+        
+   <delete id="batchDeleteByPrimaryKey" parameterType="java.util.List" >
+    delete from PJMK_AREA
+    where ID in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <delete id="delByIds" parameterType="java.util.List" >
+    delete from PJMK_AREA
+    where ID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <insert id="insert" parameterType="com.lty.rt.basicData.bean.PjmkArea" >
+    insert into PJMK_AREA (ID, CODENAME, CODEID, 
+      PARENTCODEID, PROPERTIESID, PROPERTIES, 
+      AREA, REMARK, LEVELS, STATE)
+    values (#{id,jdbcType=VARCHAR}, #{codename,jdbcType=VARCHAR}, #{codeid,jdbcType=VARCHAR}, 
+      #{parentcodeid,jdbcType=VARCHAR}, #{propertiesid,jdbcType=DECIMAL}, #{properties,jdbcType=VARCHAR}, 
+      #{area,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR},#{levels,jdbcType=DECIMAL},#{state,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lty.rt.basicData.bean.PjmkArea" >
+    insert into PJMK_AREA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="codename != null" >
+        CODENAME,
+      </if>
+      <if test="codeid != null" >
+        CODEID,
+      </if>
+      <if test="parentcodeid != null" >
+        PARENTCODEID,
+      </if>
+      <if test="propertiesid != null" >
+        PROPERTIESID,
+      </if>
+      <if test="properties != null" >
+        PROPERTIES,
+      </if>
+      <if test="area != null" >
+        AREA,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="levels != null" >
+        LEVELS,
+      </if>
+      <if test="state != null" >
+        STATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="codename != null" >
+        #{codename,jdbcType=VARCHAR},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="parentcodeid != null" >
+        #{parentcodeid,jdbcType=VARCHAR},
+      </if>
+      <if test="propertiesid != null" >
+        #{propertiesid,jdbcType=DECIMAL},
+      </if>
+      <if test="properties != null" >
+        #{properties,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="levels != null" >
+        #{levels,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lty.rt.basicData.bean.PjmkArea" >
+    update PJMK_AREA
+    <set >
+      <if test="codename != null" >
+        CODENAME = #{codename,jdbcType=VARCHAR},
+      </if>
+      <if test="codeid != null" >
+        CODEID = #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="parentcodeid != null" >
+        PARENTCODEID = #{parentcodeid,jdbcType=VARCHAR},
+      </if>
+      <if test="propertiesid != null" >
+        PROPERTIESID = #{propertiesid,jdbcType=DECIMAL},
+      </if>
+      <if test="properties != null" >
+        PROPERTIES = #{properties,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        AREA = #{area,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="levels != null" >
+        LEVELS = #{levels,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        STATE = #{state,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lty.rt.basicData.bean.PjmkArea" >
+    update PJMK_AREA
+    set CODENAME = #{codename,jdbcType=VARCHAR},
+      CODEID = #{codeid,jdbcType=VARCHAR},
+      PARENTCODEID = #{parentcodeid,jdbcType=VARCHAR},
+      PROPERTIESID = #{propertiesid,jdbcType=DECIMAL},
+      PROPERTIES = #{properties,jdbcType=VARCHAR},
+      AREA = #{area,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      LEVELS = #{levels,jdbcType=DECIMAL},
+      STATE = #{state,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

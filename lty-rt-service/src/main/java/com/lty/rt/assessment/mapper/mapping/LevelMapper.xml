@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.assessment.mapper.LevelMapper" >
+  <resultMap id="BaseResultMap" type="Level" >
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="LEVELS" property="levels" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, LEVELS, DESCRIPTION
+  </sql>
+  
+  <insert id="insert" parameterType="Level" >
+    insert into PJMK_LEVEL (ID, LEVELS, DESCRIPTION
+      )
+    values (#{id,jdbcType=VARCHAR}, #{levels,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="Level" >
+    insert into PJMK_LEVEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="levels != null" >
+        LEVELS,
+      </if>
+      <if test="description != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="levels != null" >
+        #{levels,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="findListByMap" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_LEVEL
+    where 1=1  order by levels
+  </select>
+  
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_LEVEL
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findIndexLevelByLevel" resultType="java.lang.Integer" parameterType="java.lang.String" >
+   	select count(1) from pjmk_index_level t  where t.index_level = #{level,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="delByIds" parameterType="Map" >
+    delete from PJMK_LEVEL
+    where id in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  <update id="updateById" parameterType="Level" >
+    update PJMK_LEVEL
+    set LEVELS = #{levels,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

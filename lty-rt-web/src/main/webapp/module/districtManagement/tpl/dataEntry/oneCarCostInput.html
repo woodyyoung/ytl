@@ -1,0 +1,51 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-assess-total">全市公交行业人车成本录入</h3>
+			</div><!-- panel-heading -->
+			<div class="panel-body">
+				<div class="user_btn">
+          			<button type="button" class="btn btn-info" id ="btn-insert" data-toggle="modal">添加</button>
+          			<button type="button" class="btn btn-primary" id ="btn-update" data-toggle="modal">编辑</button>
+                 	<button type="button" class="btn btn-danger" id ="btn-del" data-toggle="modal">删除</button>
+                </div><!-- user_btn -->   
+                <div class="costOfEntry_search">
+                	<form class="form-inline" id="findPVCost_form">
+					  <div class="form-group">
+					    <label>开始日期</label>
+					    <input type="text" class="form-control" id="startTime" name="startTime" value="" placeholder="选择日期">
+					  </div>
+					  <div class="form-group">
+					    <label>结束日期</label>
+					    <input type="text" class="form-control" id="endTime" name="endTime" value="" placeholder="选择日期">
+					  </div>
+					  <div class="form-group">
+					    <label>公司</label>
+					    <select class="form-control selectpicker" id="oneCarCostInput_firm" name="company_id">
+					    	<option>一公司</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <label>线路</label>
+					    <select class="form-control selectpicker" id="oneCarCostInput_line" name="line_id">
+					    	<option>1路</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <label>成本类型</label>
+					    <select class="form-control selectpicker" id="oneCarCostInput_type" name="pvcosttype_id">
+					    	<option>千车公里成本</option>
+					    </select>
+					  </div>
+					  <button type="button" class="btn btn-default" id="selectFind">查询</button>
+					</form>
+                </div><!-- costOfEntry_search -->              
+                <div class="table-responsive">
+	                <table id="example" class="display" cellspacing="0" width="100%"></table>
+	            </div><!-- table-responsive -->
+			</div><!-- panel-body -->
+		</div><!-- panel -->
+	</div>
+</div><!-- row -->
+<div id="dialogDiv"></div>

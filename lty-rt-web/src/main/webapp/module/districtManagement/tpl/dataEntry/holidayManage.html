@@ -1,0 +1,74 @@
+
+<div class="container-fluid main">
+    <div class="row">
+        <div class="col-xs-12 title">
+            <h3>节假日管理</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-7 sideleft">
+            <div class="row holitop">
+                <select class="text-center" id="year"></select>
+                <span class="prev">&lt;</span>
+                <select class="text-center" id="month"></select>
+                <span class="next">&gt;</span>
+                <span class="day pull-right">今天</span>
+            </div>
+            <div class="week">
+                <ul>
+                    <li  class="red">日</li>
+                    <li>一</li>
+                    <li>二</li>
+                    <li>三</li>
+                    <li>四</li>
+                    <li>五</li>
+                    <li class="red">六</li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="qiandao_main">
+                <ul class="qiandao_list"></ul>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="col-xs-4 sideright">
+            <h4><span class="years"></span><span class="months"></span>选定日期:</h4>
+            <div class="numday">
+
+            </div>
+            <div class="form-group">
+                <label for="status">设置自定义节假日状态:</label>
+                <select id="status" class="form-control">
+                    <option value="-1">节假日</option>
+                    <option value="0">非工作日</option>
+                    <option value="1">工作日</option>
+                </select>
+            </div>
+            <button class="sure" id="sendCal">确定</button>
+        </div>
+    </div>
+    <div class="row formss">
+        <div class="col-xs-12 forms">
+           <div class="costOfEntry_search">
+               	<div class="form-inline">
+				  <div class="form-group">
+				    <label>开始日期</label>
+				    <input type="text" class="form-control" id="date_begin" value="" placeholder="选择日期">
+				  </div>
+				  <div class="form-group">
+				    <label>结束日期</label>
+				    <input type="text" class="form-control" id="date_end" value="" placeholder="选择日期">
+				  </div>
+				  <button type="submit" class="btn btn-default"  id="btn_hours_confirm">查询</button>
+				  <button type="submit" style="display: none" class="btn btn-default pull-right" id="btn_refresh">批量更新</button>
+				</div>
+           </div>
+           <!-- costOfEntry_search -->              
+           <div class="table-responsive">
+                <table id="example" class="display" cellspacing="0" width="100%"></table>
+            </div>
+            <!-- table-responsive -->
+        </div>
+    </div>
+</div>
+

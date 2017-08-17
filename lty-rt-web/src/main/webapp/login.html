@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>login</title>
+		<style>
+		    *{margin: 0; padding: 0; font-family: "微软雅黑"; font-size: 12px;}
+		    html,body{ height: 100%;}
+		    body{background: url(images/login_bj.jpg) no-repeat center; background-size: cover; position: relative;}
+			.box{width: 39em; height: 20.5em;  position: absolute; left: 65%; top: 26%;}
+			.box h1{ list-style: none; font-size: 2.6em; color: #fff; margin-bottom: .8em;}
+		    .cantent{ width: 30em; height: 17.5em; background: #fff; padding: 2em 3em; margin-left: 1.5em;}
+		    .cantent h2{ list-style: none; text-align: center; color: #0f90de; font-weight: normal; font-size: 2em; margin-bottom: .6em;}
+		    .cantent label{ color: #0f90de; width: 20%; display: inline-table; font-size: 1.3em; text-align: right;}
+		    .cantent input{ color: #666; width: 70%; margin: .5em; padding: .8em .3em; border: 1px solid #0f90de;}
+		    .cantent button{ display: block; background: #0672d2; border: 0; width: 73%; padding: .4em 0;font-size: 1.5em; color:#fff; margin:1em 0 1em 21%; cursor: pointer;}
+		    .login_hint{ padding:10px 0 0 0; color: #ff0000;}
+		</style>
+
+		
+	</head>
+	<body>
+		<div class="box">
+		    <h1>公交运营监管评价与辅助决策系统</h1>
+			<div class="cantent">
+				<h2>用户登录</h2>
+					<label>用户名：</label><input type="text" name="u_ser" id="u_ser" placeholder="用户名"/><br/>
+					<label>密 &nbsp;&nbsp; 码：</label><input name="p_wd"  id="p_wd" type="password" placeholder="密码"/>
+					<p class="login_hint">*公共场所不建议自动登录,以防账号丢失</p>
+					<button  onclick="login()">登录</button>
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.cookie.js"></script>
+		<script type="text/javascript">
+			
+			
+			function login(){
+				var u = $.trim($('#u_ser').val());
+				var p=  $.trim($('#p_wd').val());
+				
+				if(u == null || u == '' || p == null || p == ''){
+					$(".login_hint").text('*用户名或密码不能为空!');
+				}
+				
+				var params = {
+						username : u,
+						password : p
+					}
+					
+				$.ajax({
+					type : "POST",
+					contentType : "application/json",
+					url : 'report/userLogin/login',
+					data : JSON.stringify(params),
+					success : function(resp){
+						if(resp.code == 0){
+							if(resp.data){
+								$.cookie("rt_user_name", u);
+								$.cookie("rt_user_id",resp.data.id);
+		    					window.location.href='index.html';
+							}else{
+								$(".login_hint").text('*用户名或密码错误!');
+							}
+	                    }else{
+	                    	$(".login_hint").text('*用户名或密码错误!');
+	                    }
+					}
+				});
+			}
+		</script>
+	 <script>
+      $(document).ready(function() {
+    	  $.cookie('rt_user_name', ''); 
+      });
+    </script>
+</html>

@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.passengerFlows.mapper.StretchPsgflowAnalysisMapper">
+	<!--新改造查询路段客流集散量方法begin  -->
+	<select id="queryStretchDefaultPsgFlow" resultType="java.util.HashMap"  parameterType="java.util.Map" >
+		SELECT
+			 <include refid="DefaultPsgFlow_Column" />
+			  FROM v_stretch_psgflow T
+			  <where>
+			   <include refid="DefaultPsgFlow_condition" />
+			  </where>
+			 <include refid="DefaultPsgFlow_groupby" />
+			  <include refid="DefaultPsgFlow_orderby" />
+	</select>
+	
+	<sql id="DefaultPsgFlow_Column" >
+ 		 T.stretch_name,
+		 T.stretch_code,
+		 <if test="queryType == 'days'" >
+		 T.DD as showDate,
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW as showDate,
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM as showDate,
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH as showDate,
+		 </if>
+		 SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		 SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		 SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT
+	</sql>
+	
+	<sql id="DefaultPsgFlow_condition">
+		<if test="queryType == 'hours'" >
+		 	<if test="startDate != null and startDate != ''">
+			AND T.DD = #{startDate}
+			</if>
+		</if>
+		<if test="queryType != 'hours'" >
+			<if test="startDate != null and startDate != '' and endDate !=null and endDate !=''">
+				AND T.OCCUR_TIME &gt; TO_DATE(#{startDate}, 'yyyy-mm-dd')
+				AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'yyyy-mm-dd')+1
+			</if>
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+	   		AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		AND T.stretch_code = #{stretchCode}
+	</sql>
+	
+	<sql id="DefaultPsgFlow_groupby">
+		 GROUP BY  
+		 T.stretch_name,
+		 T.stretch_code,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	<sql id="DefaultPsgFlow_orderby">
+		ORDER BY  
+		 T.stretch_name,
+		 T.stretch_code,
+		 <if test="queryType == 'days'" >
+		 T.DD
+		 </if>
+		 <if test="queryType == 'weeks'" >
+		 T.IW
+		 </if>
+		 <if test="queryType == 'months'" >
+		 T.MM
+		 </if>
+		 <if test="queryType == 'hours'" >
+		 T.HH
+		 </if>
+	</sql>
+	 <!--新改造查询路段客流集散量方法 end  -->
+
+
+	<select id="queryPsgFlowForHours" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		T.STRETCH_NAME,
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT)
+		TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.BUS_PERSON_COUNT) BUS_PERSON_COUNT from
+		(SELECT
+		#{stretchCode} as
+		STRETCH_NAME,
+		T.DD,
+		T.HH,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_STRETCH_PSGFLOW T,
+		PJMK_STRETCH AR
+		WHERE T.STRETCH_CODE = AR.LINEID and
+		<if test="endDate != null and endDate!='' ">
+			(T.DD = #{beginDate}
+			OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' ">
+			T.DD = #{beginDate}
+		</if>
+		<if test="stretchCode != null and stretchCode!='' ">
+			and t.STRETCH_CODE like
+			#{stretchCode}||'%'
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.STRETCH_NAME, T.DD, T.HH) T
+
+		GROUP BY STRETCH_NAME,T.DD, T.HH
+		ORDER BY STRETCH_NAME, T.DD, T.HH
+
+
+	</select>
+
+	<select id="queryPsgFlowForHours2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		  T.STRETCH_NAME,
+          T.STRETCH_CODE,
+          T.P_NAME,
+          T.AREA_NAME,
+          T.DD,
+          T.HH,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+          SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		 FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+		  WHERE T.STRETCH_CODE = AR.LINEID and 
+		<if test="endDate != null and endDate!='' " >
+		(T.DD = #{beginDate}
+		OR T.DD = #{endDate} )
+		</if>
+		<if test="endDate == null or endDate=='' " >
+		T.DD = #{beginDate}
+		</if>
+		<if test="stretchCode != null and stretchCode!='' " >
+			and t.STRETCH_CODE  like   #{stretchCode}||'%'
+		</if>
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		 GROUP BY T.STRETCH_NAME, T.STRETCH_CODE, T.P_NAME, T.AREA_NAME, T.DD, T.HH
+    	 ORDER BY T.STRETCH_NAME, T.P_NAME, T.AREA_NAME, T.DD, T.HH
+	</select>
+
+
+
+
+	<select id="queryPsgFlowForDays" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.STRETCH_NAME,
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.BUS_PERSON_COUNT) BUS_PERSON_COUNT
+		from
+		(SELECT
+		#{stretchCode} as
+		STRETCH_NAME,
+		T.DD,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+		WHERE T.STRETCH_CODE = AR.LINEID and
+		<if test="endDate2 != null and endDate2!='' ">
+			(
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+			or(
+			T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+			AND
+			T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+			)
+			)
+		</if>
+		<if test="endDate2 == null or endDate2=='' ">
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		
+		<if test="stretchCode != null and stretchCode!='' ">
+			and t.STRETCH_CODE like
+			#{stretchCode}||'%'
+		</if>
+		
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		GROUP BY T.STRETCH_NAME, T.DD)T
+		GROUP BY T.STRETCH_NAME, T.DD
+		ORDER BY T.STRETCH_NAME, T.DD
+
+	</select>
+
+
+	<select id="queryPsgFlowForDays2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT 
+		  T.STRETCH_NAME,
+          T.STRETCH_CODE,
+          T.P_NAME,
+          T.AREA_NAME,
+          T.DD,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+          SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+	     FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+	    WHERE T.STRETCH_CODE = AR.LINEID and 
+		
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+		
+		<if test="stretchCode != null and stretchCode!='' " >
+			and t.STRETCH_CODE  like  #{stretchCode}||'%'
+		</if>
+		
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+		
+		GROUP BY T.STRETCH_NAME, T.STRETCH_CODE, T.P_NAME, T.AREA_NAME, T.DD
+    	ORDER BY T.STRETCH_NAME, T.P_NAME, T.AREA_NAME, T.DD
+	</select>
+
+	<select id="queryPsgFlowForWeeks" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.STRETCH_NAME,
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.BUS_PERSON_COUNT) BUS_PERSON_COUNT
+		from
+		(SELECT
+		#{stretchCode} as
+		STRETCH_NAME,
+		T.IW,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+		WHERE T.STRETCH_CODE = AR.LINEID and
+		<if test="endDate2 != null and endDate2!='' ">
+			(
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+			or(
+			T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+			AND
+			T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+			)
+			)
+		</if>
+		<if test="endDate2 == null or endDate2=='' ">
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+				
+		<if test="stretchCode != null and stretchCode!='' ">
+			and t.STRETCH_CODE like
+			#{stretchCode}||'%'
+		</if>
+
+		GROUP BY T.STRETCH_NAME,  T.IW) T
+
+		GROUP BY T.STRETCH_NAME,  T.IW
+		ORDER BY T.STRETCH_NAME, T.IW
+
+	</select>
+
+	<select id="queryPsgFlowForWeeks2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		 SELECT 
+		  T.STRETCH_NAME,
+          T.STRETCH_CODE,
+          T.P_NAME,
+          T.AREA_NAME,
+          T.IW,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+          SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+	     FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+	    WHERE T.STRETCH_CODE = AR.LINEID and 
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="stretchCode != null and stretchCode!='' " >
+			and t.STRETCH_CODE  like  #{stretchCode}||'%'
+		</if>
+		
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.STRETCH_NAME, T.STRETCH_CODE, T.P_NAME, T.AREA_NAME, T.IW
+    	ORDER BY T.STRETCH_NAME, T.P_NAME, T.AREA_NAME, T.IW
+
+	</select>
+
+
+	<select id="queryPsgFlowForMonths" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		SELECT
+		T.STRETCH_NAME,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.BUS_PERSON_COUNT) BUS_PERSON_COUNT
+		from
+		(SELECT
+		#{stretchCode} as
+		STRETCH_NAME,
+		T.MM,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+		WHERE T.STRETCH_CODE = AR.LINEID and
+		<if test="endDate2 != null and endDate2!='' ">
+			(
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+			or(
+			T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+			AND
+			T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+			)
+			)
+		</if>
+		<if test="endDate2 == null or endDate2=='' ">
+			( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+			'yyyy-mm-dd')
+			AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+			)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="stretchCode != null and stretchCode!='' ">
+			and t.STRETCH_CODE like
+			#{stretchCode}||'%'
+		</if>
+		
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.STRETCH_NAME, T.MM)T
+		GROUP BY T.STRETCH_NAME, T.MM
+		ORDER BY T.STRETCH_NAME, T.MM
+
+	</select>
+
+
+	<select id="queryPsgFlowForMonths2" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		 SELECT 
+		  T.STRETCH_NAME,
+          T.STRETCH_CODE,
+          T.P_NAME,
+          T.AREA_NAME,
+          T.MM,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+          SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+          SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+	     FROM V_STRETCH_PSGFLOW T, PJMK_STRETCH AR
+	    WHERE T.STRETCH_CODE = AR.LINEID and 
+		<if test="endDate2 != null and endDate2!='' " >
+		(
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		or(
+		T.OCCUR_TIME &gt; TO_DATE(#{beginDate2}, 'YYYY-MM-DD')
+		AND
+		T.OCCUR_TIME &lt; TO_DATE(#{endDate2}, 'YYYY-MM-DD')+1
+		)
+		)
+		</if>
+		<if test="endDate2 == null or endDate2=='' " >
+		( T.OCCUR_TIME &gt; TO_DATE(#{beginDate},
+		'yyyy-mm-dd')
+		AND T.OCCUR_TIME &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+		)
+		</if>
+		<if test="beginTime != null and beginTime != '' and endTime !=null and endTime !=''">
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &gt;= #{beginTime}
+			 AND TO_CHAR(T.OCCUR_TIME,'hh24:mi:ss') &lt;= #{endTime}
+		</if>
+
+		<if test="stretchCode != null and stretchCode!='' " >
+			and t.STRETCH_CODE  like  #{stretchCode}||'%'
+		</if>
+
+
+		<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+
+		GROUP BY T.STRETCH_NAME, T.STRETCH_CODE, T.P_NAME, T.AREA_NAME, T.MM
+   		ORDER BY T.STRETCH_NAME, T.P_NAME, T.AREA_NAME, T.MM
+
+	</select>
+
+
+
+	<select id="queryLineSectionPsgFlow" resultType="java.util.HashMap"
+			parameterType="java.util.Map">
+		SELECT
+		<if test="stretchCode != null and stretchCode!='' ">
+			T.STRETCH_NAME,
+			T.STRETCH_CODE,
+		</if>
+		<if test="dataType == 1 ">
+			T.DD,
+		</if>
+		<if test="dataType == 0">
+			T.DD,T.HH,
+		</if>
+		<if test="dataType == 2">
+			T.IW,
+		</if>
+		<if test="dataType == 3">
+			T.MM,
+		</if>
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT,
+		SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT) BUS_PERSON_COUNT
+		FROM V_STRETCH_PSGFLOW T
+		<where>
+			<if test="stretchCode != null and stretchCode!='' ">
+				and t.STRETCH_CODE like #{stretchCode}||'%'
+			</if>
+			<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			<choose>
+				<when test="aloneDay != null and aloneDay !='' and aloneHour != null and aloneHour !=''">
+					AND T.DD = #{aloneDay}
+					AND T.HH = #{aloneHour}
+					GROUP BY 
+					<if test="stretchCode != null and stretchCode!='' ">
+						T.STRETCH_NAME,T.STRETCH_CODE,
+					</if>
+					T.DD,T.HH
+				</when>
+				<when test="aloneDay != null and aloneDay !='' and (aloneHour == null or aloneHour =='')">
+					AND T.DD = #{aloneDay}	
+					GROUP BY 
+					<if test="stretchCode != null and stretchCode!='' ">
+						T.STRETCH_NAME,T.STRETCH_CODE,
+					</if>
+					T.DD,T.HH
+				</when>
+				<when test="dataType == 1">
+					<if test="aloneDDay != null and aloneDDay !='' ">
+						AND T.DD = #{aloneDDay}	
+					</if>
+					<if test="startTime != null and startTime!='' and endTime != null and endTime!=''">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS') + 1
+					</if>
+					GROUP BY 
+					<if test="stretchCode != null and stretchCode !='' ">
+						T.STRETCH_NAME,T.STRETCH_CODE,
+					</if>
+					T.DD
+				</when>
+				<when test="dataType == 2">
+					<if test="aloneWeek != null and aloneWeek !='' ">
+						AND T.IW = #{aloneWeek}
+					</if>
+					<if test="startTime != null and startTime!='' and endTime != null and endTime!=''">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS') + 1
+					</if>
+					GROUP BY 
+					<if test="stretchCode != null and stretchCode !='' ">
+						T.STRETCH_NAME,T.STRETCH_CODE,
+					</if>
+					T.IW
+				</when>
+				<when test="dataType == 3">
+					<if test="aloneMonth != null and aloneMonth !='' ">
+						AND T.MM = #{aloneMonth}
+					</if>
+					<if test="startTime != null and startTime!='' and endTime != null and endTime!=''">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+ 1
+					</if>
+					GROUP BY 
+					<if test="stretchCode != null and stretchCode !='' ">
+						T.STRETCH_NAME,T.STRETCH_CODE,
+					</if>
+					T.MM
+				</when>
+				<otherwise>
+					AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+					AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+ 1
+					GROUP BY T.STRETCH_NAME,T.STRETCH_CODE
+				</otherwise>
+			</choose>
+		</where>
+		
+		<if test="dataType == 1 ">
+			ORDER BY T.DD
+		</if>
+		<if test="dataType == 0">
+			ORDER BY  T.DD,T.HH
+		</if>
+		<if test="dataType == 2">
+			ORDER BY  T.IW
+		</if>
+		<if test="dataType == 3">
+			ORDER BY  T.MM
+		</if>
+		
+		
+	</select>
+	
+	
+	<select id="querySectionPsgFlow" resultType="java.util.HashMap"
+					parameterType="java.util.Map">
+		SELECT T.STRETCHID,T3.LINENAME, SUM(T2.TOTAL_PERSON_COUNT) TOTAL_PERSON_COUNT,
+		SUM(T2.ONBUS_PERSON_COUNT) ONBUS_PERSON_COUNT,
+		SUM(T2.OFFBUS_PERSON_COUNT) OFFBUS_PERSON_COUNT
+		FROM PJMK_STRETCH_PLATFORM T,
+		PJMK_STRETCH T3,
+		(SELECT T.PLATFORM_ID, 
+		<!-- <if test="aloneDay != null and aloneDay !='' and aloneHour != null and aloneHour !=''">
+	        TO_CHAR(T.OCCUR_TIME, 'HH24') HH,
+		</if>
+		<if test="aloneDay != null and aloneDay !='' and (aloneHour == null or aloneHour =='')">
+			TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') DD,
+		</if>
+		<if test="aloneWeek != null and aloneWeek !=''">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') IW,
+		</if>
+		<if test="aloneMonth != null and aloneMonth !=''">
+	        TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') MM,
+		</if> -->
+		<if test="dataType == 0">
+			TO_CHAR(T.OCCUR_TIME, 'HH24') HH,
+		</if>
+		<if test="dataType == 1 ">
+			TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') DD,
+		</if>
+		<if test="dataType == 2">
+			TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') IW,
+		</if>
+		<if test="dataType == 3">
+			 TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') MM,
+		</if>
+		NVL(SUM(T.ONBUS_PERSON_COUNT + T.OFFBUS_PERSON_COUNT),
+		0) TOTAL_PERSON_COUNT,
+		NVL(SUM(T.ONBUS_PERSON_COUNT), 0) ONBUS_PERSON_COUNT,
+		NVL(SUM(T.OFFBUS_PERSON_COUNT), 0) OFFBUS_PERSON_COUNT
+		FROM PJMK_STATION_PSGFLOW T
+		<where>
+			<if test="holidayFlag != null and holidayFlag != '' and holidayFlag != '-1' "> AND T.HOLIDAY_FLAG = #{holidayFlag} </if> <if test="holidayFlag =='-1' "> and to_char(t.occur_time, 'yyyy-MM-dd')  in (select to_char(t.fday, 'yyyy-MM-dd')  from pjmk_jjr t  where t.fiswork = -1) </if>
+			<choose>
+				<when test="dataType == 0">
+				<if test="aloneDay != null">
+					AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDay}
+				</if>
+				<if test="aloneHour != null and aloneHour !=''">
+					AND TO_CHAR(T.OCCUR_TIME, 'HH24') = #{aloneHour}
+				</if>
+				GROUP BY T.PLATFORM_ID,TO_CHAR(T.OCCUR_TIME, 'HH24')
+				</when>
+				<when test="dataType == 1">
+					<if test="aloneDDay != null and aloneDDay !=''">
+						AND TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD') = #{aloneDDay}	
+					</if>
+					<if test="(aloneDDay == null or aloneDDay == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.PLATFORM_ID,TO_CHAR(T.OCCUR_TIME, 'YYYY-MM-DD')
+				</when>
+				<when test="dataType == 2">
+					<if test="aloneWeek != null and aloneWeek !=''">
+						and TO_CHAR(T.OCCUR_TIME, 'YYYY-IW') = #{aloneWeek}
+					</if>
+					<if test="(aloneWeek == null or aloneWeek == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.PLATFORM_ID,TO_CHAR(T.OCCUR_TIME, 'YYYY-IW')
+				</when>
+				<when test="dataType == 3">
+					<if test="aloneMonth != null and aloneMonth !=''">
+						and TO_CHAR(T.OCCUR_TIME, 'YYYY-MM') = #{aloneMonth}
+					</if>
+					<if test="(aloneMonth == null or aloneMonth == '') and startTime != null and endTime != null">
+						AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+						AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					</if>
+					GROUP BY T.PLATFORM_ID,TO_CHAR(T.OCCUR_TIME, 'YYYY-MM')
+				</when>
+				<otherwise>
+					AND T.OCCUR_TIME &gt;= TO_DATE(#{startTime}, 'YYYY-MM-DD HH24:MI:SS')
+					AND T.OCCUR_TIME &lt;= TO_DATE(#{endTime}, 'YYYY-MM-DD HH24:MI:SS')+1
+					GROUP BY
+					T.PLATFORM_ID
+				</otherwise>
+			</choose>
+		</where>
+		) T2
+		WHERE T.PLATFORMID = T2.PLATFORM_ID(+)
+		AND T.STRETCHID = T3.ID(+)
+		<if test="stretchCode != null and stretchCode!='' ">
+			AND T.STRETCHLINEID LIKE #{stretchCode}||'%'
+		</if>
+		
+		 GROUP BY T.STRETCHID,T3.LINENAME
+		
+	</select>
+	
+	
+	<select id="queryPlatByStretchCode" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+	<!-- SELECT * FROM pjmk_stretch_map T
+	WHERE T.STRETCHID = #{stretchCode,jdbcType=VARCHAR}
+	ORDER BY T.ORDERBY -->
+	select b.* from pjmk_stretch a,pjmk_stretch_map b where
+	a.id=b.stretchid and a.lineid = #{stretchCode,jdbcType=VARCHAR} order by b.ORDERBY
+	</select>
+
+
+</mapper>

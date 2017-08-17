@@ -1,0 +1,103 @@
+   
+ <div class="container body">
+        <div class="index_padd">
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="perInfo_title"><h3>客流等级管理</h3></div>
+            </div>
+          </div><!-- row -->
+          <div class="row">
+            <div class="col-md-4 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>菜单类别</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div >
+                	<button type="button" class="btn btn-info" id = "btn-batchInsert" data-toggle="modal">添加方案</button>
+                	<button type="button" class="btn btn-info" id = "btn-startOrCloseDelete" data-toggle="modal">启用方案</button>
+                	<button type="button" class="btn btn-info" id = "btn-planDelete" data-toggle="modal">删除方案</button>
+                </div>
+                <div class="x_content">
+                  <div id="treeview-searchable" class="">
+                  </div><!-- treeview-searchable -->
+                  <div>
+                    <input type="input" class="form-control" id="input-search" placeholder="菜单搜索..." value=""/>
+                    <input type="hidden" class="form-control" id="menuId" value="">
+                    <input type="hidden" class="form-control" id="dataType" value="">
+                    <input type="hidden" class="form-control" id="pid" value="">
+                  </div>    
+                </div>
+              </div>
+            </div><!-- col-md-3 -->
+
+            <div class="col-md-8 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>等级列表</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">	
+              		<div class="user_btn">
+              			<!-- <button type="button" class="btn btn-info" id = "btn-insert">添加</button> -->
+              			<!-- <button type="button" class="btn btn-info" id = "btn-batchInsert" data-toggle="modal">批量添加</button> -->
+              			<button type="button" class="btn btn-primary" id = "btn-update">修改</button>
+	                    <!-- <button type="button" class="btn btn-danger" id = "btn-delete">删除</button> -->
+	                </div>
+                  <!-- user_btn -->
+                  <table id="tab_psgLevelList" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+                  </table>
+                <!-- </div> -->
+              </div><!-- x_panel -->
+            </div><!-- col-md-9 -->
+          </div><!-- row -->
+          
+        </div><!-- index_padd -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        	<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加方案</h4>
+				      </div>
+				      <div class="modal-body">
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				        <button type="button" class="btn btn-primary" id="determineAddPlan">确定</button>
+				      </div>
+				    </div>
+				  </div>
+        </div>
+        <div class="modal fade" id="batchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        	<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加等级</h4>
+				      </div>
+				      <div class="modal-body">
+				       	 方案名：<input type="text" name="planName" id="planName">
+				       	 最大值：<input type="text" name="maxData" id="maxData">
+				      </div>
+				      <div class="passenger_padd">
+				      	<label>颜色开始</label>
+                        <div class="input-group demo2">
+                         <input type="text" id= "startColor" value="" class="form-control strokeColor_bor" />
+                         <span class="input-group-addon"><i></i></span>
+                        </div>
+                        <label>颜色结束</label>
+                        <div class="input-group demo2">
+                         <input type="text" id= "endColor" class="form-control strokeColor_bor" />
+                         <span class="input-group-addon"><i></i></span>
+                        </div>
+                      </div><!-- passenger_padd -->
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				        <button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+				      </div>
+				    </div>
+				  </div>
+        </div>
+      </div><!-- right -->
+    </div>

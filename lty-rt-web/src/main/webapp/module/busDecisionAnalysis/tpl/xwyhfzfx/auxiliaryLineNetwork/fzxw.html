@@ -1,0 +1,192 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="x_panel">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="x_panel">
+						<div class="fzxwLeft_btn">
+							<button type="button" class="btn btn-primary" id="addScheme">增加方案</button>
+							<button type="button" class="btn btn-primary" id="delScheme">删除方案</button>
+						</div><!-- fzxwLeft_btn -->
+						<div class="x_content">
+			              <div id="treeview-searchable" class=""></div><!-- treeview-searchable -->
+			              <div>
+			                <input type="input" class="form-control" id="input-search" placeholder="线路搜索..." value=""/>
+			              </div>    
+			            </div><!-- x_content -->
+					</div><!-- x_panel -->
+				</div><!-- col-md-3 -->
+				<div class="col-md-7">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title" id="panel-title-kLfx">辅助线网</h3>
+						</div><!-- panel-heading -->
+						<div class="panel-body">
+							<form class="form-inline margB10">
+								<div class="form-group">
+									<label for="exampleInputName2">日期</label>
+									<input class="form-control" id="queryDate" name="queryDate" placeholder="选择日期">
+								</div>
+								<button type="button" class="btn btn-primary" id="queryFlowData">查询客流数据</button>
+							</form><!-- form-inline -->
+							<div class="fzxw_radio margB10">
+								<!-- <label class="checkbox-inline">
+								  <input type="checkbox" id="inlineCheckbox1" value="option1">显示热力图
+								</label>
+								<label class="checkbox-inline">
+								  <input type="checkbox" id="inlineCheckbox2" value="option2">显示站点
+								</label> -->
+								<label class="checkbox-inline">
+								  <input type="checkbox" id="inlineCheckbox3" value="option3">显示所有站台
+								</label>
+							</div><!-- fzxw_radio -->
+							<div class="fzxw_btn" id="schemeBtnGroup">
+								<button type="button" class="btn btn-default" id="addStation" data-toggle="modal" data-target="#addStationModal">增加站点</button>
+								<button type="button" class="btn btn-default" id="deleteStation" data-toggle="modal" data-target="#delStationModal">删除站点</button>
+								<button type="button" class="btn btn-default" id="saveLine" data-toggle="modal" data-target="#saveSchemeModal">保存方案</button>
+								<!-- <button type="button" class="btn btn-default">导出</button> -->
+							</div><!-- fzxw_btn -->
+						</div><!-- panel-body -->
+						<div class="fzxw_map">
+							<div class="fzxwMap_tool">
+								<div class="fzxwMapTool_title">画笔工具</div>
+								<div class="fzxwMapTool_btn">
+								    <input type="button" class="button" value="开始编辑线路" id="startEditLine"/>
+   									<input type="button" class="button" value="结束编辑线路" id="endEditLine"/>
+									<!-- <input type="button" class="button" value="打开画笔" id="lineOpen"/>
+									<input type="button" class="button" value="关闭画笔" id="lineClose"/>
+				                    <input type="button" class="button" value="删除末点" id="delectLast"/>
+				                    <input type="button" class="button" value="重置线路" id="lineReset"/> -->
+								</div>
+							</div><!-- fzxwMap_tool -->
+							<div id="ztklfxCharts" style="height: 750px;"></div><!-- ztklfxCharts -->
+							
+							 <div class="linePassengerFlow_sign">
+							 <div class="total_txt">
+				                      <select id="planName" class="form-control passengerFlows_sel"></select>
+							 </div>
+			                    <ul class="linePassengerFlowSign_ul"></ul><!-- linePassengerFlowSign_ul --> 
+			                    <div class="total_txt">
+				               		<div class="total_txt1"><p class="total_p1"></p><p class="total_p2"></p></div>
+				               	</div>
+			                  </div><!-- linePassengerFlow_sign --> 
+							
+							<!-- 折线图-->
+							<div class="passenger_btn_click"><a class="passenger_btn_toggle passenger_btn_open"></a></div>
+					        <div class="passenger_float">
+					         	<div id="timeFlowChart" style="height: 220px;"></div>
+					        </div>
+						</div><!-- fzxw_map -->	
+						
+						<!-- 客流直方图 -->
+						<div class="row">
+							<div class="col-md-12">
+								<div class="x_panel">
+									<!-- 直方图 -->
+									<div class="">
+							         	<div id="stationFlowChart" style="height: 220px;"></div>
+							        </div>
+								</div><!-- x_panel -->
+							</div><!-- col-md-12 -->
+						</div><!-- row -->
+									
+					</div><!-- panel -->
+				</div><!-- col-md-7 -->
+				<div class="col-md-2">
+					<div class="x_panel">
+						<div class="fzxwLine_info">
+							<div class="fzxwLineInfo_title"><h4>线路信息</h4></div>
+							<ul class="fzxwLineInfo_list">
+								<li><span class="fzxwLineInfoList_name">线路长度:</span><span class="fzxwLineInfoList_param" id="lineLength"></span></li>
+								<li><span class="fzxwLineInfoList_name">配车数:</span><span class="fzxwLineInfoList_param" id="busNum"></span></li>
+								<li><span class="fzxwLineInfoList_name">首班时间:</span><span class="fzxwLineInfoList_param" id="firstTime"></span></li>
+								<li><span class="fzxwLineInfoList_name">末班时间:</span><span class="fzxwLineInfoList_param" id="lastTime"></span></li>
+								<li><span class="fzxwLineInfoList_name">线路方向:</span><span class="fzxwLineInfoList_param" id="direction"></span></li>
+							</ul>
+						</div><!-- fzxwLine_info -->
+						<div class="fzxwLine_info">
+							<div class="fzxwLineInfo_title"><h4>线路指标</h4></div>
+							<ul class="fzxwLineInfo_list">
+								<li><span class="fzxwLineInfoList_name">最大满载率:</span><span class="fzxwLineInfoList_param" id="max_fillrate"></span></li>
+								<li><span class="fzxwLineInfoList_name">日均满载率:</span><span class="fzxwLineInfoList_param" id="avg_fillrate"></span></li>
+								<li><span class="fzxwLineInfoList_name">日客运量:</span><span class="fzxwLineInfoList_param" id="total_psg"></span></li>
+								<li><span class="fzxwLineInfoList_name">站点数量:</span><span class="fzxwLineInfoList_param" id="stationNum"></span></li>
+								<li><span class="fzxwLineInfoList_name">平均站距:</span><span class="fzxwLineInfoList_param" id="stationSpan"></span></li>
+							</ul>
+						</div>
+						
+						<div class="schemen_info" id="scheme_inofo">
+							<div class="fzxwLineInfo_title"><h4>方案预评估</h4></div>
+							<ul class="fzxwLineInfo_list">
+								<li><span class="fzxwLineInfoList_name">最大满载率:</span><span class="fzxwLineInfoList_param" id="scheme_max_fillrate"></span></li>
+								<li><span class="fzxwLineInfoList_name">日均满载率:</span><span class="fzxwLineInfoList_param" id="scheme_avg_fillrate"></span></li>
+								<li><span class="fzxwLineInfoList_name">日客运量:</span><span class="fzxwLineInfoList_param" id="scheme_total_psg"></span></li>
+								<li><span class="fzxwLineInfoList_name">站点数量:</span><span class="fzxwLineInfoList_param" id="scheme_stationNum"></span></li>
+								<li><span class="fzxwLineInfoList_name">平均站距:</span><span class="fzxwLineInfoList_param" id="scheme_stationSpan"></span></li>
+							</ul>
+						</div>
+						
+						<!-- fzxwLine_info -->
+					</div><!-- x_panel -->
+				</div><!-- col-md-2 -->
+			</div><!-- row -->
+		</div><!-- x_panel -->
+	</div><!-- col-md-12 -->
+</div><!-- row -->
+
+<!-- Add Station Modal -->
+<div class="modal fade" id="addStationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">增加站点</h4>
+      </div>
+      <div class="modal-body">
+        <table id="paltfromTab" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;"></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="platformCloseBtn">关闭</button>
+        <button type="button" class="btn btn-primary" id="addStationData">增加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Station Modal -->
+<div class="modal fade" id="delStationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">删除站点</h4>
+      </div>
+      <div class="modal-body">
+        <table id="stationTab" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;"></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="stationCloseBtn">关闭</button>
+        <button type="button" class="btn btn-primary" id="delStationData">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Save Draw Scheme Modal -->
+<div class="modal fade" id="saveSchemeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">保存方案</h4>
+      </div>
+      <div class="modal-body">
+      	<label>方案名称:<input type="text" id="schemeName" name="schemeName"/></label>
+      	<span style="color:red;" id="validateName">方案名称不能为空</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="closeScheme">关闭</button>
+        <button type="button" class="btn btn-primary" id="saveScheme">保存</button>
+      </div>
+    </div>
+  </div>
+</div>

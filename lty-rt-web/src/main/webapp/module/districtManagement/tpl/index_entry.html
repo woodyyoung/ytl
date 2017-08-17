@@ -1,0 +1,209 @@
+   
+ <div class="container body">
+        <div class="index_padd">
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="perInfo_title"><h3>指标数据录入</h3></div>
+            </div>
+          </div><!-- row -->
+          <div class="row">
+            <div class="col-md-4 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>菜单类别</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <div id="treeview-searchable" class="">
+                  </div><!-- treeview-searchable -->
+                  <div>
+                    <input type="input" class="form-control" id="input-search" placeholder="菜单搜索..." value=""/>
+                    <input type="hidden" class="form-control" id="id" value="">
+                  </div>    
+                </div>
+              </div>
+            </div><!-- col-md-3 -->
+
+			<div class="col-md-8 col-xs-12">
+				<div class="x_panel">
+					<div class="x_content">
+						<div class="user_btn">
+							<button type="button" class="btn btn-info" id="btn-insert"
+								data-toggle="modal">添加</button>
+							<button type="button" class="btn btn-primary" id="btn-update"
+								data-toggle="modal">编辑</button>
+							<button type="button" class="btn btn-danger" id="btn-del"
+								data-toggle="modal">删除</button>
+						</div>
+						<!-- user_btn -->
+						<div class="costOfEntry_search">
+							<form class="form-inline">
+								<div class="form-group">
+									<label>开始日期</label> <input type="text" class="form-control"
+										id="startTime" size="10"  name ="startTime" value="" placeholder="选择日期">
+								</div>
+								<div class="form-group">
+									<label>结束日期</label> <input type="text"  class="form-control"
+										id="endTime" size="10"  name ="endTime" value="" placeholder="选择日期">
+										
+								</div>
+							<!-- 	<div class="form-group" id="lineSearchDiv">
+									<label>线路</label> <select id="lineSearchSelect"  class="form-control"></select>
+								</div>
+								<div class="form-group" id="qySearchDiv">
+									<label>小区</label>  <select  class="form-control selectpicker" id="qySearchSelect"></select>
+								</div> -->
+								<button type="button" id = "btn-query" class="btn btn-default">查询</button>
+							</form>
+						</div>
+						<!-- costOfEntry_search -->
+						<div class="densityEvaluationMethod_text">
+							<p>
+								<label>指标说明:</label><span id="description"></span>
+							</p>
+							<p>
+								<label>指标单位:</label><span id="levelUnit"></span>
+							</p>
+						</div>
+						<!-- densityEvaluationMethod_text -->
+						<table id="entry_example" class="display table" cellspacing="0"
+							width="100%"></table>
+						<!-- table -->
+					</div>
+					<!-- x_content -->
+				</div>
+			</div>
+			<!--  <div class="col-md-8 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>指标说明</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_panel">
+	               	<div class="x_content">
+	               		<div id="description" style="height: 100px;"></div>
+	               	</div>x_content
+	             </div>x_panel    
+                <div class="x_content">	
+                
+                    <div class="form-group row">
+                    	
+                        <div class="col-md-12 col-xs-12 " id="index_level">
+						
+						</div>
+						
+				
+                    
+                      <div class="col-md-4 col-xs-12 perInfo_margB">
+                      	<br>
+                        <label>指标值：</label>
+                        <div>
+                        	<input type="text" name="indexValue" id="indexValue"><span id="levelUnit"></span>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-xs-12" id="lineDiv">
+                        <label for="inputEmail3" class="control-label">线路</label>
+						<div>
+							<select id="test" style="width:80%" class="form-control"></select>
+						</div>
+                      </div>
+                      <div class="col-md-4 col-xs-12" id="qyDiv">
+                        <label  class="control-label">区域</label>
+						<div>
+							<select style="width:80%" class="form-control selectpicker" id="yztselect"></select>
+						</div>
+                      </div>
+                    </div>form-group
+                    <div class="form-group row">
+                    	<div class="col-md-4 col-xs-12">
+	                    	<label for="inputEmail3" class="control-label">开始日期</label>
+							<div>
+								<input class="form-control" id="startTime"  name="startTime" value=""
+									placeholder="选择日期">
+							</div>
+						</div>
+						<div class="col-md-4 col-xs-12">
+							<label for="inputEmail3" class="control-label">结束日期</label>
+						 	<div>
+								<input class="form-control" id="endTime"  name="endTime" value=""
+								placeholder="选择日期">
+						 	</div>
+						</div>
+						
+                    </div>
+                    <div class="form-group row">
+                    	<div class="col-sm-12 passline_btn">
+		              		<button type="button" class="btn btn-info" id = "btn-insert">录入</button>
+		              		<label  class="control-label">备注：录入前请完善指标等级配置，确保录入的指标值能找到相应的唯一等级。</label>
+						</div>
+                    </div>
+        
+				      <div class="form-group passengerFlow_width passenger_marT">
+						
+						
+					</div>
+	             <div>
+	             <div class="col-sm-12 passline_btn">
+		              	<button type="button" class="btn btn-info" id = "btn-update"  data-toggle="modal">修改</button>
+		              	<button type="button" class="btn btn-info" id = "btn-del">删除</button>
+		              	<button type="button" class="btn btn-info" id = "btn-query">查询</button>
+		              	<div class="form-group row">
+                    	<div class="col-md-4 col-xs-12">
+	                    	<label for="inputEmail3" class="control-label">开始日期</label>
+							<div>
+								<input class="form-control" id="startTimeTable"  name="startTime" value=""
+									placeholder="选择日期">
+							</div>
+						</div>
+						<div class="col-md-4 col-xs-12">
+							<label for="inputEmail3" class="control-label">结束日期</label>
+						 	<div>
+								<input class="form-control" id="endTimeTable"  name="endTime" value=""
+								placeholder="选择日期">
+						 	</div>
+						</div>
+						
+                    </div>
+				 </div>
+	             <table id="entry_example" class="display table" cellspacing="0" width="100%" role="grid" aria-describedby="example_info" style="width: 100%;">
+                  </table>
+                  </div>
+                </div>
+              </div>x_panel
+            </div>col-md-9
+          </div>row -->
+          
+        </div><!-- index_padd -->
+        <!-- 
+        <div class="modal fade" id="batchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        	<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <h4 class="modal-title" id="myModalLabel">修改指标数据</h4>
+				      </div>
+				      <div class="modal-body">
+				       	 指标ID：<input type="text" name="planIndexId" id="planIndexId" readonly="readonly">
+				       	 指标名称：<input type="text" name="planIndexName" id="planIndexName" readonly="readonly">
+				      </div>
+				      <div class="modal-body">
+				       	 统计日期：<input type="text" name="planIndexDate" id="planIndexDate" readonly="readonly">
+				      </div>
+				      <div class="modal-body">
+				      	 统计数量：<input type="text" name="planMaxData" id="planMaxData">
+				       	 统计总数：<input type="text" name="planTotalData" id="planTotalData">
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				        <button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+				      </div>
+				    </div>
+				  </div>
+        </div>
+       -->
+      </div><!-- right -->
+    </div>
+    
+    
+<div id="dialogDiv">
+</div>

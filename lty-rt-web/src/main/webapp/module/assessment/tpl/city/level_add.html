@@ -1,0 +1,31 @@
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>添加评价等级</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="user_btn">
+					<button type="button" class="btn btn-danger" id="level_save">保存</button>
+					<button type="button" class="btn btn-primary" id="level_back">返回</button>
+				</div>
+				<!-- user_btn -->
+				<form class="perInfo_form" role="form" id="level_form">
+					<div class="form-group row">
+						<input type="text" hidden="true" name="id" value="<%=obj.id%>">
+						<div class="col-md-2 col-xs-12 perInfo_margB">
+							<label>评分等级</label> 
+							<input type="text" class="form-control" maxlength="2" onkeyup="this.value=this.value.replace(/\D/g,'')"   name="levels" id="add_index_level" value="<%=obj.levels%>" placeholder="">
+						</div>
+						<div class="col-md-5 col-xs-12 perInfo_margB">
+							<label>描述</label> 
+							<input type="text" class="form-control" maxlength="20" size="25" name="description" value="<%=obj.description%>" placeholder="">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- x_panel -->
+	</div>
+</div>

@@ -1,0 +1,28 @@
+ 
+	               		
+	<div class="col-md-12 col-xs-12 perInfo_margB">
+		<label>指标评分等级配置说明</label>
+		<table border="1">
+			<tr>
+				<th width="5%" >评分等级</th>
+				<th width="10%">范围下限(<%=obj.levelUnit%>)</th>
+				<th width="10%">范围上限(<%=obj.levelUnit%>)</th>
+				<th width="10%">描述(个性设置)</th>
+				<!-- <th width="65%">评价建议</td> -->
+			</tr>
+			<%								
+			if(obj.indexLevelList != null){ 
+			      for(var i = 0; i != obj.indexLevelList.length ; i++){
+			%>
+			<tr>
+			  <td><input type="text" class="form-control" name="indexLevelList[<%=i%>].indexLevel" value="<%=obj.indexLevelList[i].indexLevel %>" placeholder="" readonly="readonly"></td>
+			  <td><input type="text" class="form-control" name="indexLevelList[<%=i%>].lowerLimit" value="<%=obj.indexLevelList[i].lowerLimit %>" placeholder="" readonly="readonly"></td>
+			  <td><input type="text" class="form-control" name="indexLevelList[<%=i%>].topLimit" value="<%=obj.indexLevelList[i].topLimit %>" placeholder="" readonly="readonly"></td>
+			  <td><input type="text" class="form-control" name="indexLevelList[<%=i%>].description" value="<%=obj.indexLevelList[i].description %>" placeholder="" readonly="readonly"></td>
+			 <!--  <td><input type="text" class="form-control" name="indexLevelList[<%=i%>].proposal" value="<%=obj.indexLevelList[i].proposal %>" placeholder=""></td> -->
+			</tr>
+			   
+			<%} }%>
+		</table>
+	</div>
+	               		

@@ -1,0 +1,39 @@
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>添加路段</h2>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="user_btn">
+					<button type="button" class="btn btn-danger" id="ldgl_save">保存</button>
+					<button type="button" class="btn btn-primary" id="ldgl_back">返回</button>
+				</div>
+				<!-- user_btn -->
+				<form class="perInfo_form" role="form" id="ldgl_form">
+					<div class="form-group row">
+						<input type="text" hidden="true" name="id" value="<%=obj.id%>">
+						<input type="text" hidden="true" name="levels" value="<%=obj.levels%>">
+						<input type="text" hidden="true" name="lineid" value="<%=obj.lineid%>">
+						<input type="text" hidden="true" name="parentlineid" value="<%=obj.parentlineid%>">
+						<input type="text" hidden="true" name="state" value="<%=obj.state%>">
+						<div class="col-md-5 col-xs-12 perInfo_margB">
+							<label>路段名称</label> <input type="text" class="form-control"
+								name="linename" value="<%=obj.linename%>" placeholder="">
+						</div>
+						<div class="col-md-5 col-xs-12 perInfo_margB">
+							<label>长度</label> <input type="text" class="form-control"
+								name="linelength" value="<%=obj.linelength%>" placeholder="">
+						</div>
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>备注</label>
+							<textarea class="form-control" rows="3" name="remark"><%=obj.remark%></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- x_panel -->
+	</div>
+</div>

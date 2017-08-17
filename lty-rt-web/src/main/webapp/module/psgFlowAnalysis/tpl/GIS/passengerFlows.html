@@ -1,0 +1,127 @@
+<div class="row">
+
+	<div class="col-md-12 col-sm-12 col-xs-12">
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">
+				<h3 class="panel-title" id="panel-title-kLfx">站台客流展示</h3>
+			</div>
+
+			<div class="panel-body">
+
+				<form class="form-horizontal passengerFlows_from" role="form">
+
+
+					<div class="form-group">
+						<label class="col-sm-1 control-label">工作日</label>
+						<div class="col-sm-9">
+							<div>
+								<label class="radio-inline"> <input type="radio"
+									name="optionsRadios1" id="optionsRadios1" value=""
+									checked="checked">全部
+								</label> 
+								<label class="radio-inline"> <input type="radio"
+									name="optionsRadios1" id="optionsRadios2" value="1">工作日
+								</label> 
+								<label class="radio-inline"> <input type="radio"
+									name="optionsRadios1" id="optionsRadios3" value="0">非工作日
+								</label>
+								<label class="radio-inline"> <input type="radio"
+									name="optionsRadios1" id="optionsRadios4" value="-1">节假日
+								</label>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-group">
+						<label class="col-sm-1 control-label">站台</label>
+						<div class="col-sm-11">
+							<select id="p_station" class="form-control selectpicker passengerFlows_sel" style="width:25%;" >
+							</select>
+						</div>
+					</div>
+
+
+
+					<div class="form-group">
+						<label class="col-sm-1 control-label">分析时段</label>
+						<div class="col-sm-2">
+							<input class="form-control" id="startTime" name="startTime"
+								placeholder="选择日期">
+						</div>
+						<!-- <label  class="col-sm-1 control-label">至</label> -->
+						<div class="col-sm-2">
+							<input class="form-control" id="endTime" name="endTime"
+								placeholder="选择日期">
+						</div>
+
+
+
+						<div class="col-sm-2">
+							<button type="button" class="btn btn-primary role_update "
+								id="btn_cx">查询</button>
+						</div>
+					</div>
+
+
+				</form>
+
+			</div>
+			<!-- x_content -->
+		</div>
+		<!-- x_panel -->
+	</div>
+
+
+	<div class="col-sm-12">
+		<div class="panel panel-default passenger_position">
+			<div id="visitorsFlowRate_map">
+			</div>
+			<div class="passenger_rightBtn_click"><a class="passenger_rightBtn_toggle passenger_btn_open"></a></div>
+			<div class="linePassengerFlow_sign">
+				<div class="total_txt">
+	               <select id="planName" class="form-control passengerFlows_sel"></select>
+			    </div>
+               <ul class="linePassengerFlowSign_ul"></ul><!-- linePassengerFlowSign_ul --> 
+            </div><!-- linePassengerFlow_sign --> 
+		</div>
+	</div>
+
+
+	<div class="col-sm-12">
+		<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="row">
+
+				<div class="col-sm-12 xlklcx_btn">
+
+					 <!-- <button type="button" class="btn btn-info">打印</button> -->
+					<button type="button" class="btn btn-warning" id="btn-export">导出图表</button>
+				</div>
+
+			</div>
+
+
+			<table id="example" class="display" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<!--   <th>序号</th>
+                          <th>小区</th>
+                          <th>路段</th> -->
+						<th>站台</th>
+						<th>时间</th>
+						<th>上车人数</th>
+						<th>下车人数</th>
+					</tr>
+				</thead>
+			</table>
+
+		</div>
+		</div>
+
+	</div>
+
+</div>
+<!-- row -->

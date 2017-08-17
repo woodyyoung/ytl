@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.PVCostMapper" >
+  
+  <!-- Auxiliary line scheme result map -->
+  <resultMap id="PVCostTypeResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.PVCostType" >
+    <result column="pvcosttype_id" property="pvcosttype_id" />
+    <result column="pvcosttype_name" property="pvcosttype_name" />
+    <result column="user_id" property="user_id" />
+    <result column="user_name" property="user_name" />
+    <result column="create_time" property="create_time" />
+    <result column="note" property="note" />
+  </resultMap>
+  
+  <!-- Auxiliary line station result map -->
+  <resultMap id="PVCostResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.PVCost" >
+    <result column="pvcost_id" property="pvcost_id" />
+    <result column="year" property="year" />
+    <result column="line_id" property="line_id" />
+    <result column="company_id" property="company_id" />
+    <result column="money" property="money" />
+    <result column="user_id" property="user_id" />
+    <result column="user_name" property="user_name" />
+    <result column="create_time" property="create_time" />
+    <result column="note" property="note" />
+    
+    <result column="pvcosttype_id" property="pvcosttype_id" />
+    <result column="pvcosttype_name" property="pvcosttype_name" />
+    <result column="pvcosttype_user_id" property="pvcosttype_user_id" />
+    <result column="pvcosttype_user_name" property="pvcosttype_user_name" />
+    <result column="pvcosttype_create_time" property="pvcosttype_create_time" />
+    <result column="pvcosttype_note" property="pvcosttype_note" />
+  </resultMap>
+  
+
+  <!-- 插入数据 -->
+  <insert id="insertPVCost" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCost">
+  	INSERT INTO PJMK_PVCOST(pvcost_id, year, line_id, company_id, pvcosttype_id,money,user_id,user_name,create_time,note) VALUES(#{pvcost_id},#{ year},#{ line_id},#{ company_id},#{ pvcosttype_id},#{money},#{user_id},#{user_name},#{create_time},#{note})
+  </insert>
+  
+   <!-- 更新数据 -->
+  <update id="updatePVCost" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCost">
+  	UPDATE PJMK_PVCOST SET
+  	 year = #{year},
+  	 line_id = #{line_id},
+  	 company_id = #{company_id},
+  	 pvcosttype_id = #{pvcosttype_id},
+  	 money = #{money},
+  	 user_id = #{user_id},
+  	 user_name = #{user_name},
+  	 create_time = #{create_time},
+  	 note = #{note}
+  	where pvcost_id = #{pvcost_id}
+  </update>
+  
+  <!-- 删除数据 -->
+  <delete id="delPVCostByPvcost_id" parameterType="java.lang.String">
+  	DELETE FROM PJMK_PVCOST WHERE pvcost_id = #{pvcost_id}
+  </delete>
+  
+  <!-- 条件删除数据 -->
+  <delete id="delPVCostByCondition" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCost">
+  	DELETE FROM PJMK_PVCOST WHERE year = #{year} AND line_id = #{line_id} AND company_id = #{company_id} AND pvcosttype_id = #{pvcosttype_id}
+  </delete>
+  
+  <!-- 查询所有 -->
+  <select id="queryPVCosts" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCost" resultType="java.util.HashMap" >
+	     SELECT
+	     	rownum as NUMBER1,
+		    pc.pvcost_id,
+		    pc.year,
+		    pc.line_id,
+		    pl.name line_name,
+		    pc.company_id,
+		    pd.name company_name,
+		    pc.pvcosttype_id,
+		    pct.pvcosttype_name,
+		    pc.money,
+		    pc.user_id,
+		    pc.user_name,
+		    to_char(pc.create_time,'yyyy-mm-dd hh24:mi:ss') create_time,
+		    pc.note ,
+		    pct.pvcosttype_id,
+		    pct.pvcosttype_name,
+		    pct.user_id     pvcosttype_user_id,
+		    to_char(pct.create_time,'yyyy-mm-dd hh24:mi:ss') pvcosttype_create_time,
+		    pct.note        pvcosttype_note,
+		    pct.user_name   pvcosttype_user_name
+		FROM 
+		    PJMK_PVCOST pc,
+		    PJMK_PVCOSTTYPE pct,
+		    PJMK_LINE pl,
+		    PJMK_DEPARTMENT pd  
+		WHERE (pc.pvcosttype_id=pct.pvcosttype_id 
+		AND pc.line_id=pl.ID 
+		AND pc.company_id=pd.id||'')
+		 
+		<if test="line_id !=null and line_id!=''">  
+        	AND pc.line_id = #{line_id}
+    	</if> 
+		<if test="company_id !=null and company_id!='' ">  
+			AND pc.company_id = #{company_id}
+		</if> 
+		<if test="pvcosttype_id !=null and pvcosttype_id!='' ">  
+			AND pc.pvcosttype_id = #{pvcosttype_id}
+		</if>
+		<if test="startTime !=null and startTime!='' ">  
+			AND pc.year &gt;= #{startTime} 
+		</if>
+		<if test="endTime !=null and endTime!='' ">  
+			AND pc.year &lt;= #{endTime} 
+		</if>
+  </select>
+  
+  <!-- 查询所有 -->
+  <select id="queryPVCostsByCondition" resultType="java.util.HashMap" parameterType="java.util.Map">		
+		     SELECT 
+		         le.year
+		        ,le.pvcosttype_name name
+		        , 'line' type
+		        , '总量' stack
+		        ,nvl(ri.money,'0') money 
+		        FROM(		
+				SELECT a.year,b.pvcosttype_id,b.pvcosttype_name FROM (
+				      SELECT LEVEL-1+#{startTime} year FROM dual CONNECT BY LEVEL &lt;= (#{endTime}-#{startTime})+1
+				) a,(
+				      select * from PJMK_PVCOSTTYPE WHERE 1=1 
+				      <if test="pvcosttype_id !=null and pvcosttype_id!='' ">  
+							AND pvcosttype_id = #{pvcosttype_id}
+					  </if>
+				) b
+			) le,(
+		                SELECT
+		                    pc.year,
+		                    pc.pvcosttype_id,
+		                    sum(pc.money) money
+		                FROM 
+		                    PJMK_PVCOST pc,
+		                    PJMK_PVCOSTTYPE pct,
+		                    PJMK_LINE pl,
+		                    PJMK_DEPARTMENT pd  
+		                WHERE (pc.pvcosttype_id=pct.pvcosttype_id 
+		                AND pc.line_id=pl.ID 
+		                AND pc.company_id=pd.id)
+		                
+		                <if test="line_id !=null and line_id!=''">  
+				        	AND pc.line_id = #{line_id}
+				    	</if> 
+						<if test="company_id !=null and company_id!='' ">  
+							AND pc.company_id = #{company_id}
+						</if> 
+						<if test="pvcosttype_id !=null and pvcosttype_id!='' ">  
+							AND pc.pvcosttype_id = #{pvcosttype_id}
+						</if>
+						<if test="startTime !=null and startTime!='' ">  
+							AND pc.year &gt;= #{startTime} 
+						</if>
+						<if test="endTime !=null and endTime!='' ">  
+							AND pc.year &lt;= #{endTime} 
+						</if>
+		                
+		                GROUP BY pc.year,pc.pvcosttype_id	
+		       ) ri where le.year=ri.year(+)  AND le.pvcosttype_id=ri.pvcosttype_id(+) order by le.pvcosttype_id,le.year
+  </select>
+  
+  <!-- 批量删除 -->
+  <delete id="bathDelPVCost" parameterType="list">
+        <![CDATA[
+            DELETE FROM PJMK_PVCOST WHERE pvcost_id in
+        ]]>
+        <foreach collection="list" item="pvcost_ids"  open="(" separator="," close=")">  
+            #{pvcost_ids} 
+        </foreach>
+   </delete> 
+   
+  <!-- 查询所有公司 -->
+  <select id="queryDepartments" resultType="java.util.HashMap">
+    	SELECT t1.id,t1.name FROM pjmk_department t1 WHERE t1.propertyex ='D' 
+  </select>
+</mapper>

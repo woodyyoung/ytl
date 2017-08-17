@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.districtManagement.mapper.AreaMapMapper" >
+  <resultMap id="BaseResultMap" type="AreaMap" >
+    <result column="AREAID" property="areaid" jdbcType="VARCHAR" />
+    <result column="LAT" property="lat" jdbcType="DOUBLE" />
+    <result column="ING" property="ing" jdbcType="DOUBLE" />
+    <result column="ORDERBY" property="orderby" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    AREAID, LAT, ING, ORDERBY
+  </sql>
+  
+  <insert id="insert" parameterType="AreaMap" >
+    insert into PJMK_AREA_MAP (AREAID, LAT, ING, ORDERBY
+      )
+    values (#{areaid,jdbcType=VARCHAR}, #{lat,jdbcType=DOUBLE}, #{ing,jdbcType=DOUBLE},#{orderby,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="AreaMap" >
+    insert into PJMK_AREA_MAP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="areaid != null" >
+        AREAID,
+      </if>
+      <if test="lat != null" >
+        LAT,
+      </if>
+      <if test="ing != null" >
+        ING,
+      </if>
+      <if test="orderby != null" >
+        ORDERBY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="areaid != null" >
+        #{areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="lat != null" >
+        #{lat,jdbcType=DOUBLE},
+      </if>
+      <if test="ing != null" >
+        #{ing,jdbcType=DOUBLE},
+      </if>
+      <if test="orderby != null" >
+        #{orderby,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="batchInsert" parameterType="AreaMap">
+    insert into PJMK_AREA_MAP
+    <foreach collection="list" index="index" item="item" open="(" separator="union" close=")">    
+            select #{item.areaid},#{item.lat},#{item.ing},#{item.orderby} from dual    
+    </foreach>
+  </insert>
+  
+  <delete id="delByAreaid" parameterType="java.lang.String" >
+    delete from PJMK_AREA_MAP
+    where AREAID =  #{areaId,jdbcType=VARCHAR}
+  </delete>
+  
+  <select id="selectAreaMapByAreaId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_AREA_MAP
+    where AREAID = #{areaId,jdbcType=VARCHAR} order by orderby
+  </select>
+  
+  <delete id="delByAreaIds" parameterType="Map" >
+    delete from PJMK_AREA_MAP
+    where AREAID in
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  
+</mapper>

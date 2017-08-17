@@ -1,0 +1,67 @@
+<div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>添加客流等级</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <div class="user_btn">
+                    <button type="button" class="btn btn-danger" id="psglF_save">保存</button>
+                    <button type="button" class="btn btn-primary" id="psglF_back">返回</button>
+                  </div><!-- user_btn -->
+                  <form class="perInfo_form" role="form" id="psglF_form">
+                    <div class="form-group row">
+                    <input type="text" hidden="true" name= "id" value="<%=obj.id%>" >
+                      <div class="col-md-6 col-xs-12 perInfo_margB">
+                        <label>等级名称</label>
+                        <input type="text" class="form-control" name= "levelname" value="<%=obj.levelname%>" placeholder="">
+                      </div>
+                      <div class="col-md-6 col-xs-12">
+                        <label>颜色</label>
+                        <div class="input-group demo2">
+                         <input type="text" name= "circlecolor" value="<%=obj.circlecolor%>" class="form-control strokeColor_bor" />
+                         <span class="input-group-addon"><i></i></span>
+                         </div>
+                        <!-- <input type="text" class="form-control" name= "CIRCLECOLOR" placeholder=""> -->
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6 col-xs-12 perInfo_margB">
+                        <label>大小</label>
+                        <input type="number" class="form-control" name= "circlesize" value="<%=obj.circlesize%>" placeholder="">
+                      </div>
+                      <div class="col-md-6 col-xs-12">
+                        <label>数据下限</label>
+                        <input type="number" class="form-control" name= "mindata" value="<%=obj.mindata%>" placeholder="">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6 col-xs-12 perInfo_margB">
+                        <label>数据上限</label>
+                        <input type="email" class="form-control" name= "maxdata" value="<%=obj.maxdata%>" placeholder="">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6 col-xs-12">
+                        <label>是否启用 </label>
+                        <label class="checkbox-inline">
+                          <input type="radio" name="isdisable"  
+                          <%= "1" == obj.isdisable ? checked = 'checked' :'' %> value="1">启用
+                        </label>
+                        <label class="checkbox-inline">
+                          <input type="radio" name="isdisable"  <%= "0" == obj.isdisable ? checked = 'checked' :'' %> value="0">禁用
+                        </label>
+                      </div>
+                    </div>
+                     <div class="form-group row">
+                      <div class="col-md-12 col-xs-12">
+                        <label>备注</label>
+                        <textarea class="form-control" rows="3" name="remark"><%=obj.remark%></textarea>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div><!-- x_panel -->
+            </div>
+          </div>

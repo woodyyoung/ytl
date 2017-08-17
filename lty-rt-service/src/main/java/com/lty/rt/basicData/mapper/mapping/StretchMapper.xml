@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.basicData.mapper.StretchMapper" >
+  <resultMap id="BaseResultMap" type="Stretch" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="LINENAME" property="linename" jdbcType="VARCHAR" />
+    <result column="LINEID" property="lineid" jdbcType="VARCHAR" />
+    <result column="PARENTLINEID" property="parentlineid" jdbcType="VARCHAR" />
+    <result column="LINELENGTH" property="linelength" jdbcType="DECIMAL" />
+    <result column="TRACK" property="track" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="INTEGER" />
+    <result column="LEVELS" property="levels" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="StretchTreeResultMap" type="com.lty.rt.basicData.treeUtil.TreeNode" >
+    <result column="lineid" property="id" />
+    <result column="parentlineid" property="pid" />
+    <result column="linename" property="nodeName" />
+    <result column="id" property="arg" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, LINENAME, LINEID, PARENTLINEID, LINELENGTH, TRACK, STATE,LEVELS, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STRETCH
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from PJMK_STRETCH
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="Stretch" >
+    insert into PJMK_STRETCH (ID, LINENAME, LINEID, 
+      PARENTLINEID, LINELENGTH, TRACK, 
+      STATE,LEVELS, REMARK)
+    values (#{id,jdbcType=VARCHAR}, #{linename,jdbcType=VARCHAR}, #{lineid,jdbcType=VARCHAR}, 
+      #{parentlineid,jdbcType=VARCHAR}, #{linelength,jdbcType=DECIMAL}, #{track,jdbcType=VARCHAR}, 
+      #{state,jdbcType=INTEGER},#{levels,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="Stretch" >
+    insert into PJMK_STRETCH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="linename != null" >
+        LINENAME,
+      </if>
+      <if test="lineid != null" >
+        LINEID,
+      </if>
+      <if test="parentlineid != null" >
+        PARENTLINEID,
+      </if>
+      <if test="linelength != null" >
+        LINELENGTH,
+      </if>
+      <if test="track != null" >
+        TRACK,
+      </if>
+      <if test="state != null" >
+        STATE,
+      </if>
+      <if test="levels != null" >
+        LEVELS,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="linename != null" >
+        #{linename,jdbcType=VARCHAR},
+      </if>
+      <if test="lineid != null" >
+        #{lineid,jdbcType=VARCHAR},
+      </if>
+      <if test="parentlineid != null" >
+        #{parentlineid,jdbcType=VARCHAR},
+      </if>
+      <if test="linelength != null" >
+        #{linelength,jdbcType=DECIMAL},
+      </if>
+      <if test="track != null" >
+        #{track,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="levels != null" >
+        #{levels,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Stretch" >
+    update PJMK_STRETCH
+    <set >
+      <if test="linename != null" >
+        LINENAME = #{linename,jdbcType=VARCHAR},
+      </if>
+      <if test="lineid != null" >
+        LINEID = #{lineid,jdbcType=VARCHAR},
+      </if>
+      <if test="parentlineid != null" >
+        PARENTLINEID = #{parentlineid,jdbcType=VARCHAR},
+      </if>
+      <if test="linelength != null" >
+        LINELENGTH = #{linelength,jdbcType=DECIMAL},
+      </if>
+      <if test="track != null" >
+        TRACK = #{track,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        STATE = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="levels != null" >
+        LEVELS = #{levels,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Stretch" >
+    update PJMK_STRETCH
+    set LINENAME = #{linename,jdbcType=VARCHAR},
+      LINEID = #{lineid,jdbcType=VARCHAR},
+      PARENTLINEID = #{parentlineid,jdbcType=VARCHAR},
+      LINELENGTH = #{linelength,jdbcType=DECIMAL},
+      TRACK = #{track,jdbcType=VARCHAR},
+      STATE = #{state,jdbcType=INTEGER},
+      LEVELS = #{levels,jdbcType=INTEGER},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from PJMK_STRETCH where 1=1
+    <if test="parentLineId != null" >
+       AND PARENTLINEID = #{parentLineId,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="getStretchTree" resultMap="StretchTreeResultMap" parameterType="java.util.Map" >
+    select a.lineid, a.parentlineid, a.linename, a.id from pjmk_stretch a where a.state = 0
+  </select>
+  
+  <delete id="batchDeleteByPrimaryKey" parameterType="java.util.List" >
+    delete from PJMK_STRETCH
+    where ID in
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+   <delete id="deleteRefrencePlatform" parameterType="java.util.List" >
+    DELETE FROM PJMK_STRETCH_PLATFORM
+    WHERE STRETCHID  IN
+    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+            #{item}    
+    </foreach>
+  </delete>
+  
+  
+   <delete id="deleteLngLat" parameterType="java.util.List" >
+	    DELETE FROM  PJMK_STRETCH_MAP T WHERE T.STRETCHID   IN
+	    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">    
+	            #{item}    
+	    </foreach>
+  </delete>
+  
+  <select id="getMaxLineId" resultType = "String" parameterType="String" >
+    select max(lineid) from PJMK_STRETCH where parentlineid = #{parentId,jdbcType=VARCHAR}
+  </select>
+</mapper>

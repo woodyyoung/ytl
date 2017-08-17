@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lty.rt.auxiliaryAnalysis.mapper.FinancialMapper" >
+  
+  <!-- Auxiliary line station result map -->
+  <resultMap id="FinancialResultMap" type="com.lty.rt.auxiliaryAnalysis.entity.Financial" >
+    <result column="financial_id" property="financial_id" />
+    <result column="year" property="year" />
+    <result column="money" property="money" />
+    <result column="user_id" property="user_id" />
+    <result column="user_name" property="user_name" />
+    <result column="create_time" property="create_time" />
+    <result column="note" property="note" />
+    
+    <result column="financialtype_type_id" property="financialtype_type_id" />
+    <result column="financialtype_type_name" property="financialtype_type_name" />
+    <result column="financialtype_type_user_id" property="financialtype_type_user_id" />
+    <result column="financialtype_type_user_name" property="financialtype_type_user_name" />
+    <result column="financialtype_type_object" property="financialtype_type_object" />
+    <result column="financialtype_type_create_time" property="financialtype_type_create_time" />
+    <result column="financialtype_type_note" property="financialtype_type_note" />
+    
+    <result column="financialsource_source_id" property="financialsource_source_id" />
+    <result column="financialsource_source_name" property="financialsource_source_name" />
+    <result column="financialsource_source_user_id" property="financialsource_source_user_id" />
+    <result column="financialsource_source_user_name" property="financialsource_source_user_name" />
+    <result column="financialsource_source_object" property="financialsource_source_object" />
+    <result column="financialsource_source_create_time" property="financialsource_source_create_time" />
+    <result column="financialsource_source_note" property="financialsource_source_note" />
+    
+    <result column="financialobject_object_id" property="financialobject_object_id" />
+    <result column="financialobject_object_name" property="financialobject_object_name" />
+    <result column="financialobject_object_user_id" property="financialobject_object_user_id" />
+    <result column="financialobject_object_user_name" property="financialobject_object_user_name" />
+    <result column="financialobject_object_object" property="financialobject_object_object" />
+    <result column="financialobject_object_create_time" property="financialobject_object_create_time" />
+    <result column="financialobject_object_note" property="financialobject_object_note" />
+  </resultMap>
+  
+  <!-- 插入数据 -->
+  <insert id="insertFinancial" parameterType="com.lty.rt.auxiliaryAnalysis.entity.Financial">
+  	INSERT INTO PJMK_FINANCIAL(financial_id, year, financialtype_type,financialtype_object,financialtype_source,money,user_id,user_name,create_time,note) 
+  	VALUES(#{financial_id},#{year},#{financialtype_type_id},#{financialtype_object_id},#{financialtype_source_id},#{money},#{user_id},#{user_name},#{create_time},#{note})
+  </insert>
+  
+   <!-- 更新数据 -->
+  <update id="updateFinancial" parameterType="com.lty.rt.auxiliaryAnalysis.entity.Financial">
+  	UPDATE PJMK_FINANCIAL 
+  	<set>
+  	 <if test="user_id != null" >
+  	 user_id = #{user_id},
+  	 </if>
+  	 <if test="user_name != null" >
+  	 user_name = #{user_name},
+  	 </if>
+  	 <if test="year != null" >
+  	 year = #{year},
+  	 </if>
+  	 <if test="financialtype_type_id != null" >
+  	 financialtype_type = #{financialtype_type_id},
+  	 </if>
+  	 <if test="financialtype_object_id != null" >
+  	 financialtype_object = #{financialtype_object_id},
+  	 </if>
+  	 <if test="financialtype_source_id != null" >
+  	 financialtype_source = #{financialtype_source_id},
+  	 </if>
+  	 <if test="money != null" >
+  	 money = #{money},
+  	 </if>
+  	 <if test="note != null" >
+  	 note = #{note}
+  	 </if>
+  	 </set>
+  	where financial_id = #{financial_id}
+  </update>
+  
+  <!-- 删除数据 -->
+  <delete id="delFinancialByFinancial_id" parameterType="java.lang.String">
+  	DELETE FROM PJMK_FINANCIAL WHERE financial_id = #{financial_id}
+  </delete>
+  
+   <!-- 条件删除数据 -->
+  <delete id="delFinancialByCondition" parameterType="com.lty.rt.auxiliaryAnalysis.entity.PVCost">
+  	DELETE FROM PJMK_FINANCIAL WHERE year = #{year} pvcosttype_id = #{financialtype_id}
+  </delete>
+  
+  <select id="queryFinancials" resultType="java.util.HashMap" >
+       SELECT           
+       		 pc.financial_id
+		    ,pc.year
+		    ,pc.money
+		    ,pc.user_id
+		    ,pc.user_name
+		    ,to_char(pc.create_time,'yyyy-mm-dd hh24:mi:ss') create_time
+		    ,pc.note 
+		    
+		    ,type_type.financialtype_id financialtype_type_id
+		    ,type_type.financialtype_name financialtype_type_name
+		    ,type_type.user_id  financialtype_type_user_id
+		    ,to_char(type_type.create_time,'yyyy-mm-dd hh24:mi:ss') financialtype_type_create_time
+		    ,type_type.note financialtype_type_note
+		    ,type_type.user_name financialtype_type_user_name 
+		    
+		    ,type_object.financialtype_id financialtype_object_id
+		    ,type_object.financialtype_name financialtype_object_name
+		    ,type_object.user_id  financialtype_object_user_id
+		    ,to_char(type_object.create_time,'yyyy-mm-dd hh24:mi:ss') financialtype_object1
+		    ,type_object.note financialtype_object_note
+		    ,type_object.user_name financialtype_object_user_name 
+		    
+		    ,type_source.financialtype_id financialtype_source_id
+		    ,type_source.financialtype_name financialtype_source_name
+		    ,type_source.user_id  financialtype_type_user_id
+		    ,to_char(type_source.create_time,'yyyy-mm-dd hh24:mi:ss') financialtype_source2
+		    ,type_source.note financialtype_source_note
+		    ,type_source.user_name financialtype_source_user_name 
+     FROM 
+     	PJMK_FINANCIAL pc ,
+    	(SELECT * FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 1 ) type_type,
+    	(SELECT * FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 2 ) type_object,
+    	(SELECT * FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 3 ) type_source
+     	WHERE (pc.financialtype_type=type_type.financialtype_id 
+     	AND pc.financialtype_object=type_object.financialtype_id 
+     	AND pc.financialtype_source=type_source.financialtype_id)   
+    <if test="financialtype_source_id !=null and financialtype_source_id != '' ">  
+        	AND pc.FINANCIALTYPE_SOURCE = #{financialtype_source_id}
+   	</if> 
+	<if test="financialtype_object_id !=null and financialtype_object_id != '' ">  
+		AND pc.FINANCIALTYPE_OBJECT = #{financialtype_object_id}
+	</if> 
+	<if test="financialtype_type_id !=null and financialtype_type_id != '' ">  
+		AND pc.financialtype_type = #{financialtype_type_id}
+	</if>
+	<if test="startTime !=null and startTime!='' ">  
+		AND pc.year &gt;= #{startTime} 
+	</if>
+	<if test="endTime !=null and endTime!='' ">  
+		AND pc.year &lt;= #{endTime} 
+	</if>
+	order by   pc.year
+  </select>
+  
+  
+  <!-- 查询所有 -->
+  <select id="queryLineFinancialsByCondition" resultType="java.util.HashMap" parameterType="java.util.Map">		
+		     SELECT 
+		         le.year
+		        ,le.financialtype_name name
+		        , 'line' type
+		        , '总量' stack
+		        ,nvl(ri.money,'0') money 
+		        FROM(		
+				SELECT a.year,b.financialtype_id,b.financialtype_name FROM (
+				      SELECT LEVEL-1+#{startTime} year FROM dual CONNECT BY LEVEL &lt;= (#{endTime}-#{startTime})+1
+				) a,(
+				      select financialtype_id,financialtype_name from PJMK_FINANCIALTYPE WHERE 1=1 AND financialtype_object = 1
+				      <if test="financialtype_type_id !=null and financialtype_type_id !='' ">  
+							AND financialtype_id = #{financialtype_type_id}
+					  </if>
+				) b
+			) le,(
+		                SELECT
+		                    pc.year,
+		                    pc.financialtype_type,
+		                    sum(pc.money) money
+		                FROM 
+		                    PJMK_FINANCIAL pc,
+		                    (SELECT * FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 1 ) type_type
+		                WHERE (pc.financialtype_type=type_type.financialtype_id)
+		                
+						<if test="financialtype_type_id !=null and financialtype_type_id !='' ">  
+							AND pc.financialtype_type = #{financialtype_type_id}
+						</if>
+						<if test="startTime !=null and startTime!='' ">  
+							AND pc.year &gt;= #{startTime} 
+						</if>
+						<if test="endTime !=null and endTime!='' ">  
+							AND pc.year &lt;= #{endTime} 
+						</if>
+		                
+		                GROUP BY pc.year,pc.financialtype_type	
+		       ) ri where le.year=ri.year(+)  AND le.financialtype_id=ri.financialtype_type(+) order by le.financialtype_id,le.year
+  </select>
+  
+   <!-- 查询所有 -->
+  <select id="queryPieFinancialsByCondition" resultType="java.util.HashMap" parameterType="java.util.Map">		
+		     SELECT lle.name,Round((lle.value/total_num)*100,1) value FROM(                
+			                SELECT 
+					        le.financialtype_name name
+					        ,SUM(nvl(ri.money,'0')) value 
+					        FROM(		
+							SELECT a.year,b.financialtype_id,b.financialtype_name FROM (
+							      SELECT LEVEL-1+#{startTime} year FROM dual CONNECT BY LEVEL &lt;= (#{endTime}-#{startTime})+1
+							) a,(
+							      select financialtype_id,financialtype_name from PJMK_FINANCIALTYPE WHERE 1=1 AND financialtype_object = 1
+							     <if test="financialtype_type_id !=null and financialtype_type_id !='' ">  
+										AND financialtype_id = #{financialtype_type_id}
+								 </if> 
+							) b
+						) le,(
+					                SELECT
+					                    pc.year,
+					                    pc.financialtype_type,
+					                    sum(pc.money) money
+					                FROM 
+					                    PJMK_FINANCIAL pc,
+					                    (SELECT * FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 1 ) type_type
+					                WHERE (pc.financialtype_type=type_type.financialtype_id)
+									<if test="financialtype_type_id !=null and financialtype_type_id !='' ">  
+										AND pc.financialtype_type = #{financialtype_type_id}
+									</if>
+									<if test="startTime !=null and startTime!='' ">  
+										AND pc.year &gt;= #{startTime} 
+									</if>
+									<if test="endTime !=null and endTime!='' ">  
+										AND pc.year &lt;= #{endTime} 
+									</if>
+					                GROUP BY pc.year,pc.financialtype_type	
+					       ) ri where le.year=ri.year(+)  AND le.financialtype_id=ri.financialtype_type(+) 
+					       GROUP BY le.financialtype_name
+			) lle,(select sum(pc.money) total_num FROM 
+					                            PJMK_FINANCIAL pc,
+					                            (SELECT financialtype_id FROM PJMK_FINANCIALTYPE WHERE financialtype_object = 1 ) type_type
+					                       WHERE (pc.financialtype_type=type_type.financialtype_id)
+			) rii order by lle.name
+  </select>
+  
+  <delete id="bathDelFinancial" parameterType="list">
+        <![CDATA[
+            DELETE FROM PJMK_FINANCIAL WHERE financial_id in
+        ]]>
+        <foreach collection="list" item="financial_ids"  open="(" separator="," close=")">  
+            #{financial_ids} 
+         </foreach>
+   </delete> 
+</mapper>

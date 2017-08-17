@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<meta http-equiv="Cache" content="no-cache">
+    
+    <title>首页</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="css/font-awesome.css" rel="stylesheet">
+    <!-- iCheck -->
+    <!-- <link href="css/green.css" rel="stylesheet"> -->
+    <!-- bootstrap-progressbar -->
+    <link href="css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="css/select2.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="css/custom.css?v=1.0.2" rel="stylesheet">
+      <!-- dataTables -->
+    <link href="css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="css/select.dataTables.min.css" rel="stylesheet">
+    <link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="css/map.css" rel="stylesheet">
+    
+    <link href="css/style.css?v=1.0.2" rel="stylesheet">
+     </head>
+  <body class="nav-md">
+    <div class="container body">
+      <div class="col-md-3 left_col">
+
+      <div class="left_col scroll-view">
+
+        <div class="navbar nav_title">
+          <a href="index.html" class="site_title logo_site" style="text-align: center;"><img style="width:116%;height:40px;margin-left:-5px"  src="images/logo.png"><!-- <span>HENGDA</span> --></a>
+        </div><!-- nav_title -->
+        <div class="clearfix"></div>
+        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+          
+          <ul class="nav side-menu">
+          
+            <li><a><i class="fa fa-wrench gjklfx"></i>公交客流分析<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+                
+                 <li><a>客流分析推导<span class="fa fa-chevron-down"></span></a>
+		              <ul class="nav child_menu">                
+		                <li class="ztklfx" dataUrl="psgFlowAnalysis/src/klfxtd/ztklfx" title="站台客流分析"><a>站台客流分析</a></li>
+		                <li class="xlklfx" dataUrl="psgFlowAnalysis/src/xlklfx/xlklfx_tab"><a>线路客流分析</a></li>
+		                <li class="xqklfx" dataUrl="psgFlowAnalysis/src/xqklfx/xqklfx_tab"><a>区域客流分析 </a></li>
+		                <li class="dmklfx" dataUrl="psgFlowAnalysis/src/dmklfx/dmklfx_tab"><a>断面客流分析</a></li>
+		              </ul>
+		            </li>
+                
+                <li><a>客流结果查询<span class="fa fa-chevron-down"></span></a>
+                	 <ul class="nav child_menu">                
+		                <li class="ztklcx" dataUrl="psgFlowAnalysis/src/ztklcx/ztklcx"><a>站台客流查询</a></li>
+		                <li class="xlklcx" dataUrl="psgFlowAnalysis/src/xlklcx/xlklcx_tab"><a>线路客流查询</a></li>
+		                <li class="xqklcx" dataUrl="psgFlowAnalysis/src/xqklcx/xqklcx_tab"><a>区域客流查询</a></li>
+		                <li class="dmklcx" dataUrl="psgFlowAnalysis/src/dmklcx/dmklcx_tab"><a>断面客流查询</a></li>
+		              </ul>
+                
+                </li>
+                
+                <li><a>客流GIS展示<span class="fa fa-chevron-down"></span></a>
+		              <ul class="nav child_menu">                
+		                <li class="ztklMapShow" dataUrl="psgFlowAnalysis/src/GIS/psgfMap"><a>站台客流展示</a></li>
+		                <li class="lineKLFX" dataUrl="psgFlowAnalysis/src/GIS/psgfLine"><a>线路客流展示</a></li>
+		                <li class="communityKLFX" dataUrl="psgFlowAnalysis/src/GIS/psgCommunity"><a>区域客流展示</a></li>
+		                <li class="dmklShow" dataUrl="psgFlowAnalysis/src/GIS/psgSection"><a>断面客流展示</a></li>
+		              </ul>
+		            </li>
+               <!--  <li class=""><a>客流数据导出</a></li> -->
+               <!--  <li class="klfx_fsdpz"><a>分析时段配置</a></li> -->
+              </ul>
+            </li>
+          
+            <li><a><i class="fa fa-tint gjklyc"></i>公交客流预测<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+                <li class="" dataUrl="psgForecast/src/station/ztklcx" ><a>公交站台客流预测</a></li>
+                <li class="" dataUrl="psgForecast/src/line/xlklcx" ><a>线路客流影响预测</a></li>
+                <li class="" dataUrl="psgForecast/src/area/xqklcx"><a>区域客流预测</a></li>
+                <li class="" dataUrl="psgForecast/src/stretch/dmklcx"><a>路段断面客流预测</a></li>
+              </ul>
+            </li>
+            
+            
+             <li><a><i class="fa fa-map-marker jcsj"></i>公交线网评价<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">    
+				        <li class="" dataUrl="assessment/src/city/level" ><a>评价等级设置</a></li>    
+                <li class="" dataUrl="assessment/src/city/index?indexType=2"><a>评价指标管理</a></li>   
+                <li class="" dataUrl="assessment/src/city/assess_sub_tab?indexType=2"><a>分项评价计算</a></li>            
+                <li class="" dataUrl="assessment/src/city/assess_total_tab?indexType=2"><a>总体评价</a></li>            
+              </ul>
+            </li>
+            
+            
+            <li><a><i class="fa fa-retweet jcsj"></i>公交行业决策分析<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+                <li class=""><a>公交成本补贴核算<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                    <li class="kyzlfx"><a>成本收入核算<span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                        <li class="kyzlfx" dataUrl="busDecisionAnalysis/src/accountingSubsidies/incomeAccounting/ndbh/ndbh"><a>全市公交行业成本年度变化情况</a></li>
+                        <li class="kyzlfx" dataUrl="busDecisionAnalysis/src/accountingSubsidies/incomeAccounting/qcndbh/qcndbh"><a>全市公交行业人车公里成本年度变化情况</a></li>
+                      </ul>
+                    </li> 
+                    <li class="kyzlfx"><a>财政补贴管理<span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                        <!-- <li class="kyzlfx" dataUrl="busDecisionAnalysis/src/accountingSubsidies/financialSubsidies/czjc/czjc"><a>公交财政补贴基础数据管理</a></li> -->
+                        <li class="kyzlfx" dataUrl="busDecisionAnalysis/src/accountingSubsidies/financialSubsidies/czgc/czgc"><a>公交财政补贴构成统计</a></li>
+                      </ul>
+                    </li>
+                    <li class="kyzlfx" dataUrl="busDecisionAnalysis/src/accountingSubsidies/subsidiesBenefit/btxy"><a>财政补贴效益分析</a></li>
+                  </ul>
+                </li>
+                <li><a>线网优化辅助分析<span class="fa fa-chevron-down"></span></a>
+                	<ul class="nav child_menu">
+                		<li class="lineNetKLFX" dataUrl="busDecisionAnalysis/src/xwyhfzfx/psgfLineNet"><a>线网客流统计分析</a></li>
+                		<li class="kyzlfx" dataUrl="busDecisionAnalysis/src/xwyhfzfx/kyzlfx/kyzlfx_tab"><a>客运走廊分析</a></li> 
+                    <li class="" dataUrl="busDecisionAnalysis/src/xwyhfzfx/auxiliaryLineNetwork/fzxw"><a>辅助线网调整设计</a></li>
+                  <!--   <li class="" dataUrl="busDecisionAnalysis/src/xwyhfzfx/wireMeshPreAssessment/xwtzypg"><a>线网调整预评估</a></li>
+                    <li class="" dataUrl="busDecisionAnalysis/src/xwyhfzfx/wireMeshAfterAssessment/xwtzhpg"><a>线网调整后评估</a></li> -->
+                	</ul>
+                </li>
+                
+                <li><a>公交服务质量评价<span class="fa fa-chevron-down"></span></a>
+                	<ul class="nav child_menu">
+                		<li class="" dataUrl="assessment/src/city/level" ><a>评价等级设置</a></li>    
+               	 		<li class="" dataUrl="assessment/src/city/index?indexType=3"><a>评价指标管理</a></li>   
+                		<li class="" dataUrl="assessment/src/city/assess_sub_tab?indexType=3"><a>分项评价计算</a></li>            
+                		<li class="" dataUrl="assessment/src/city/assess_total_tab?indexType=3"><a>总体评价</a></li> 
+                	</ul>
+                </li>
+                
+                
+                <li><a>公交发展水平评价<span class="fa fa-chevron-down"></span></a>
+                	<ul class="nav child_menu">
+                		<li class="" dataUrl="assessment/src/city/level" ><a>评价等级设置</a></li>    
+                		<li class="" dataUrl="assessment/src/city/index?indexType=4"><a>评价指标管理</a></li>   
+                		<li class="" dataUrl="assessment/src/city/assess_sub_tab?indexType=4"><a>分项评价计算</a></li>            
+                		<li class="" dataUrl="assessment/src/city/assess_total_tab?indexType=4"><a>总体评价</a></li> 
+                	</ul>
+                </li>
+              </ul>
+            </li>
+            
+            <li><a><i class="fa fa-map-marker jcsj"></i>公交都市考核评价<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">    
+				        <li class="" dataUrl="assessment/src/city/level" ><a>评价等级设置</a></li>    
+                <li class="" dataUrl="assessment/src/city/index?indexType=1"><a>评价指标管理</a></li>   
+                <li class="" dataUrl="assessment/src/city/assess_sub_tab?indexType=1"><a>分项评价计算</a></li>            
+                <li class="" dataUrl="assessment/src/city/assess_total_tab?indexType=1"><a>总体评价</a></li>            
+              </ul>
+            </li>
+            
+           
+            
+            <li><a><i class="fa fa-cog jcsj"></i>基础数据维护<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+              <!--   <li class="dm_dygl" dataUrl="districtManagement/src/dm_dygl"><a>区域管理</a></li> -->
+                <li class="dm_dygl" dataUrl="districtManagement/src/area_mgmt"><a>区域管理</a></li>
+            <!--     <li class="dm_qyztgl" dataUrl="districtManagement/src/dm_qyztgl"><a>区域站台维护</a></li> -->
+          <!--       <li class="dm_ldgl" dataUrl="districtManagement/src/dm_ldgl"><a>路段管理</a></li> -->
+                 <li class="dm_ldgl" dataUrl="districtManagement/src/stretch_mgt"><a>路段管理</a></li>
+                <!-- <li class="dm_ldztgl" dataUrl="districtManagement/src/dm_ldztgl"><a>路段站台维护</a></li> -->
+                <li class="index_entry"><a>数据录入<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                    <li class="index_entry" dataUrl="districtManagement/src/index_entry"><a>指标数据录入</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/costOfEntry"><a>全市公交行业成本录入</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/costTypes"><a>全市公交行业成本类型</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/fiscalSubsidyManagement"><a>公交财政补贴基础数据管理</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/fiscalSubsidyType"><a>公交财政补贴类型</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/includedInTheCamp"><a>公交营收录入</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/costOfCarType"><a>全市公交行业人车成本类型</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/oneCarCostInput"><a>全市公交行业人车成本录入</a></li>
+                    <li dataUrl="districtManagement/src/dataEntry/holidayManage"><a>节假日管理</a></li>
+                         <!-- <li dataUrl="districtManagement/src/dataEntry/densityEvaluationMethod"><a>线网密度评价</a></li>-->
+                  </ul>
+                </li>
+                <li class="psgmfs" dataUrl="psgFlowAnalysis/src/GIS/psgfLevel"><a>客流等级配置</a></li>
+              </ul>
+            </li>
+            
+            
+            <li><a><i class="fa fa-cog jcsj"></i>系统管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">    
+              
+               <li dataUrl="systemManage/src/user/user_mgmt"><a>用户管理</a></li>
+               <li dataUrl="systemManage/src/permisson/menuManager"><a>菜单管理</a></li>
+               <li dataUrl="systemManage/src/role/role"><a>角色管理</a></li>  
+              
+            <!--   <li><a><i class="fa fa-user"></i>用户管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">                
+                <li dataUrl="systemManage/src/user/personalInformation"><a>个人信息管理</a></li>
+                <li dataUrl="systemManage/src/user/user_mgmt"><a>用户管理</a></li> -->
+              </ul>
+            </li>
+            
+          <!--   <li><a><i class="fa fa-sitemap"></i>部门管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">
+                <li dataUrl="systemManage/src/dept/department"><a>部门管理</a></li>            
+              </ul>
+            </li>
+            <li><a><i class="fa fa-book"></i>字典管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">
+                <li dataUrl="systemManage/src/dictionary/dictionary"><a>字典管理</a></li>            
+              </ul>
+            </li>
+            <li><a><i class="fa fa-lock"></i>权限管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">
+                <li><a href="system/permission.html">权限分配</a></li>
+                <li dataUrl="systemManage/src/permisson/menuManager"><a>菜单管理</a></li>
+                <li><a href="system/menuAllot.html">菜单分配</a></li>                    
+              </ul>
+            </li>
+            <li><a><i class="fa fa-vcard"></i>角色管理<span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">
+                <li dataUrl="systemManage/src/role/role"><a>角色管理</a></li>                  
+              </ul>
+            </li> -->
+              </ul>
+            </li>
+            
+            
+                    
+          </ul>
+        
+        
+        </div><!-- sidebar-menu -->
+
+        </div>
+
+      </div><!-- left -->
+      <div class="right_col" role="main">
+        <div class="top_nav">
+          <div class="nav_menu">
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fa fa-arrow-circle-left"></i></a>
+            </div><!-- nav -->
+            <ul class="nav navbar-nav navbar-right">
+              <li class="">
+                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <img src="images/user.png" alt="">管理员
+                  <span class=" fa fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                  <li><a href="javascript:;"><i class="fa fa-id-card-o"></i><span class="drop_sp">当前在线用户</span></a></li>
+                  <li><a id="index_updatePWD" href="javascript:;"><i class="fa fa-cog"></i><span class="drop_sp">修改密码</span></a></li>
+                  <li><a id="index_myinfo" href="javascript:;"><i class="fa fa-user"></i><span  class="drop_sp">我的资料</span></span></a></li>
+                  <li><a href="login.html"><i class="fa fa-sign-out"></i><span class="drop_sp">退出系统</span></a></li>
+                </ul>
+              </li>
+            </ul><!-- navbar-nav -->
+            <div class="menu_btn right hide"><i class="fa fa-bars"></i></div><!-- menu_btn -->
+            <ul class="menu_ul navbar-right" style="width:110px;">
+           <!--    <li><i class="fa fa-truck"></i><p>调度</p></li>
+              <li><i class="fa fa-map-marker"></i><p>运营</p></li> 
+              <li><a href=""><i class="fa fa-bus"></i><p>车辆</p></a></li>
+              <li><a href=""><i class="fa fa-cubes"></i><p>物资</p></a></li>
+              <li><i class="fa fa-bars"></i><p>设备</p></li>
+              <li><i class="fa fa-life-ring"></i><p>安全</p></li>
+              <li><i class="fa fa-user"></i><p>人事</p></li>
+              <li><i class="fa fa-cny"></i><p>财务</p></li>
+              <li><i class="fa fa-bar-chart"></i><p>报表</p></li>
+              <li><a ><i class="fa fa-briefcase"></i><p>办公</p></a></li> 
+              <li><a > <i class="fa fa-cog"></i><p>系统</p></a></li>-->
+            </ul><!-- menu_ul -->
+          </div><!-- nav_menu -->
+        </div><!-- top_nav -->
+
+	  <!-- 对应每个页面Middle部分 -->
+ 	  <div class="index_padd"  id="index_padd" ></div><!-- index_padd -->
+
+      </div><!-- right -->
+      
+      <!-- 导出form -->
+	  <div>
+	 	     <form class="form-horizontal form_after" role="form" id="export_form" 
+	 	       action="/report/exportController/export" method="post">
+	 	  		<input type="hidden" name="img" id="img" />
+				<input type="hidden" name="tableData" id="tableData" />
+				<input type="hidden" name="fileName" id="fileName" />
+				<input type="hidden" name="titleColumn" id="titleColumn" />
+				<input type="hidden" name="titleName" id="titleName" />
+				<input type="hidden" name="titleSize" id="titleSize" />
+				<input type="hidden" name="picLocation" id="picLocation" />
+			 </form>
+	  </div>    
+  
+    </div><!-- container -->
+    
+    
+
+<!-- 提示信息 -->
+<div class="modal fade" id="alert_tip" tabindex="-100" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">提示信息</h4>
+            </div>
+            <div class="modal-body">你已经提交了客户资料，请稍等5个工作日之后再来查看!</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                <!-- <button type="button" class="btn btn-primary">提交更改</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- 确认提示框 -->
+<div class="modal fade" id="alert_confirm" tabindex="-100" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">确认信息</h4>
+            </div>
+            <div class="modal-body">你确认删除此目录?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">确定</button> 
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- 警告或错误信息 -->
+<div class="modal fade" id="alert_warn" tabindex="-100" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel" style="color:red">警告信息</h4>
+            </div>
+            <div class="modal-body" style="color:red">操作非法！</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                <!-- <button type="button" class="btn btn-primary">提交更改</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- ajax加载图片 -->
+<div id="showLoadIngDiv" style="display:none;position: absolute; top: 0px; filter: alpha(opacity=60); background-color: #777;   z-index: 1005; left: 0px; opacity:0.5; -moz-opacity:0.5">
+	<img  style="position: fixed; top: 50%; z-index: 109; left: 50%; " src="images/loading.gif"/>
+</div>
+    
+<!-- 修改密码模态框（Modal） -->
+<div class="modal fade" id="index_updatePWD_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					修改密码
+				</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" role="form">
+					<div class="form-group">
+						<label for="firstname" class="col-sm-2 control-label">旧密码</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="index_oldPWD" placeholder="请输入旧密码"/>
+							<span id="index_oldPWD_error" style="color: red;"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname" class="col-sm-2 control-label">新密码</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="index_newPWD" placeholder="请输入新密码"/>
+							<span id="index_newPWD_error" style="color: red;"></span>
+						</div>
+					</div>	
+					<div class="form-group">
+						<label for="lastname" class="col-sm-2 control-label">再次输入</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="index_newPWD_tow"  placeholder="请再次输入新密码"/>
+							<span id="index_newPWD_tow_error" style="color: red;"></span>
+						</div>
+					</div>	
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+				<button  id="index_submit_updatePWD" type="button" class="btn btn-primary">
+					提交更改
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.custom.js"></script>
+    <script src="js/jquery.cookie.js"></script>
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Chart.js -->
+    <script src="js/Flot/Chart.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="js/Flot/bootstrap-progressbar.min.js"></script>
+    <!-- iCheck -->
+    <script src="js/icheck.min.js"></script>
+    <!-- Skycons -->
+    <script src="js/skycons.js"></script>
+    <!-- Flot -->
+    <script src="js/Flot/jquery.flot.js"></script>
+    <script src="js/Flot/jquery.flot.pie.js"></script>
+    <script src="js/Flot/jquery.flot.time.js"></script>
+    <script src="js/Flot/jquery.flot.stack.js"></script>
+    <script src="js/Flot/jquery.flot.resize.js"></script>
+    <!-- Flot plugins -->
+    <script src="js/Flot/jquery.flot.orderBars.js"></script>
+    <script src="js/Flot/date.js"></script>
+    <script src="js/Flot/jquery.flot.spline.js"></script>
+    <script src="js/Flot/curvedLines.js"></script>
+    <script src="js/gauge.min.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="js/moment.min.js"></script>
+    <script src="js/daterangepicker.js"></script>
+   
+    <!-- dataTables -->
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.buttons.min.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    
+    
+    <script src="js/bootstrap-colorpicker.min.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/select2.full.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.js"></script>
+    <script src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="module/common/src/common.js?v=1.0.2"></script>
+    <script src="module/common/src/dataTable_zh_CN.js"></script>
+	  <script src="js/bootstrap-treeview.js"></script>
+    <!-- <link rel="stylesheet" href="http://www.treejs.cn/v3/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="http://www.treejs.cn/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="http://www.treejs.cn/v3/js/jquery.ztree.core.js"></script> -->
+  
+    <!-- Custom Theme Scripts -->
+    <script src="js/custom.js"></script>
+    <script src="js/html2canvas.js"></script>
+   <!-- map -->
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=1e9e0c9fa41546524c5f18491731db93&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.CircleEditor">
+    </script>
+    
+    <script>
+      $(document).ready(function() {
+    
+        var cookiename = $.cookie('rt_user_name'); 
+        if(cookiename==null||cookiename==''){
+        	window.location.href='login.html';
+        }
+        var params = {};
+        params.id =  $.cookie('rt_user_id'); 
+        $.ajax({
+			type : "POST",
+			contentType : "application/json",
+			url : 'report/userMgmt/queryUserById',
+			data : JSON.stringify(params),
+			success : function(resp){
+				if(resp.code == 0){
+					if(resp.data){
+    					comm.userInfo = resp.data;
+    					
+    					$('#sidebar-menu').find("li").hide();
+    					//以下菜单部分，不忍直视，如果维护看到别打脸
+    					$.each(comm.userInfo.role.menus,function(_index){
+    						var dbName = $.trim(comm.userInfo.role.menus[_index].menuName);
+    						$.each($('#sidebar-menu li'),function(_menu){
+        						var htmlName = $.trim($($('#sidebar-menu li')[_menu]).text());
+        						if(htmlName.startWith(dbName)){
+        							$(this).show();
+        						}
+        					});
+    					});		 
+
+					}
+                }
+			}
+		});
+        
+      });
+      
+      String.prototype.startWith=function(s){
+    	  if(s==null||s==""||this.length==0||s.length>this.length)
+    	   return false;
+    	  if(this.substr(0,s.length)==s)
+    	     return true;
+    	  else
+    	     return false;
+    	  return true;
+      }
+    </script>
+   
+    
+    <script data-main="module/main.js" src="js/require.js"></script>
+    
+  </body>
+</html>

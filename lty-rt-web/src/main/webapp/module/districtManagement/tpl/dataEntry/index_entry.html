@@ -1,0 +1,114 @@
+   
+ <div class="container body">
+        <div class="index_padd">
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="perInfo_title"><h3>指标数据录入</h3></div>
+            </div>
+          </div><!-- row -->
+          <div class="row">
+            <div class="col-md-4 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>菜单类别</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <div id="treeview-searchable" class="">
+                  </div><!-- treeview-searchable -->
+                  <div>
+                    <input type="input" class="form-control" id="input-search" placeholder="菜单搜索..." value=""/>
+                    <input type="hidden" class="form-control" id="id" value="">
+                  </div>    
+                </div>
+              </div>
+            </div><!-- col-md-3 -->
+
+            <div class="col-md-8 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>指标说明</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_panel">
+	               	<div class="x_content">
+	               		<div id="description" style="height: 100px;"></div>
+	               	</div><!-- x_content -->
+	             </div><!-- x_panel -->    
+                <div class="x_content">	
+                
+                <form class="perInfo_form" role="form">
+                    <div class="form-group row">
+                      <div class="col-md-4 col-xs-12 perInfo_margB">
+                        <label>指标值：</label>
+                        <div>
+                        	<input type="text" name="indexValue" id="indexValue"><span id="levelUnit"></span>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-xs-12" id="lineDiv">
+                        <label for="inputEmail3" class="control-label">线路</label>
+						<div>
+							<select id="test" style="width:80%" class="form-control"></select>
+						</div>
+                      </div>
+                      <div class="col-md-4 col-xs-12" id="qyDiv">
+                        <label  class="control-label">区域</label>
+						<div>
+							<select style="width:80%" class="form-control selectpicker" id="yztselect"></select>
+						</div>
+                      </div>
+                    </div><!-- form-group -->
+                    <div class="form-group row">
+                    	<div class="col-md-4 col-xs-12">
+	                    	<label for="inputEmail3" class="control-label">开始日期</label>
+							<div>
+								<input class="form-control" id="startTime"  name="startTime" value=""
+									placeholder="选择日期">
+							</div>
+						</div>
+						<div class="col-md-4 col-xs-12">
+							<label for="inputEmail3" class="control-label">结束日期</label>
+						 	<div>
+								<input class="form-control" id="endTime"  name="endTime" value=""
+								placeholder="选择日期">
+						 	</div>
+						</div>
+						
+                    </div>
+                    <div class="form-group row">
+                    	<div class="col-sm-2 passline_btn">
+		              		<button type="button" class="btn btn-info" id = "btn-insert">添加</button>
+						</div>
+                    </div>
+        
+				      <div class="form-group passengerFlow_width passenger_marT">
+						
+						
+					</div>
+	             
+                <!-- </div> -->
+              </div><!-- x_panel -->
+            </div><!-- col-md-9 -->
+          </div><!-- row -->
+          
+        </div><!-- index_padd -->
+        <div class="modal fade" id="batchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        	<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加指标</h4>
+				      </div>
+				      <div class="modal-body">
+				       	 统计数量：<input type="text" name="planName" id="planName">
+				       	 统计总数：<input type="text" name="maxData" id="maxData">
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				        <button type="button" class="btn btn-primary" id="determineAdd">确定</button>
+				      </div>
+				    </div>
+				  </div>
+        </div>
+      </div><!-- right -->
+    </div>

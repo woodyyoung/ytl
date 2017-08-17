@@ -1,0 +1,114 @@
+body{ font-family: "微软雅黑"; font-size: 12px;}
+p,body,ul,li{ padding: 0; margin: 0;}
+ul,li{ list-style: none;}
+a{ text-decoration: none;}
+.clearfix{content: ""; clear: both; height: 0px; display: block;}
+
+
+.main{
+	background: #eee;
+}
+.main .title{
+	background: #fff;
+	margin-bottom: 15px;
+}
+
+/*左侧*/
+.sideleft{
+	margin-left: 15px;
+	background: #fff;
+	border-top:1px solid #000;
+	border-bottom:1px solid #000;
+	border-left:1px solid #000;
+}
+.holitop{
+	padding:5% 10%;
+}
+.holitop select{
+	width: 20%;
+	border:1px solid #ddd;
+	height: 30px;
+	margin:0 5%;
+	padding-left: 6%;
+}
+.holitop .prev,.holitop .next{
+	font-size: 18px;
+}
+.day{
+	border:1px solid #ddd;
+	padding:6px 15px;
+	border-radius: 3px;
+}
+.week{
+	width: 88%;
+	margin: 0 auto;
+}
+.week ul li{
+	float: left;
+	width: 14.2%;
+	text-align: center;
+	font-weight: bold;
+	font-size: 16px;
+}
+.red{
+	color:red;
+}
+.bg{
+	background: rgb(231,240,190)!important;
+}
+.qiandao_main{
+	width: 88%;
+	margin: 4% auto;
+}
+.qiandao_list{
+	width: 100%;
+}
+.qiandao-icon{
+	text-align: center;
+	line-height: 35px;
+}
+.qiandao_list li{
+	position:relative;
+	float:left;
+	width: 14.1%;
+	height:35px;
+}
+
+.qiandao_list li div{
+	position:absolute;
+	top:0;
+	left:25%;
+	z-index:1;
+	width:50%;
+	height: 100%;
+}
+
+/*右侧*/
+.sideright{
+	padding:5% 10%;
+}
+.numday{
+	padding:20px 5px;
+}
+.sure{
+	padding:3% 20%;
+}
+#status{
+	margin: 15px 0;
+}
+#toView{
+	margin-left:20px;
+}
+
+/*表单*/
+.formss{
+	margin-right:-15px;
+}
+.forms{
+	padding-right:0!important;
+	padding-left:15px;
+}
+.forms .costOfEntry_search{
+	padding:15px 5%;
+	background: #fff;
+}

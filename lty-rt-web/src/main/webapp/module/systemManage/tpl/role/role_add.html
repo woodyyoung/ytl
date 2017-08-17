@@ -1,0 +1,37 @@
+
+      
+
+<div class="modal fade" id="addRoleModal" tabindex="-1" role="dialog"  aria-labelledby="addRoleModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="addRoleLabelTile">添加角色</h4>
+			</div>
+			<div class="modal-body">
+				<form class="Role_form" role="form" id="Role_form">
+						<input type="text" hidden="true" name="roleId"  value="<%=obj.roleId%>">
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>角色名称</label> <input type="text" class="form-control"
+								name="roleName" value="<%=obj.roleName%>" id="add_RoleName" placeholder="">
+						</div>
+						<div class="col-md-12 col-xs-12 perInfo_margB">
+							<label>角色描述</label> <input type="text" class="form-control"
+								name="rights" value="<%=obj.rights%>" id="add_rights" placeholder="">
+						</div>
+						
+						
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="btn_add_Role">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+        
